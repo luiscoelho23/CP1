@@ -216,18 +216,10 @@ bool memory_read(int addr_r, int length, char* data)
 	if((0x10000 - addr_r) < length)
 		return false;
 
-	/*
-	uint32_t *addr = 0x20040000; //	SRAM1
-	addr += (uint8_t) addr_r;
-	addr += ((addr_r+1)/sizeof(addr_r) - 1);
-
 	for(int i = 0; i < length; i++)
 	{
-		data[i] = *(addr++);
+		data[i] = memory[addr_r++];
 	}
-
-	bool dummy = true;
-	*/
 
 	return true;
 }
