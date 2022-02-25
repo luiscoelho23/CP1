@@ -55,7 +55,7 @@ void MX_USART3_UART_Init(void);
 void reset_UART();
 
 void send_UART(const char*);
-bool transmitting_to_UART();
+bool is_transmitting_to_UART();
 
 void read_UART(uint8_t*);
 bool is_ready_read_from_UART();

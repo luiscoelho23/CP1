@@ -48,7 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t memory[65536];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,7 +106,7 @@ int main(void)
 		  uint8_t message[128];
 		  read_UART(message);
 
-		  checkCommand(message);
+		  //checkCommand(message);
 
 		  if(!strncmp((char*) message, "MR", 2))
 		  {
@@ -240,28 +240,20 @@ bool memory_write(int addr_r, int length, int data)
 	if((0x10000 - addr_r) < length)
 		return false;
 
-	/*
-	uint32_t *addr = 0x20040000; //	SRAM1
-	addr += (uint8_t) addr_r;
-	addr += ((addr_r+1)/sizeof(addr_r) - 1);
-
 	for(int i = 0; i < length; i++)
 	{
-		*(addr++) = data;
+		memory[addr_r++] = data;
 	}
-
-	bool dummy = true;
-	*/
 
 	return true;
 }
-
+/*
 void checkCommand(const char* message)
 {
 	if(!strncmp((char*) message, "MR", 2))
 	{
 }
-
+*/
 /* USER CODE END 4 */
 
 /**

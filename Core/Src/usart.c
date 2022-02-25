@@ -143,7 +143,7 @@ bool is_ready_read_from_UART()
 	return flagCPP;
 }
 
-bool transmitting_to_UART()
+bool is_transmitting_to_UART()
 {
 	return flagCPE;
 }
