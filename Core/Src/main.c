@@ -38,7 +38,14 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define INV 0
+#define MR 1
+#define MW 2
+#define MI 3
+#define MO 4
+#define RD 5
+#define WD 6
+#define RA 7
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -216,6 +223,32 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+char check_command(char* message)
+{
+	if(!strncmp((char*) message, "MR ", 3))
+		return MR;
+
+	else if(!strncmp((char*) message, "MW ", 3))
+		return MW;
+
+	else if(!strncmp((char*) message, "MI ", 3))
+		return MI;
+
+	else if(!strncmp((char*) message, "MO ", 3))
+		return MO;
+
+	else if(!strncmp((char*) message, "RD ", 3))
+		return RD;
+
+	else if(!strncmp((char*) message, "WD ", 3))
+		return WD;
+
+	else if(!strncmp((char*) message, "RA ", 3))
+		return RA;
+
+	else return INV;
+}
 
 bool memory_read(int addr_r, int length, char* data)
 {
