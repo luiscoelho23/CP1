@@ -20,13 +20,14 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
@@ -118,13 +119,21 @@ int main(void)
 
 				  if(memory_read(addr, length, data))
 				  {
-					  send_UART("Success.\r");
+					  strcpy((char*) message, "Memory read: ");
+					  char temp[4];
+
+					  for(int i = 0; i < length; i++)
+					  {
+						  strcat((char*) message, itoa(data[i], temp, 16));
+						  strcat((char*) message, " ");
+					  }
+					  send_UART((char*) message);
 				  }
 				  else
 					  send_UART("Invalid Memory Read instruction argument values.\r");
 			  }
 			  else
-				  send_UART("Invalid Memory Read instruction syntax.\r");
+				  send_UART("Invalid Memory Read instruction syntax.");
 		  }
 		  else if(!strncmp((char*) message, "MW", 2))
 		  {
@@ -133,15 +142,15 @@ int main(void)
 			  if(sscanf((char*) message, "%*s %x %x %x", &addr, &length, &data) == 3)
 			  {
 				  if(memory_write(addr, length, data))
-					  send_UART("Success.\r");
+					  send_UART("Success.");
 				  else
-					  send_UART("Invalid Memory Write instruction argument values.\r");
+					  send_UART("Invalid Memory Write instruction argument values.");
 			  }
 			  else
-				  send_UART("Invalid Memory Write instruction syntax.\r");
+				  send_UART("Invalid Memory Write instruction syntax.");
 		  }
 		  else
-			  send_UART("Invalid instruction.\r");
+			  send_UART("Invalid instruction.");
 
 		  while(is_transmitting_to_UART());
 

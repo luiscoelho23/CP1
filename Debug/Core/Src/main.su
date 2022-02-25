@@ -1,5 +1,5 @@
-main.c:71:5:main	184	dynamic
-main.c:162:6:SystemClock_Config	88	static
-main.c:211:6:memory_read	32	static
-main.c:227:6:memory_write	32	static
-main.c:255:6:Error_Handler	4	static,ignoring_inline_asm
+main.c:72:5:main	192	dynamic
+main.c:171:6:SystemClock_Config	88	static
+main.c:220:6:memory_read	32	static
+main.c:236:6:memory_write	32	static
+main.c:264:6:Error_Handler	4	static,ignoring_inline_asm

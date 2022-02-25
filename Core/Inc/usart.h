@@ -27,10 +27,11 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <string.h>
-#include <stdbool.h>
 
 /* USER CODE BEGIN Includes */
+
+#include <stdbool.h>
+#include <string.h>
 
 /* USER CODE END Includes */
 

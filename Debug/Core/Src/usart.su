@@ -5,6 +5,6 @@ usart.c:141:6:is_ready_read_from_UART	4	static
 usart.c:146:6:is_transmitting_to_UART	4	static
 usart.c:151:6:reset_UART	8	static
 usart.c:159:6:send_UART	16	static
-usart.c:169:6:read_UART	16	static
-usart.c:176:6:HAL_UART_RxCpltCallback	16	static
-usart.c:194:6:HAL_UART_TxCpltCallback	16	static
+usart.c:170:6:read_UART	16	static
+usart.c:177:6:HAL_UART_RxCpltCallback	16	static
+usart.c:195:6:HAL_UART_TxCpltCallback	16	static
