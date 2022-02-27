@@ -59,7 +59,7 @@ void send_UART(const char*);
 bool is_transmitting_to_UART();
 
 void read_UART(uint8_t*);
-bool is_ready_read_from_UART();
+bool has_message_from_UART();
 
 
 /* USER CODE END Prototypes */

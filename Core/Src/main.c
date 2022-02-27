@@ -62,9 +62,11 @@ uint8_t memory[65536];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-bool memory_read(int addr_r, int length, char* data);
-bool memory_write(int addr_r, int length, int data);
-void check_command(const char*);
+bool memory_read(unsigned int addr_r, unsigned int length, unsigned char* data);
+bool memory_write(unsigned int addr_r, unsigned int length, unsigned int data);
+bool make_pin_input(unsigned int port_addr, unsigned int pin_setting);
+bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
+char check_command(const unsigned char*);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -109,31 +111,28 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(is_ready_read_from_UART())
+	  if(has_message_from_UART())
 	  {
 		  uint8_t message[128];
 		  read_UART(message);
 
-		  //checkCommand(message);
-
-		  if(!strncmp((char*) message, "MR", 2))
+		  if(!strncmp((char*) message, "MR ", 3))
 		  {
-			  int addr, length;
+			  unsigned int addr, length;
 
 			  if(sscanf((char*) message, "%*s %x %x", &addr, &length) == 2)
 			  {
-				  char data[length];
+				  unsigned char data[length];
 
 				  if(memory_read(addr, length, data))
 				  {
-					  strcpy((char*) message, "Memory read: ");
-					  char temp[4];
+					  sprintf((char*) message, "Memory read: ");
 
 					  for(int i = 0; i < length; i++)
 					  {
-						  strcat((char*) message, itoa(data[i], temp, 16));
-						  strcat((char*) message, " ");
+						  sprintf((char*) message + strlen((char*) message), "%02X ", data[i]);
 					  }
+
 					  send_UART((char*) message);
 				  }
 				  else
@@ -142,19 +141,47 @@ int main(void)
 			  else
 				  send_UART("Invalid Memory Read instruction syntax.");
 		  }
-		  else if(!strncmp((char*) message, "MW", 2))
+		  else if(!strncmp((char*) message, "MW ", 3))
 		  {
-			  int addr, length, data;
+			  unsigned int addr, length, data;
 
 			  if(sscanf((char*) message, "%*s %x %x %x", &addr, &length, &data) == 3)
 			  {
 				  if(memory_write(addr, length, data))
-					  send_UART("Success.");
+					  send_UART("Memory written with success.");
 				  else
 					  send_UART("Invalid Memory Write instruction argument values.");
 			  }
 			  else
 				  send_UART("Invalid Memory Write instruction syntax.");
+		  }
+		  else if(!strncmp((char*) message, "MI ", 3))
+		  {
+			  unsigned int port_addr, pin_setting;
+
+			  if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
+			  {
+				  if(make_pin_input(port_addr, pin_setting))
+					  send_UART("Pin(s) set as input with success.");
+				  else
+					  send_UART("Invalid Make Pin Input instruction argument values.");
+			  }
+			  else
+				  send_UART("Invalid Make Pin Input instruction syntax.");
+		  }
+		  else if(!strncmp((char*) message, "MO ", 3))
+		  {
+			  unsigned int port_addr, pin_setting;
+
+			  if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
+			  {
+				  if(make_pin_output(port_addr, pin_setting))
+					  send_UART("Pin(s) set as output with success.");
+				  else
+					  send_UART("Invalid Make Pin Output instruction argument values.");
+			  }
+			  else
+				  send_UART("Invalid Make Pin Output instruction syntax.");
 		  }
 		  else
 			  send_UART("Invalid instruction.");
@@ -224,7 +251,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-char check_command(char* message)
+char check_command(const unsigned char* message)
 {
 	if(!strncmp((char*) message, "MR ", 3))
 		return MR;
@@ -250,7 +277,7 @@ char check_command(char* message)
 	else return INV;
 }
 
-bool memory_read(int addr_r, int length, char* data)
+bool memory_read(unsigned int addr_r, unsigned int length, unsigned char* data)
 {
 	if(addr_r < 0 && addr_r > 0xFFFF && length < 0 && length > 0xFF)
 		return false;
@@ -266,28 +293,88 @@ bool memory_read(int addr_r, int length, char* data)
 	return true;
 }
 
-bool memory_write(int addr_r, int length, int data)
+bool memory_write(unsigned int addr, unsigned int length, unsigned int data)
 {
-	if(addr_r < 0 && addr_r > 0xFFFF && length < 0 && length > 0xFF && data < 0 && data > 0xFF)
+	if(addr < 0 && addr > 0xFFFF && length < 0 && length > 0xFF && data < 0 && data > 0xFF)
 		return false;
 
-	if((0x10000 - addr_r) < length)
+	if((0x10000 - addr) < length)
 		return false;
 
 	for(int i = 0; i < length; i++)
 	{
-		memory[addr_r++] = data;
+		memory[addr++] = data;
 	}
 
 	return true;
 }
-/*
-void checkCommand(const char* message)
+
+bool make_pin_input(unsigned int port_addr, unsigned int pin_setting)
 {
-	if(!strncmp((char*) message, "MR", 2))
+	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
+		return false;
+
+	switch(port_addr)
 	{
+	case  1: __HAL_RCC_GPIOA_CLK_ENABLE(); break;
+	case  2: __HAL_RCC_GPIOB_CLK_ENABLE(); break;
+	case  3: __HAL_RCC_GPIOC_CLK_ENABLE(); break;
+	case  4: __HAL_RCC_GPIOD_CLK_ENABLE(); break;
+	case  5: __HAL_RCC_GPIOE_CLK_ENABLE(); break;
+	case  6: __HAL_RCC_GPIOF_CLK_ENABLE(); break;
+	case  7: __HAL_RCC_GPIOG_CLK_ENABLE(); break;
+	case  8: __HAL_RCC_GPIOH_CLK_ENABLE(); break;
+	case  9: __HAL_RCC_GPIOI_CLK_ENABLE(); break;
+	case 10: __HAL_RCC_GPIOJ_CLK_ENABLE(); break;
+	case 11: __HAL_RCC_GPIOK_CLK_ENABLE(); break;
+	}
+
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	GPIO_InitStruct.Pin |= pin_setting;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr-1))), &GPIO_InitStruct);
+
+	return true;
 }
-*/
+
+bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
+{
+	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
+		return false;
+
+	switch(port_addr)
+	{
+	case  1: __HAL_RCC_GPIOA_CLK_ENABLE(); break;
+	case  2: __HAL_RCC_GPIOB_CLK_ENABLE(); break;
+	case  3: __HAL_RCC_GPIOC_CLK_ENABLE(); break;
+	case  4: __HAL_RCC_GPIOD_CLK_ENABLE(); break;
+	case  5: __HAL_RCC_GPIOE_CLK_ENABLE(); break;
+	case  6: __HAL_RCC_GPIOF_CLK_ENABLE(); break;
+	case  7: __HAL_RCC_GPIOG_CLK_ENABLE(); break;
+	case  8: __HAL_RCC_GPIOH_CLK_ENABLE(); break;
+	case  9: __HAL_RCC_GPIOI_CLK_ENABLE(); break;
+	case 10: __HAL_RCC_GPIOJ_CLK_ENABLE(); break;
+	case 11: __HAL_RCC_GPIOK_CLK_ENABLE(); break;
+	}
+
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	GPIO_InitStruct.Pin |= pin_setting;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+
+//	HAL_GPIO_WritePin(port_addr, GPIO_PIN_0, GPIO_PIN_RESET); reset antes de inicializar, pino a pino
+
+	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr-1))), &GPIO_InitStruct);
+
+	return true;
+}
+
+
 /* USER CODE END 4 */
 
 /**

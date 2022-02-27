@@ -1,7 +1,7 @@
 usart.c:41:6:MX_USART3_UART_Init	8	static
 usart.c:71:6:HAL_UART_MspInit	192	static
 usart.c:114:6:HAL_UART_MspDeInit	16	static
-usart.c:141:6:is_ready_read_from_UART	4	static
+usart.c:141:6:has_message_from_UART	4	static
 usart.c:146:6:is_transmitting_to_UART	4	static
 usart.c:151:6:reset_UART	8	static
 usart.c:159:6:send_UART	16	static

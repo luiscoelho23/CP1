@@ -138,7 +138,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 
-bool is_ready_read_from_UART()
+bool has_message_from_UART()
 {
 	return flagCPP;
 }
@@ -150,7 +150,7 @@ bool is_transmitting_to_UART()
 
 void reset_UART()
 {
-	// clear buffer not needed
+	memset(UART_RX_buffer, 0, BUFFER_SIZE);
 
 	HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);
 	flagCPP = false;
