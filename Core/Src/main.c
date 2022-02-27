@@ -114,7 +114,7 @@ int main(void)
 	  if(has_message_from_UART())
 	  {
 		  uint8_t message[128];
-		  read_UART(message);
+		  read_UART((char*)message);
 
 		  if(!strncmp((char*) message, "MR ", 3))
 		  {
