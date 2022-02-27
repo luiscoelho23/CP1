@@ -62,10 +62,10 @@ uint8_t memory[65536];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-bool memory_read(unsigned int addr_r, unsigned int length, unsigned char* data);
-bool memory_write(unsigned int addr_r, unsigned int length, unsigned int data);
-bool make_pin_input(unsigned int port_addr, unsigned int pin_setting);
-bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
+bool memory_read(unsigned int, unsigned int, unsigned char*);
+bool memory_write(unsigned int, unsigned int, unsigned int);
+bool make_pin_input(unsigned int, unsigned int);
+bool make_pin_output(unsigned int, unsigned int);
 char check_command(const unsigned char*);
 /* USER CODE END PFP */
 

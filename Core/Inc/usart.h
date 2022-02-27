@@ -39,10 +39,12 @@ extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
 
-uint8_t UART_RX_buffer[128];
+#define BUFFER_SIZE 128
+
+uint8_t UART_RX_buffer[BUFFER_SIZE];
 size_t UART_RX_index;
 
-uint8_t UART_TX_buffer[128];
+uint8_t UART_TX_buffer[BUFFER_SIZE];
 size_t UART_TX_index;
 
 bool flagCPP;
@@ -58,9 +60,8 @@ void reset_UART();
 void send_UART(const char*);
 bool is_transmitting_to_UART();
 
-void read_UART(uint8_t*);
+void read_UART(char*);
 bool has_message_from_UART();
-
 
 /* USER CODE END Prototypes */
 

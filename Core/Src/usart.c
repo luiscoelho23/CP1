@@ -21,16 +21,11 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-#define BUFFER_SIZE 128
 
-uint8_t UART_RX_buffer[BUFFER_SIZE];
-size_t UART_RX_index = 0;
 
-uint8_t UART_TX_buffer[BUFFER_SIZE];
-size_t UART_TX_index = 0;
 
-bool flagCPP = false;
-bool flagCPE = false;
+
+
 
 /* USER CODE END 0 */
 
@@ -46,7 +41,13 @@ void MX_USART3_UART_Init(void)
   /* USER CODE END USART3_Init 0 */
 
   /* USER CODE BEGIN USART3_Init 1 */
+
+  flagCPP = false;
+  flagCPE = false;
+  UART_RX_index = 0;
+  UART_TX_index = 0;
   UART_TX_buffer[0] = '\r';
+
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
   huart3.Init.BaudRate = 115200;
@@ -167,7 +168,7 @@ void send_UART(const char* msg_to_send)
 	return;
 }
 
-void read_UART(uint8_t* msg_to_read)
+void read_UART(char* msg_to_read)
 {
 	// formatar backspaces
 
