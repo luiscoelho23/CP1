@@ -38,14 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define INV 0
-#define MR 1
-#define MW 2
-#define MI 3
-#define MO 4
-#define RD 5
-#define WD 6
-#define RA 7
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -66,7 +59,8 @@ bool memory_read(unsigned int, unsigned int, unsigned char*);
 bool memory_write(unsigned int, unsigned int, unsigned int);
 bool make_pin_input(unsigned int, unsigned int);
 bool make_pin_output(unsigned int, unsigned int);
-char check_command(const unsigned char*);
+char check_command(char*);
+void exec_command(char,char*);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -116,6 +110,9 @@ int main(void)
 		  uint8_t message[128];
 		  read_UART((char*)message);
 
+		  exec_command(check_command((char*)message),(char*)message);
+
+		  /*
 		  if(!strncmp((char*) message, "MR ", 3))
 		  {
 			  unsigned int addr, length;
@@ -185,6 +182,7 @@ int main(void)
 		  }
 		  else
 			  send_UART("Invalid instruction.");
+		   */
 
 		  while(is_transmitting_to_UART());
 
@@ -251,7 +249,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-char check_command(const unsigned char* message)
+char check_command(char* message)
 {
 	if(!strncmp((char*) message, "MR ", 3))
 		return MR;
@@ -275,6 +273,103 @@ char check_command(const unsigned char* message)
 		return RA;
 
 	else return INV;
+}
+
+void exec_command(char command,char* message)
+{
+	unsigned int addr, length, data, port_addr, pin_setting;
+
+	switch(command){
+		case 0:
+
+			send_UART("Invalid instruction.");
+
+			break;
+
+		case 1:
+
+			if(sscanf((char*) message, "%*s %x %x", &addr, &length) == 2)
+			{
+				unsigned char data[length];
+
+				if(memory_read(addr, length, data))
+				{
+					sprintf((char*) message, "Memory read: ");
+
+					for(int i = 0; i < length; i++)
+					{
+						sprintf((char*) message + strlen((char*) message), "%02X ", data[i]);
+					}
+
+					send_UART((char*) message);
+				}
+				else
+					send_UART("Invalid Memory Read instruction argument values.\r");
+			}
+			else
+				send_UART("Invalid Memory Read instruction syntax.");
+
+			break;
+
+		case 2:
+
+			if(sscanf((char*) message, "%*s %x %x %x", &addr, &length, &data) == 3)
+			{
+				if(memory_write(addr, length, data))
+					send_UART("Memory written with success.");
+				else
+					send_UART("Invalid Memory Write instruction argument values.");
+			}
+			else
+				send_UART("Invalid Memory Write instruction syntax.");
+
+			break;
+
+		case 3:
+
+			if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
+			{
+				if(make_pin_input(port_addr, pin_setting))
+					send_UART("Pin(s) set as input with success.");
+				else
+					send_UART("Invalid Make Pin Input instruction argument values.");
+			}
+			else
+			  send_UART("Invalid Make Pin Input instruction syntax.");
+
+			break;
+
+		case 4:
+
+			if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
+			{
+				if(make_pin_output(port_addr, pin_setting))
+					send_UART("Pin(s) set as output with success.");
+				else
+					send_UART("Invalid Make Pin Output instruction argument values.");
+			}
+			else
+				send_UART("Invalid Make Pin Output instruction syntax.");
+
+			break;
+
+		case 5:
+
+			break;
+
+		case 6:
+
+			break;
+
+		case 7:
+
+			break;
+
+		default:
+
+			break;
+	}
+
 }
 
 bool memory_read(unsigned int addr_r, unsigned int length, unsigned char* data)
