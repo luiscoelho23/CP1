@@ -448,6 +448,8 @@ bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned
 		}
 	}
 
+	.
+
 	return true;
 /*
 Write Dig Output: <char>+=”WDβ<port addr> β <pin setting> β <pin values>
