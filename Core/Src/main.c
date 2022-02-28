@@ -59,7 +59,9 @@ bool memory_read(unsigned int addr, unsigned int length, char* data);
 bool memory_write(unsigned int addr, unsigned int length, int data);
 bool make_pin_input(unsigned int port_addr, unsigned int pin_setting);
 bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
+bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values);
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values);
+bool analog_read(unsigned int addr3, unsigned )
 unsigned char check_command(char* message);
 void exec_command(unsigned char cmd, char* message);
 /* USER CODE END PFP */
@@ -120,7 +122,6 @@ int main(void)
 
 		  reset_UART();
 	  }
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -287,6 +288,30 @@ void exec_command(unsigned char command, char* message)
 
 		case RD:
 
+			if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
+			{
+				GPIO_PinState pin_values[16];
+
+				if(read_dig_input(port_addr, pin_setting, pin_values))
+				{
+					sprintf((char*) message, "Digital input read: ");
+
+					for(int i = 15; i >= 0; i--)
+					{
+						sprintf((char*) message + strlen((char*) message), "%d", pin_values[i]);
+
+						if(!(i % 4) && i)
+							strcat((char*) message, " ");
+					}
+
+					send_UART((char*) message);
+				}
+				else
+					send_UART("Invalid Read Digital Input instruction argument values.");
+			}
+			else
+				send_UART("Invalid Read Digital Input instruction syntax.");
+
 			break;
 
 		case WD:
@@ -304,6 +329,18 @@ void exec_command(unsigned char command, char* message)
 			break;
 
 		case RA:
+
+			if(sscanf((char*) message, "%*s %x %x %x", &port_addr, &pin_setting, &pin_values) == 3)
+			{
+				if(write_dig_output(port_addr, pin_setting, pin_values))
+				{
+					send_UART("Analog read: ");
+				}
+				else
+					send_UART("Invalid Analog Read instruction argument values.");
+			}
+			else
+				send_UART("Invalid Analog Read instruction syntax.");
 
 			break;
 
@@ -411,24 +448,26 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 	return true;
 }
 
-/*
-bool read_dig_input(unsigned int port_addr, unsigned int pin_setting)
+bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values)
 {
 	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
 		return false;
 
+	int mask = 1;
 
-	HAL_GPIO_ReadPin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), GPIO_Pin);
+	for(int pin = 0; pin < 16; pin++)
+	{
+		if(pin_setting & mask)
+			pin_values[pin] = HAL_GPIO_ReadPin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (0x0001U * (pin + 1)));
+		else
+			pin_values[pin] = (GPIO_PinState) 0;
 
-Read Dig Input: <char>+=”RDβ<port addr> β <pin setting>
-Ler da porta <port addr> o valor digital dos pinos a que corresponde o padrão de bits a
-‘1’ em <pin setting>.
-Os pinos correspondentes aos bits que estão com o valor ‘0’ em <pin setting> deverão
-sempre devolver o valor ‘0’.
+		mask <<= 1;
+	}
 
-
+	return true;
 }
-*/
+
 
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values)
 {
@@ -439,31 +478,20 @@ bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned
 
 	for(int pin = 0; pin < 16; pin++)
 	{
-		bool dummy = pin_setting & mask;
-		if(dummy)
+		if(pin_setting & mask)
 		{
-			int dummy2 = pin_values & mask;
-			HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (0x0001U * (pin + 1)), dummy2);
+			HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (0x0001U * (pin + 1)), (GPIO_PinState) (pin_values & mask));
 			mask <<= 1;
 		}
 	}
 
-	.
-
 	return true;
-/*
-Write Dig Output: <char>+=”WDβ<port addr> β <pin setting> β <pin values>
-Na porta de endereço <port addr> escrever os bits de <pin values> nos pinos correspondentes
-da porta, que se encontram a ‘1’ em <pin setting>.
-Os pinos da porta correspondentes aos bits que estão a ‘0’ em <pin setting>, não devem
-sofrer qualquer alteração no seu valor.
-Exemplo: Escrever na porta 1, bits 3 e 7, os valores 0 e 1 respetivamente. Os restantes
-bits permanecem inalterados.
+}
 
-WDβ01β88β80
-WD GPIOA
-*/
-
+bool analog_read(unsigned int addr3, unsigned int value)
+{
+	if(port_addr < 0 && port_addr > 0x10)
+		return false;
 }
 
 /* USER CODE END 4 */
