@@ -61,7 +61,7 @@ bool make_pin_input(unsigned int port_addr, unsigned int pin_setting);
 bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
 bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values);
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values);
-bool analog_read(unsigned int addr3, unsigned )
+bool analog_read(unsigned int addr3, unsigned );
 unsigned char check_command(char* message);
 void exec_command(unsigned char cmd, char* message);
 /* USER CODE END PFP */
@@ -487,12 +487,12 @@ bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned
 
 	return true;
 }
-
+/*
 bool analog_read(unsigned int addr3, unsigned int value)
 {
 	if(port_addr < 0 && port_addr > 0x10)
 		return false;
-}
+}*/
 
 /* USER CODE END 4 */
 
