@@ -160,6 +160,7 @@ void reset_UART()
 void send_UART(const char* msg_to_send)
 {
 	strncpy((char*) UART_TX_buffer, msg_to_send, 128);
+	strcat((char*) UART_TX_buffer, PROMPT);
 	strcat((char*) UART_TX_buffer, "\r");
 
 	flagCPE = true;

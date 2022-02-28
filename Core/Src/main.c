@@ -38,7 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA};
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA };
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,12 +55,13 @@ uint8_t memory[65536];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-bool memory_read(unsigned int, unsigned int, unsigned char*);
-bool memory_write(unsigned int, unsigned int, unsigned int);
-bool make_pin_input(unsigned int, unsigned int);
-bool make_pin_output(unsigned int, unsigned int);
-char check_command(char*);
-void exec_command(char,char*);
+bool memory_read(unsigned int addr, unsigned int length, char* data);
+bool memory_write(unsigned int addr, unsigned int length, int data);
+bool make_pin_input(unsigned int port_addr, unsigned int pin_setting);
+bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
+bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values);
+unsigned char check_command(char* message);
+void exec_command(unsigned char cmd, char* message);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -98,6 +99,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  //send_UART("");
   HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);
   /* USER CODE END 2 */
 
@@ -107,82 +109,12 @@ int main(void)
   {
 	  if(has_message_from_UART())
 	  {
-		  uint8_t message[128];
-		  read_UART((char*)message);
+		  uint8_t message[BUFFER_SIZE];
 
-		  exec_command(check_command((char*) message), (char*) message);
+		  read_UART((char*) message);
 
-		  /*
-		  if(!strncmp((char*) message, "MR ", 3))
-		  {
-			  unsigned int addr, length;
-
-			  if(sscanf((char*) message, "%*s %x %x", &addr, &length) == 2)
-			  {
-				  unsigned char data[length];
-
-				  if(memory_read(addr, length, data))
-				  {
-					  sprintf((char*) message, "Memory read: ");
-
-					  for(int i = 0; i < length; i++)
-					  {
-						  sprintf((char*) message + strlen((char*) message), "%02X ", data[i]);
-					  }
-
-					  send_UART((char*) message);
-				  }
-				  else
-					  send_UART("Invalid Memory Read instruction argument values.\r");
-			  }
-			  else
-				  send_UART("Invalid Memory Read instruction syntax.");
-		  }
-		  else if(!strncmp((char*) message, "MW ", 3))
-		  {
-			  unsigned int addr, length, data;
-
-			  if(sscanf((char*) message, "%*s %x %x %x", &addr, &length, &data) == 3)
-			  {
-				  if(memory_write(addr, length, data))
-					  send_UART("Memory written with success.");
-				  else
-					  send_UART("Invalid Memory Write instruction argument values.");
-			  }
-			  else
-				  send_UART("Invalid Memory Write instruction syntax.");
-		  }
-		  else if(!strncmp((char*) message, "MI ", 3))
-		  {
-			  unsigned int port_addr, pin_setting;
-
-			  if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
-			  {
-				  if(make_pin_input(port_addr, pin_setting))
-					  send_UART("Pin(s) set as input with success.");
-				  else
-					  send_UART("Invalid Make Pin Input instruction argument values.");
-			  }
-			  else
-				  send_UART("Invalid Make Pin Input instruction syntax.");
-		  }
-		  else if(!strncmp((char*) message, "MO ", 3))
-		  {
-			  unsigned int port_addr, pin_setting;
-
-			  if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
-			  {
-				  if(make_pin_output(port_addr, pin_setting))
-					  send_UART("Pin(s) set as output with success.");
-				  else
-					  send_UART("Invalid Make Pin Output instruction argument values.");
-			  }
-			  else
-				  send_UART("Invalid Make Pin Output instruction syntax.");
-		  }
-		  else
-			  send_UART("Invalid instruction.");
-		   */
+		  unsigned char cmd = check_command((char*) message);
+		  exec_command(cmd, (char*) message);
 
 		  while(is_transmitting_to_UART());
 
@@ -249,7 +181,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-char check_command(char* message)
+unsigned char check_command(char* message)
 {
 	if(!strncmp((char*) message, "MR ", 3))
 		return MR;
@@ -275,22 +207,22 @@ char check_command(char* message)
 	else return INV;
 }
 
-void exec_command(char command,char* message)
+void exec_command(unsigned char command, char* message)
 {
-	unsigned int addr, length, data, port_addr, pin_setting;
+	unsigned int addr, length, data, port_addr, pin_setting, pin_values;
 
-	switch(command){
-		case 0:
+	switch(command)
+	{
+		case INV:
 
 			send_UART("Invalid instruction.");
-
 			break;
 
-		case 1:
+		case MR:
 
 			if(sscanf((char*) message, "%*s %x %x", &addr, &length) == 2)
 			{
-				unsigned char data[length];
+				char data[length];
 
 				if(memory_read(addr, length, data))
 				{
@@ -311,7 +243,7 @@ void exec_command(char command,char* message)
 
 			break;
 
-		case 2:
+		case MW:
 
 			if(sscanf((char*) message, "%*s %x %x %x", &addr, &length, &data) == 3)
 			{
@@ -325,7 +257,7 @@ void exec_command(char command,char* message)
 
 			break;
 
-		case 3:
+		case MI:
 
 			if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
 			{
@@ -339,7 +271,7 @@ void exec_command(char command,char* message)
 
 			break;
 
-		case 4:
+		case MO:
 
 			if(sscanf((char*) message, "%*s %x %x", &port_addr, &pin_setting) == 2)
 			{
@@ -353,15 +285,25 @@ void exec_command(char command,char* message)
 
 			break;
 
-		case 5:
+		case RD:
 
 			break;
 
-		case 6:
+		case WD:
+
+			if(sscanf((char*) message, "%*s %x %x %x", &port_addr, &pin_setting, &pin_values) == 3)
+			{
+				if(write_dig_output(port_addr, pin_setting, pin_values))
+					send_UART("Digital output value wrote with success.");
+				else
+					send_UART("Invalid Write Digital Output instruction argument values.");
+			}
+			else
+				send_UART("Invalid Write Digital Output instruction syntax.");
 
 			break;
 
-		case 7:
+		case RA:
 
 			break;
 
@@ -372,7 +314,7 @@ void exec_command(char command,char* message)
 
 }
 
-bool memory_read(unsigned int addr_r, unsigned int length, unsigned char* data)
+bool memory_read(unsigned int addr_r, unsigned int length, char* data)
 {
 	if(addr_r < 0 && addr_r > 0xFFFF && length < 0 && length > 0xFF)
 		return false;
@@ -388,7 +330,7 @@ bool memory_read(unsigned int addr_r, unsigned int length, unsigned char* data)
 	return true;
 }
 
-bool memory_write(unsigned int addr, unsigned int length, unsigned int data)
+bool memory_write(unsigned int addr, unsigned int length, int data)
 {
 	if(addr < 0 && addr > 0xFFFF && length < 0 && length > 0xFF && data < 0 && data > 0xFF)
 		return false;
@@ -464,11 +406,63 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 
 //	HAL_GPIO_WritePin(port_addr, GPIO_PIN_0, GPIO_PIN_RESET); reset antes de inicializar, pino a pino
 
-	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr-1))), &GPIO_InitStruct);
+	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), &GPIO_InitStruct);
 
 	return true;
 }
 
+/*
+bool read_dig_input(unsigned int port_addr, unsigned int pin_setting)
+{
+	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
+		return false;
+
+
+	HAL_GPIO_ReadPin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), GPIO_Pin);
+
+Read Dig Input: <char>+=”RDβ<port addr> β <pin setting>
+Ler da porta <port addr> o valor digital dos pinos a que corresponde o padrão de bits a
+‘1’ em <pin setting>.
+Os pinos correspondentes aos bits que estão com o valor ‘0’ em <pin setting> deverão
+sempre devolver o valor ‘0’.
+
+
+}
+*/
+
+bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values)
+{
+	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF && pin_values < 0x01 && pin_values > 0xFFFF)
+		return false;
+
+	int mask = 1;
+
+	for(int pin = 0; pin < 16; pin++)
+	{
+		bool dummy = pin_setting & mask;
+		if(dummy)
+		{
+			int dummy2 = pin_values & mask;
+			HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (0x0001U * (pin + 1)), dummy2);
+			mask <<= 1;
+		}
+	}
+
+	return true;
+/*
+Write Dig Output: <char>+=”WDβ<port addr> β <pin setting> β <pin values>
+Na porta de endereço <port addr> escrever os bits de <pin values> nos pinos correspondentes
+da porta, que se encontram a ‘1’ em <pin setting>.
+Os pinos da porta correspondentes aos bits que estão a ‘0’ em <pin setting>, não devem
+sofrer qualquer alteração no seu valor.
+Exemplo: Escrever na porta 1, bits 3 e 7, os valores 0 e 1 respetivamente. Os restantes
+bits permanecem inalterados.
+
+WDβ01β88β80
+WD GPIOA
+*/
+
+}
 
 /* USER CODE END 4 */
 

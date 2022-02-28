@@ -40,6 +40,7 @@ extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN Private defines */
 
 #define BUFFER_SIZE 128
+#define PROMPT "\n> "
 
 uint8_t UART_RX_buffer[BUFFER_SIZE];
 size_t UART_RX_index;
