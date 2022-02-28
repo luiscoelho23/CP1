@@ -110,7 +110,7 @@ int main(void)
 		  uint8_t message[128];
 		  read_UART((char*)message);
 
-		  exec_command(check_command((char*)message),(char*)message);
+		  exec_command(check_command((char*) message), (char*) message);
 
 		  /*
 		  if(!strncmp((char*) message, "MR ", 3))
