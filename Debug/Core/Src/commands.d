@@ -1,4 +1,4 @@
-Core/commands.o: ../Core/commands.c ../Core/Inc/commands.h \
+Core/Src/commands.o: ../Core/Src/commands.c ../Core/Inc/commands.h \
  ../Core/Inc/usart.h ../Core/Inc/main.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h \
  ../Core/Inc/stm32f7xx_hal_conf.h \

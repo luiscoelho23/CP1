@@ -1,0 +1,15 @@
+commands.c:3:15:check_command	24	static
+commands.c:35:6:inv_command	16	static
+commands.c:39:6:mr_command	48	dynamic
+commands.c:65:6:mw_command	40	static
+commands.c:80:6:mi_command	24	static
+commands.c:96:6:mo_command	24	static
+commands.c:112:6:rd_command	48	static
+commands.c:142:6:wd_command	40	static
+commands.c:158:6:ra_command	40	static
+commands.c:176:6:memory_read	32	static
+commands.c:192:6:memory_write	32	static
+commands.c:208:6:make_pin_input	80	static
+commands.c:239:6:make_pin_output	80	static
+commands.c:273:6:read_dig_input	40	static
+commands.c:294:6:write_dig_output	32	static
