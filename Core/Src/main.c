@@ -113,6 +113,7 @@ int main(void)
 		  while(is_transmitting_to_UART());
 
 		  reset_UART();
+		  .
 	  }
     /* USER CODE END WHILE */
 
