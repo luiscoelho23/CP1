@@ -3,7 +3,7 @@
 
 unsigned char check_command(char* message)
 {
-	char cmd = 0;
+	char cmd = INV;
 
 	cmd += (!strncmp((char*) message, "MR", 2)) * MR;
 
@@ -185,13 +185,18 @@ void proc_wd_cmd(char* message)
 
 	if(sscanf((char*) message, "WD %x %x %x", &port_addr, &pin_setting, &pin_values) == 3)
 	{
-		if(write_dig_output(port_addr, pin_setting, pin_values))
+		if(is_GPIO_pin_free(port_addr, pin_setting))
 		{
-			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
-			send_UART("Digital output value wrote with success.");
+			if(write_dig_output(port_addr, pin_setting, pin_values))
+			{
+				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+				send_UART("Digital output value wrote with success.");
+			}
+			else
+				send_UART("Invalid Write Digital Output instruction argument values.");
 		}
 		else
-			send_UART("Invalid Write Digital Output instruction argument values.");
+			send_UART("At least one inputted pin is reserved to peripherals.");
 	}
 	else
 		send_UART("Invalid Write Digital Output instruction syntax.");
@@ -315,7 +320,7 @@ bool memory_write(unsigned int addr, unsigned int length, int data)
 
 bool make_pin_input(unsigned int port_addr, unsigned int pin_setting)
 {
-	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x08 || pin_setting < 0x01 || pin_setting > 0xFFFF)
 		return false;
 
 	switch(port_addr)
@@ -342,7 +347,7 @@ bool make_pin_input(unsigned int port_addr, unsigned int pin_setting)
 
 bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 {
-	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x08 || pin_setting < 0x01 || pin_setting > 0xFFFF)
 		return false;
 
 	switch(port_addr)
@@ -362,7 +367,6 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-
 	// HAL_GPIO_WritePin(port_addr, GPIO_PIN_0, GPIO_PIN_RESET); reset antes de inicializar, pino a pino
 
 	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), &GPIO_InitStruct);
@@ -372,7 +376,7 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 
 bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values)
 {
-	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x08 || pin_setting < 0x01 || pin_setting > 0xFFFF)
 		return false;
 
 	int mask = 1;
@@ -380,9 +384,14 @@ bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinSt
 	for(int pin = 0; pin < 16; pin++)
 	{
 		if(pin_setting & mask)
-			pin_values[pin] = HAL_GPIO_ReadPin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (0x0001U * (pin + 1)));
+		{
+			GPIO_TypeDef* GPIOx = (GPIO_TypeDef*) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1)));
+			uint16_t GPIO_Pin = (1 << pin);
+
+			pin_values[pin] = HAL_GPIO_ReadPin(GPIOx, GPIO_Pin);
+		}
 		else
-			pin_values[pin] = (GPIO_PinState) 0;
+			pin_values[pin] = GPIO_PIN_RESET;
 
 		mask <<= 1;
 	}
@@ -392,7 +401,7 @@ bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinSt
 
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values)
 {
-	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF || pin_values < 0 || pin_values > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x08 || pin_setting < 0x01 || pin_setting > 0xFFFF || pin_values < 0 || pin_values > 0xFFFF)
 		return false;
 
 	int mask = 1;
@@ -400,8 +409,13 @@ bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned
 	for(int pin = 0; pin < 16; pin++)
 	{
 		if(pin_setting & mask)
-			HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (1 << pin), (pin_values & mask) ? 1 : 0);
+		{
+			GPIO_TypeDef* GPIOx = (GPIO_TypeDef*) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1)));
+			uint16_t GPIO_Pin = (1 << pin);
+			GPIO_PinState PinState = (pin_values & mask) >> pin;
 
+			HAL_GPIO_WritePin(GPIOx, GPIO_Pin, PinState);
+		}
 		mask <<= 1;
 	}
 
