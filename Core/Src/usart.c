@@ -159,14 +159,10 @@ void send_UART(const char* msg_to_send)
 
 	flagCPE = true;
 	HAL_UART_Transmit_IT(&huart3, UART_TX_buffer, 1);
-
-	return;
 }
 
 void read_UART(char* msg_to_read)
 {
-	// formatar backspaces e escapes
-
 	strncpy((char*) msg_to_read, (char*) UART_RX_buffer, BUFFER_SIZE);
 }
 
@@ -193,11 +189,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 		if(UART_RX_buffer[UART_RX_index] == 0x1B) //	ESCAPE
 			UART_RX_index = -1;
 
-		if(UART_RX_buffer[UART_RX_index] == '$') //	$
+		if(UART_RX_buffer[UART_RX_index] == '$') //		$
 		{
 			UART_RX_index = 0;
 			UART_RX_buffer[0] = '$';
 		}
+
 		HAL_UART_Receive_IT(&huart3, &UART_RX_buffer[++UART_RX_index], 1);
 	}
 }
@@ -213,9 +210,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
 		flagCPE = false;
 	}
 	else
-	{
 		HAL_UART_Transmit_IT(&huart3, (uint8_t*) &UART_TX_buffer[++UART_TX_index], 1);
-	}
 }
 
 /* USER CODE END 1 */

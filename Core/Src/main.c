@@ -107,6 +107,8 @@ int main(void)
   {
 	  if(has_message_from_UART())
 	  {
+		  blink_LED();
+
 		  uint8_t message[BUFFER_SIZE];
 
 		  read_UART((char*) message);

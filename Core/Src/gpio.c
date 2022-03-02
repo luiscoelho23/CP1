@@ -41,13 +41,29 @@
 */
 void MX_GPIO_Init(void)
 {
+
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PB0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 }
+
+/* USER CODE BEGIN 2 */
 
 bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 {
@@ -71,10 +87,21 @@ bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 		if(pin_setting & 0x0180)
 			return false;
 
+	//	LED1
+
+	if(port_addr == 2)
+		if(pin_setting & 0x0001)
+			return false;
+
 	return true;
 }
 
+void blink_LED()
+{
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+	HAL_Delay(200);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+}
 
-/* USER CODE BEGIN 2 */
 
 /* USER CODE END 2 */

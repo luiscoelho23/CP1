@@ -1,2 +1,3 @@
-gpio.c:42:6:MX_GPIO_Init	24	static
-gpio.c:52:6:is_GPIO_pin_free	16	static
+gpio.c:42:6:MX_GPIO_Init	48	static
+gpio.c:68:6:is_GPIO_pin_free	16	static
+gpio.c:99:6:blink_LED	8	static
