@@ -281,7 +281,7 @@ void proc_ver_cmd(char* message)
 
 bool memory_read(unsigned int addr_r, unsigned int length, char* data)
 {
-	if(addr_r < 0 && addr_r > 0xFFFF && length < 0 && length > 0xFF)
+	if(addr_r < 0 || addr_r > 0xFFFF || length < 0 || length > 0xFF)
 		return false;
 
 	if((0x10000 - addr_r) < length)
@@ -298,7 +298,7 @@ bool memory_read(unsigned int addr_r, unsigned int length, char* data)
 
 bool memory_write(unsigned int addr, unsigned int length, int data)
 {
-	if(addr < 0 && addr > 0xFFFF && length < 0 && length > 0xFF && data < 0 && data > 0xFF)
+	if(addr < 0 || addr > 0xFFFF || length < 0 || length > 0xFF || data < 0 || data > 0xFF)
 		return false;
 
 	if((0x10000 - addr) < length)
@@ -315,7 +315,7 @@ bool memory_write(unsigned int addr, unsigned int length, int data)
 
 bool make_pin_input(unsigned int port_addr, unsigned int pin_setting)
 {
-	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF)
 		return false;
 
 	switch(port_addr)
@@ -342,7 +342,7 @@ bool make_pin_input(unsigned int port_addr, unsigned int pin_setting)
 
 bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 {
-	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF)
 		return false;
 
 	switch(port_addr)
@@ -372,7 +372,7 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting)
 
 bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values)
 {
-	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF)
 		return false;
 
 	int mask = 1;
@@ -392,7 +392,7 @@ bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinSt
 
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values)
 {
-	if(port_addr < 0x01 && port_addr > 0x0B && pin_setting < 0x01 && pin_setting > 0xFFFF && pin_values < 0x01 && pin_values > 0xFFFF)
+	if(port_addr < 0x01 || port_addr > 0x0B || pin_setting < 0x01 || pin_setting > 0xFFFF || pin_values < 0 || pin_values > 0xFFFF)
 		return false;
 
 	int mask = 1;
@@ -400,10 +400,9 @@ bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned
 	for(int pin = 0; pin < 16; pin++)
 	{
 		if(pin_setting & mask)
-		{
-			HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (0x0001U * (pin + 1)), (GPIO_PinState) (pin_values & mask));
-			mask <<= 1;
-		}
+			HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + (0x0400UL * (port_addr - 1))), (uint16_t) (1 << pin), (pin_values & mask) ? 1 : 0);
+
+		mask <<= 1;
 	}
 
 	return true;
@@ -411,7 +410,7 @@ bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned
 
 bool analog_read(unsigned int addr3, unsigned int* value)
 {
-	if(addr3 < 0 && addr3 > 0x0F)
+	if(addr3 < 0 || addr3 > 0x0F)
 		return false;
 
 	config_ADC(addr3);

@@ -16,4 +16,4 @@ commands.c:316:6:make_pin_input	64	static
 commands.c:343:6:make_pin_output	64	static
 commands.c:373:6:read_dig_input	40	static
 commands.c:393:6:write_dig_output	32	static
-commands.c:412:6:analog_read	16	static
+commands.c:411:6:analog_read	16	static
