@@ -1,3 +1,4 @@
+"./Core/Src/adc.o"
 "./Core/Src/commands.o"
 "./Core/Src/gpio.o"
 "./Core/Src/main.o"
@@ -9,6 +10,8 @@
 "./Core/Src/usart.o"
 "./Core/Startup/startup_stm32f767zitx.o"
 "./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.o"
+"./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.o"
+"./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.o"
 "./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.o"
 "./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.o"
 "./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.o"

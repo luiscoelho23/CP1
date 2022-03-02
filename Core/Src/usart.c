@@ -22,11 +22,6 @@
 
 /* USER CODE BEGIN 0 */
 
-
-
-
-
-
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart3;
@@ -159,8 +154,7 @@ void reset_UART()
 
 void send_UART(const char* msg_to_send)
 {
-	strncpy((char*) UART_TX_buffer, msg_to_send, 128);
-	strcat((char*) UART_TX_buffer, PROMPT);
+	strncpy((char*) UART_TX_buffer, msg_to_send, BUFFER_SIZE);
 	strcat((char*) UART_TX_buffer, "\r");
 
 	flagCPE = true;
@@ -171,9 +165,9 @@ void send_UART(const char* msg_to_send)
 
 void read_UART(char* msg_to_read)
 {
-	// formatar backspaces
+	// formatar backspaces e escapes
 
-	strncpy((char*) msg_to_read, (char*) UART_RX_buffer, 128);
+	strncpy((char*) msg_to_read, (char*) UART_RX_buffer, BUFFER_SIZE);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
@@ -181,17 +175,31 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	if(flagCPP)
 		return;
 
-	if(UART_RX_buffer[UART_RX_index] == '\r')
+	if(UART_RX_buffer[UART_RX_index] == '\r') //		CARRIAGE RETURN
 	{
 		UART_RX_index = 0;
 		flagCPP = true;
 	}
 	else
 	{
+		if(UART_RX_buffer[UART_RX_index] == 0x08) //	BACKSPACE
+		{
+			if(UART_RX_index == 0)
+				UART_RX_index--;
+			else
+				UART_RX_index -= 2;
+		}
+
+		if(UART_RX_buffer[UART_RX_index] == 0x1B) //	ESCAPE
+			UART_RX_index = -1;
+
+		if(UART_RX_buffer[UART_RX_index] == '$') //	$
+		{
+			UART_RX_index = 0;
+			UART_RX_buffer[0] = '$';
+		}
 		HAL_UART_Receive_IT(&huart3, &UART_RX_buffer[++UART_RX_index], 1);
 	}
-
-	return;
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
@@ -199,7 +207,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
 	if(!flagCPE)
 		return;
 
-	if(UART_TX_buffer[UART_TX_index] == '\r')
+	if(UART_TX_buffer[UART_TX_index] == '\r' && UART_TX_buffer[UART_TX_index-1] != '\n')
 	{
 		UART_TX_index = 0;
 		flagCPE = false;
@@ -208,8 +216,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
 	{
 		HAL_UART_Transmit_IT(&huart3, (uint8_t*) &UART_TX_buffer[++UART_TX_index], 1);
 	}
-
-	return;
 }
 
 /* USER CODE END 1 */

@@ -29,11 +29,11 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
-
+bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting);
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);

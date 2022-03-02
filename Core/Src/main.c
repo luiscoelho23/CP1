@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -92,9 +93,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART3_UART_Init();
+  MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
-  //send_UART("");
+
   HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);
+  send_UART(PROMPT);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,7 +117,7 @@ int main(void)
 		  while(is_transmitting_to_UART());
 
 		  reset_UART();
-		  .
+		  send_UART(PROMPT);
 	  }
     /* USER CODE END WHILE */
 
@@ -208,3 +212,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
