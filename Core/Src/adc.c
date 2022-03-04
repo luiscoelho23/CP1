@@ -189,7 +189,7 @@ void config_ADC(unsigned int channel)
 
 uint32_t read_ADC(void)
 {
-
+	Read = false;
 	if(HAL_ADC_Start_IT(&hadc3) == HAL_OK)
 	{
 	  while(!Read);

@@ -37,13 +37,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00029364  00000000  00000000  00037928  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000101d5  00000000  00000000  00060c8c  2**0
+ 17 .debug_line   000101d8  00000000  00000000  00060c8c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000f8503  00000000  00000000  00070e61  2**0
+ 18 .debug_str    000f8503  00000000  00000000  00070e64  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  00169364  2**0
+ 19 .comment      00000053  00000000  00000000  00169367  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000042c8  00000000  00000000  001693b8  2**2
+ 20 .debug_frame  000042c8  00000000  00000000  001693bc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1077,836 +1077,837 @@ uint32_t read_ADC(void)
 {
  8000ba8:	b580      	push	{r7, lr}
  8000baa:	af00      	add	r7, sp, #0
-
+	Read = false;
+ 8000bac:	4b0b      	ldr	r3, [pc, #44]	; (8000bdc <read_ADC+0x34>)
+ 8000bae:	2200      	movs	r2, #0
+ 8000bb0:	701a      	strb	r2, [r3, #0]
 	if(HAL_ADC_Start_IT(&hadc3) == HAL_OK)
- 8000bac:	480a      	ldr	r0, [pc, #40]	; (8000bd8 <read_ADC+0x30>)
- 8000bae:	f001 fb77 	bl	80022a0 <HAL_ADC_Start_IT>
- 8000bb2:	4603      	mov	r3, r0
- 8000bb4:	2b00      	cmp	r3, #0
- 8000bb6:	d10a      	bne.n	8000bce <read_ADC+0x26>
+ 8000bb2:	480b      	ldr	r0, [pc, #44]	; (8000be0 <read_ADC+0x38>)
+ 8000bb4:	f001 fb74 	bl	80022a0 <HAL_ADC_Start_IT>
+ 8000bb8:	4603      	mov	r3, r0
+ 8000bba:	2b00      	cmp	r3, #0
+ 8000bbc:	d10a      	bne.n	8000bd4 <read_ADC+0x2c>
 	{
 	  while(!Read);
- 8000bb8:	bf00      	nop
- 8000bba:	4b08      	ldr	r3, [pc, #32]	; (8000bdc <read_ADC+0x34>)
- 8000bbc:	781b      	ldrb	r3, [r3, #0]
- 8000bbe:	f083 0301 	eor.w	r3, r3, #1
- 8000bc2:	b2db      	uxtb	r3, r3
- 8000bc4:	2b00      	cmp	r3, #0
- 8000bc6:	d1f8      	bne.n	8000bba <read_ADC+0x12>
+ 8000bbe:	bf00      	nop
+ 8000bc0:	4b06      	ldr	r3, [pc, #24]	; (8000bdc <read_ADC+0x34>)
+ 8000bc2:	781b      	ldrb	r3, [r3, #0]
+ 8000bc4:	f083 0301 	eor.w	r3, r3, #1
+ 8000bc8:	b2db      	uxtb	r3, r3
+ 8000bca:	2b00      	cmp	r3, #0
+ 8000bcc:	d1f8      	bne.n	8000bc0 <read_ADC+0x18>
 	  HAL_ADC_Stop_IT(&hadc3);
- 8000bc8:	4803      	ldr	r0, [pc, #12]	; (8000bd8 <read_ADC+0x30>)
- 8000bca:	f001 fc41 	bl	8002450 <HAL_ADC_Stop_IT>
+ 8000bce:	4804      	ldr	r0, [pc, #16]	; (8000be0 <read_ADC+0x38>)
+ 8000bd0:	f001 fc3e 	bl	8002450 <HAL_ADC_Stop_IT>
 	}
 
 	return adc_value;
- 8000bce:	4b04      	ldr	r3, [pc, #16]	; (8000be0 <read_ADC+0x38>)
- 8000bd0:	681b      	ldr	r3, [r3, #0]
+ 8000bd4:	4b03      	ldr	r3, [pc, #12]	; (8000be4 <read_ADC+0x3c>)
+ 8000bd6:	681b      	ldr	r3, [r3, #0]
 }
- 8000bd2:	4618      	mov	r0, r3
- 8000bd4:	bd80      	pop	{r7, pc}
- 8000bd6:	bf00      	nop
- 8000bd8:	20000240 	.word	0x20000240
+ 8000bd8:	4618      	mov	r0, r3
+ 8000bda:	bd80      	pop	{r7, pc}
  8000bdc:	20000238 	.word	0x20000238
- 8000be0:	2000023c 	.word	0x2000023c
+ 8000be0:	20000240 	.word	0x20000240
+ 8000be4:	2000023c 	.word	0x2000023c
 
-08000be4 <HAL_ADC_ConvCpltCallback>:
+08000be8 <HAL_ADC_ConvCpltCallback>:
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
- 8000be4:	b580      	push	{r7, lr}
- 8000be6:	b082      	sub	sp, #8
- 8000be8:	af00      	add	r7, sp, #0
- 8000bea:	6078      	str	r0, [r7, #4]
+ 8000be8:	b580      	push	{r7, lr}
+ 8000bea:	b082      	sub	sp, #8
+ 8000bec:	af00      	add	r7, sp, #0
+ 8000bee:	6078      	str	r0, [r7, #4]
 	adc_value = HAL_ADC_GetValue(&hadc3);
- 8000bec:	4806      	ldr	r0, [pc, #24]	; (8000c08 <HAL_ADC_ConvCpltCallback+0x24>)
- 8000bee:	f001 fd7d 	bl	80026ec <HAL_ADC_GetValue>
- 8000bf2:	4603      	mov	r3, r0
- 8000bf4:	4a05      	ldr	r2, [pc, #20]	; (8000c0c <HAL_ADC_ConvCpltCallback+0x28>)
- 8000bf6:	6013      	str	r3, [r2, #0]
+ 8000bf0:	4806      	ldr	r0, [pc, #24]	; (8000c0c <HAL_ADC_ConvCpltCallback+0x24>)
+ 8000bf2:	f001 fd7b 	bl	80026ec <HAL_ADC_GetValue>
+ 8000bf6:	4603      	mov	r3, r0
+ 8000bf8:	4a05      	ldr	r2, [pc, #20]	; (8000c10 <HAL_ADC_ConvCpltCallback+0x28>)
+ 8000bfa:	6013      	str	r3, [r2, #0]
 	Read = true;
- 8000bf8:	4b05      	ldr	r3, [pc, #20]	; (8000c10 <HAL_ADC_ConvCpltCallback+0x2c>)
- 8000bfa:	2201      	movs	r2, #1
- 8000bfc:	701a      	strb	r2, [r3, #0]
+ 8000bfc:	4b05      	ldr	r3, [pc, #20]	; (8000c14 <HAL_ADC_ConvCpltCallback+0x2c>)
+ 8000bfe:	2201      	movs	r2, #1
+ 8000c00:	701a      	strb	r2, [r3, #0]
 }
- 8000bfe:	bf00      	nop
- 8000c00:	3708      	adds	r7, #8
- 8000c02:	46bd      	mov	sp, r7
- 8000c04:	bd80      	pop	{r7, pc}
- 8000c06:	bf00      	nop
- 8000c08:	20000240 	.word	0x20000240
- 8000c0c:	2000023c 	.word	0x2000023c
- 8000c10:	20000238 	.word	0x20000238
+ 8000c02:	bf00      	nop
+ 8000c04:	3708      	adds	r7, #8
+ 8000c06:	46bd      	mov	sp, r7
+ 8000c08:	bd80      	pop	{r7, pc}
+ 8000c0a:	bf00      	nop
+ 8000c0c:	20000240 	.word	0x20000240
+ 8000c10:	2000023c 	.word	0x2000023c
+ 8000c14:	20000238 	.word	0x20000238
 
-08000c14 <check_command>:
+08000c18 <check_command>:
 #include "commands.h"
 
 
 unsigned char check_command(char* message)
 {
- 8000c14:	b580      	push	{r7, lr}
- 8000c16:	b084      	sub	sp, #16
- 8000c18:	af00      	add	r7, sp, #0
- 8000c1a:	6078      	str	r0, [r7, #4]
+ 8000c18:	b580      	push	{r7, lr}
+ 8000c1a:	b084      	sub	sp, #16
+ 8000c1c:	af00      	add	r7, sp, #0
+ 8000c1e:	6078      	str	r0, [r7, #4]
 	char cmd = INV;
- 8000c1c:	2300      	movs	r3, #0
- 8000c1e:	73fb      	strb	r3, [r7, #15]
+ 8000c20:	2300      	movs	r3, #0
+ 8000c22:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "MR", 2)) * MR;
- 8000c20:	2202      	movs	r2, #2
- 8000c22:	4947      	ldr	r1, [pc, #284]	; (8000d40 <check_command+0x12c>)
- 8000c24:	6878      	ldr	r0, [r7, #4]
- 8000c26:	f005 ff50 	bl	8006aca <strncmp>
- 8000c2a:	4603      	mov	r3, r0
- 8000c2c:	2b00      	cmp	r3, #0
- 8000c2e:	bf0c      	ite	eq
- 8000c30:	2301      	moveq	r3, #1
- 8000c32:	2300      	movne	r3, #0
- 8000c34:	b2db      	uxtb	r3, r3
- 8000c36:	461a      	mov	r2, r3
- 8000c38:	7bfb      	ldrb	r3, [r7, #15]
- 8000c3a:	4413      	add	r3, r2
- 8000c3c:	73fb      	strb	r3, [r7, #15]
+ 8000c24:	2202      	movs	r2, #2
+ 8000c26:	4947      	ldr	r1, [pc, #284]	; (8000d44 <check_command+0x12c>)
+ 8000c28:	6878      	ldr	r0, [r7, #4]
+ 8000c2a:	f005 ff4e 	bl	8006aca <strncmp>
+ 8000c2e:	4603      	mov	r3, r0
+ 8000c30:	2b00      	cmp	r3, #0
+ 8000c32:	bf0c      	ite	eq
+ 8000c34:	2301      	moveq	r3, #1
+ 8000c36:	2300      	movne	r3, #0
+ 8000c38:	b2db      	uxtb	r3, r3
+ 8000c3a:	461a      	mov	r2, r3
+ 8000c3c:	7bfb      	ldrb	r3, [r7, #15]
+ 8000c3e:	4413      	add	r3, r2
+ 8000c40:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "MW", 2)) * MW;
- 8000c3e:	2202      	movs	r2, #2
- 8000c40:	4940      	ldr	r1, [pc, #256]	; (8000d44 <check_command+0x130>)
- 8000c42:	6878      	ldr	r0, [r7, #4]
- 8000c44:	f005 ff41 	bl	8006aca <strncmp>
- 8000c48:	4603      	mov	r3, r0
- 8000c4a:	2b00      	cmp	r3, #0
- 8000c4c:	d101      	bne.n	8000c52 <check_command+0x3e>
- 8000c4e:	2202      	movs	r2, #2
- 8000c50:	e000      	b.n	8000c54 <check_command+0x40>
- 8000c52:	2200      	movs	r2, #0
- 8000c54:	7bfb      	ldrb	r3, [r7, #15]
- 8000c56:	4413      	add	r3, r2
- 8000c58:	73fb      	strb	r3, [r7, #15]
+ 8000c42:	2202      	movs	r2, #2
+ 8000c44:	4940      	ldr	r1, [pc, #256]	; (8000d48 <check_command+0x130>)
+ 8000c46:	6878      	ldr	r0, [r7, #4]
+ 8000c48:	f005 ff3f 	bl	8006aca <strncmp>
+ 8000c4c:	4603      	mov	r3, r0
+ 8000c4e:	2b00      	cmp	r3, #0
+ 8000c50:	d101      	bne.n	8000c56 <check_command+0x3e>
+ 8000c52:	2202      	movs	r2, #2
+ 8000c54:	e000      	b.n	8000c58 <check_command+0x40>
+ 8000c56:	2200      	movs	r2, #0
+ 8000c58:	7bfb      	ldrb	r3, [r7, #15]
+ 8000c5a:	4413      	add	r3, r2
+ 8000c5c:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "MI", 2)) * MI;
- 8000c5a:	2202      	movs	r2, #2
- 8000c5c:	493a      	ldr	r1, [pc, #232]	; (8000d48 <check_command+0x134>)
- 8000c5e:	6878      	ldr	r0, [r7, #4]
- 8000c60:	f005 ff33 	bl	8006aca <strncmp>
- 8000c64:	4603      	mov	r3, r0
- 8000c66:	2b00      	cmp	r3, #0
- 8000c68:	d101      	bne.n	8000c6e <check_command+0x5a>
- 8000c6a:	2203      	movs	r2, #3
- 8000c6c:	e000      	b.n	8000c70 <check_command+0x5c>
- 8000c6e:	2200      	movs	r2, #0
- 8000c70:	7bfb      	ldrb	r3, [r7, #15]
- 8000c72:	4413      	add	r3, r2
- 8000c74:	73fb      	strb	r3, [r7, #15]
+ 8000c5e:	2202      	movs	r2, #2
+ 8000c60:	493a      	ldr	r1, [pc, #232]	; (8000d4c <check_command+0x134>)
+ 8000c62:	6878      	ldr	r0, [r7, #4]
+ 8000c64:	f005 ff31 	bl	8006aca <strncmp>
+ 8000c68:	4603      	mov	r3, r0
+ 8000c6a:	2b00      	cmp	r3, #0
+ 8000c6c:	d101      	bne.n	8000c72 <check_command+0x5a>
+ 8000c6e:	2203      	movs	r2, #3
+ 8000c70:	e000      	b.n	8000c74 <check_command+0x5c>
+ 8000c72:	2200      	movs	r2, #0
+ 8000c74:	7bfb      	ldrb	r3, [r7, #15]
+ 8000c76:	4413      	add	r3, r2
+ 8000c78:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "MO", 2)) * MO;
- 8000c76:	2202      	movs	r2, #2
- 8000c78:	4934      	ldr	r1, [pc, #208]	; (8000d4c <check_command+0x138>)
- 8000c7a:	6878      	ldr	r0, [r7, #4]
- 8000c7c:	f005 ff25 	bl	8006aca <strncmp>
- 8000c80:	4603      	mov	r3, r0
- 8000c82:	2b00      	cmp	r3, #0
- 8000c84:	d101      	bne.n	8000c8a <check_command+0x76>
- 8000c86:	2204      	movs	r2, #4
- 8000c88:	e000      	b.n	8000c8c <check_command+0x78>
- 8000c8a:	2200      	movs	r2, #0
- 8000c8c:	7bfb      	ldrb	r3, [r7, #15]
- 8000c8e:	4413      	add	r3, r2
- 8000c90:	73fb      	strb	r3, [r7, #15]
+ 8000c7a:	2202      	movs	r2, #2
+ 8000c7c:	4934      	ldr	r1, [pc, #208]	; (8000d50 <check_command+0x138>)
+ 8000c7e:	6878      	ldr	r0, [r7, #4]
+ 8000c80:	f005 ff23 	bl	8006aca <strncmp>
+ 8000c84:	4603      	mov	r3, r0
+ 8000c86:	2b00      	cmp	r3, #0
+ 8000c88:	d101      	bne.n	8000c8e <check_command+0x76>
+ 8000c8a:	2204      	movs	r2, #4
+ 8000c8c:	e000      	b.n	8000c90 <check_command+0x78>
+ 8000c8e:	2200      	movs	r2, #0
+ 8000c90:	7bfb      	ldrb	r3, [r7, #15]
+ 8000c92:	4413      	add	r3, r2
+ 8000c94:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "RD", 2)) * RD;
- 8000c92:	2202      	movs	r2, #2
- 8000c94:	492e      	ldr	r1, [pc, #184]	; (8000d50 <check_command+0x13c>)
- 8000c96:	6878      	ldr	r0, [r7, #4]
- 8000c98:	f005 ff17 	bl	8006aca <strncmp>
- 8000c9c:	4603      	mov	r3, r0
- 8000c9e:	2b00      	cmp	r3, #0
- 8000ca0:	d101      	bne.n	8000ca6 <check_command+0x92>
- 8000ca2:	2205      	movs	r2, #5
- 8000ca4:	e000      	b.n	8000ca8 <check_command+0x94>
- 8000ca6:	2200      	movs	r2, #0
- 8000ca8:	7bfb      	ldrb	r3, [r7, #15]
- 8000caa:	4413      	add	r3, r2
- 8000cac:	73fb      	strb	r3, [r7, #15]
+ 8000c96:	2202      	movs	r2, #2
+ 8000c98:	492e      	ldr	r1, [pc, #184]	; (8000d54 <check_command+0x13c>)
+ 8000c9a:	6878      	ldr	r0, [r7, #4]
+ 8000c9c:	f005 ff15 	bl	8006aca <strncmp>
+ 8000ca0:	4603      	mov	r3, r0
+ 8000ca2:	2b00      	cmp	r3, #0
+ 8000ca4:	d101      	bne.n	8000caa <check_command+0x92>
+ 8000ca6:	2205      	movs	r2, #5
+ 8000ca8:	e000      	b.n	8000cac <check_command+0x94>
+ 8000caa:	2200      	movs	r2, #0
+ 8000cac:	7bfb      	ldrb	r3, [r7, #15]
+ 8000cae:	4413      	add	r3, r2
+ 8000cb0:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "WD", 2)) * WD;
- 8000cae:	2202      	movs	r2, #2
- 8000cb0:	4928      	ldr	r1, [pc, #160]	; (8000d54 <check_command+0x140>)
- 8000cb2:	6878      	ldr	r0, [r7, #4]
- 8000cb4:	f005 ff09 	bl	8006aca <strncmp>
- 8000cb8:	4603      	mov	r3, r0
- 8000cba:	2b00      	cmp	r3, #0
- 8000cbc:	d101      	bne.n	8000cc2 <check_command+0xae>
- 8000cbe:	2206      	movs	r2, #6
- 8000cc0:	e000      	b.n	8000cc4 <check_command+0xb0>
- 8000cc2:	2200      	movs	r2, #0
- 8000cc4:	7bfb      	ldrb	r3, [r7, #15]
- 8000cc6:	4413      	add	r3, r2
- 8000cc8:	73fb      	strb	r3, [r7, #15]
+ 8000cb2:	2202      	movs	r2, #2
+ 8000cb4:	4928      	ldr	r1, [pc, #160]	; (8000d58 <check_command+0x140>)
+ 8000cb6:	6878      	ldr	r0, [r7, #4]
+ 8000cb8:	f005 ff07 	bl	8006aca <strncmp>
+ 8000cbc:	4603      	mov	r3, r0
+ 8000cbe:	2b00      	cmp	r3, #0
+ 8000cc0:	d101      	bne.n	8000cc6 <check_command+0xae>
+ 8000cc2:	2206      	movs	r2, #6
+ 8000cc4:	e000      	b.n	8000cc8 <check_command+0xb0>
+ 8000cc6:	2200      	movs	r2, #0
+ 8000cc8:	7bfb      	ldrb	r3, [r7, #15]
+ 8000cca:	4413      	add	r3, r2
+ 8000ccc:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "RA", 2)) * RA;
- 8000cca:	2202      	movs	r2, #2
- 8000ccc:	4922      	ldr	r1, [pc, #136]	; (8000d58 <check_command+0x144>)
- 8000cce:	6878      	ldr	r0, [r7, #4]
- 8000cd0:	f005 fefb 	bl	8006aca <strncmp>
- 8000cd4:	4603      	mov	r3, r0
- 8000cd6:	2b00      	cmp	r3, #0
- 8000cd8:	d101      	bne.n	8000cde <check_command+0xca>
- 8000cda:	2207      	movs	r2, #7
- 8000cdc:	e000      	b.n	8000ce0 <check_command+0xcc>
- 8000cde:	2200      	movs	r2, #0
- 8000ce0:	7bfb      	ldrb	r3, [r7, #15]
- 8000ce2:	4413      	add	r3, r2
- 8000ce4:	73fb      	strb	r3, [r7, #15]
+ 8000cce:	2202      	movs	r2, #2
+ 8000cd0:	4922      	ldr	r1, [pc, #136]	; (8000d5c <check_command+0x144>)
+ 8000cd2:	6878      	ldr	r0, [r7, #4]
+ 8000cd4:	f005 fef9 	bl	8006aca <strncmp>
+ 8000cd8:	4603      	mov	r3, r0
+ 8000cda:	2b00      	cmp	r3, #0
+ 8000cdc:	d101      	bne.n	8000ce2 <check_command+0xca>
+ 8000cde:	2207      	movs	r2, #7
+ 8000ce0:	e000      	b.n	8000ce4 <check_command+0xcc>
+ 8000ce2:	2200      	movs	r2, #0
+ 8000ce4:	7bfb      	ldrb	r3, [r7, #15]
+ 8000ce6:	4413      	add	r3, r2
+ 8000ce8:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "$", 1)) * LAST;
- 8000ce6:	687b      	ldr	r3, [r7, #4]
- 8000ce8:	781a      	ldrb	r2, [r3, #0]
- 8000cea:	4b1c      	ldr	r3, [pc, #112]	; (8000d5c <check_command+0x148>)
- 8000cec:	781b      	ldrb	r3, [r3, #0]
- 8000cee:	1ad3      	subs	r3, r2, r3
- 8000cf0:	2b00      	cmp	r3, #0
- 8000cf2:	d101      	bne.n	8000cf8 <check_command+0xe4>
- 8000cf4:	2208      	movs	r2, #8
- 8000cf6:	e000      	b.n	8000cfa <check_command+0xe6>
- 8000cf8:	2200      	movs	r2, #0
- 8000cfa:	7bfb      	ldrb	r3, [r7, #15]
- 8000cfc:	4413      	add	r3, r2
- 8000cfe:	73fb      	strb	r3, [r7, #15]
+ 8000cea:	687b      	ldr	r3, [r7, #4]
+ 8000cec:	781a      	ldrb	r2, [r3, #0]
+ 8000cee:	4b1c      	ldr	r3, [pc, #112]	; (8000d60 <check_command+0x148>)
+ 8000cf0:	781b      	ldrb	r3, [r3, #0]
+ 8000cf2:	1ad3      	subs	r3, r2, r3
+ 8000cf4:	2b00      	cmp	r3, #0
+ 8000cf6:	d101      	bne.n	8000cfc <check_command+0xe4>
+ 8000cf8:	2208      	movs	r2, #8
+ 8000cfa:	e000      	b.n	8000cfe <check_command+0xe6>
+ 8000cfc:	2200      	movs	r2, #0
+ 8000cfe:	7bfb      	ldrb	r3, [r7, #15]
+ 8000d00:	4413      	add	r3, r2
+ 8000d02:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "?", 1)) * HELP;
- 8000d00:	687b      	ldr	r3, [r7, #4]
- 8000d02:	781a      	ldrb	r2, [r3, #0]
- 8000d04:	4b16      	ldr	r3, [pc, #88]	; (8000d60 <check_command+0x14c>)
- 8000d06:	781b      	ldrb	r3, [r3, #0]
- 8000d08:	1ad3      	subs	r3, r2, r3
- 8000d0a:	2b00      	cmp	r3, #0
- 8000d0c:	d101      	bne.n	8000d12 <check_command+0xfe>
- 8000d0e:	2209      	movs	r2, #9
- 8000d10:	e000      	b.n	8000d14 <check_command+0x100>
- 8000d12:	2200      	movs	r2, #0
- 8000d14:	7bfb      	ldrb	r3, [r7, #15]
- 8000d16:	4413      	add	r3, r2
- 8000d18:	73fb      	strb	r3, [r7, #15]
+ 8000d04:	687b      	ldr	r3, [r7, #4]
+ 8000d06:	781a      	ldrb	r2, [r3, #0]
+ 8000d08:	4b16      	ldr	r3, [pc, #88]	; (8000d64 <check_command+0x14c>)
+ 8000d0a:	781b      	ldrb	r3, [r3, #0]
+ 8000d0c:	1ad3      	subs	r3, r2, r3
+ 8000d0e:	2b00      	cmp	r3, #0
+ 8000d10:	d101      	bne.n	8000d16 <check_command+0xfe>
+ 8000d12:	2209      	movs	r2, #9
+ 8000d14:	e000      	b.n	8000d18 <check_command+0x100>
+ 8000d16:	2200      	movs	r2, #0
+ 8000d18:	7bfb      	ldrb	r3, [r7, #15]
+ 8000d1a:	4413      	add	r3, r2
+ 8000d1c:	73fb      	strb	r3, [r7, #15]
 
 	cmd += (!strncmp((char*) message, "VER", 3)) * VER;
- 8000d1a:	2203      	movs	r2, #3
- 8000d1c:	4911      	ldr	r1, [pc, #68]	; (8000d64 <check_command+0x150>)
- 8000d1e:	6878      	ldr	r0, [r7, #4]
- 8000d20:	f005 fed3 	bl	8006aca <strncmp>
- 8000d24:	4603      	mov	r3, r0
- 8000d26:	2b00      	cmp	r3, #0
- 8000d28:	d101      	bne.n	8000d2e <check_command+0x11a>
- 8000d2a:	220a      	movs	r2, #10
- 8000d2c:	e000      	b.n	8000d30 <check_command+0x11c>
- 8000d2e:	2200      	movs	r2, #0
- 8000d30:	7bfb      	ldrb	r3, [r7, #15]
- 8000d32:	4413      	add	r3, r2
- 8000d34:	73fb      	strb	r3, [r7, #15]
+ 8000d1e:	2203      	movs	r2, #3
+ 8000d20:	4911      	ldr	r1, [pc, #68]	; (8000d68 <check_command+0x150>)
+ 8000d22:	6878      	ldr	r0, [r7, #4]
+ 8000d24:	f005 fed1 	bl	8006aca <strncmp>
+ 8000d28:	4603      	mov	r3, r0
+ 8000d2a:	2b00      	cmp	r3, #0
+ 8000d2c:	d101      	bne.n	8000d32 <check_command+0x11a>
+ 8000d2e:	220a      	movs	r2, #10
+ 8000d30:	e000      	b.n	8000d34 <check_command+0x11c>
+ 8000d32:	2200      	movs	r2, #0
+ 8000d34:	7bfb      	ldrb	r3, [r7, #15]
+ 8000d36:	4413      	add	r3, r2
+ 8000d38:	73fb      	strb	r3, [r7, #15]
 
 	return cmd;
- 8000d36:	7bfb      	ldrb	r3, [r7, #15]
+ 8000d3a:	7bfb      	ldrb	r3, [r7, #15]
 }
- 8000d38:	4618      	mov	r0, r3
- 8000d3a:	3710      	adds	r7, #16
- 8000d3c:	46bd      	mov	sp, r7
- 8000d3e:	bd80      	pop	{r7, pc}
- 8000d40:	0800ac70 	.word	0x0800ac70
- 8000d44:	0800ac74 	.word	0x0800ac74
- 8000d48:	0800ac78 	.word	0x0800ac78
- 8000d4c:	0800ac7c 	.word	0x0800ac7c
- 8000d50:	0800ac80 	.word	0x0800ac80
- 8000d54:	0800ac84 	.word	0x0800ac84
- 8000d58:	0800ac88 	.word	0x0800ac88
- 8000d5c:	0800ac8c 	.word	0x0800ac8c
- 8000d60:	0800ac90 	.word	0x0800ac90
- 8000d64:	0800ac94 	.word	0x0800ac94
+ 8000d3c:	4618      	mov	r0, r3
+ 8000d3e:	3710      	adds	r7, #16
+ 8000d40:	46bd      	mov	sp, r7
+ 8000d42:	bd80      	pop	{r7, pc}
+ 8000d44:	0800ac70 	.word	0x0800ac70
+ 8000d48:	0800ac74 	.word	0x0800ac74
+ 8000d4c:	0800ac78 	.word	0x0800ac78
+ 8000d50:	0800ac7c 	.word	0x0800ac7c
+ 8000d54:	0800ac80 	.word	0x0800ac80
+ 8000d58:	0800ac84 	.word	0x0800ac84
+ 8000d5c:	0800ac88 	.word	0x0800ac88
+ 8000d60:	0800ac8c 	.word	0x0800ac8c
+ 8000d64:	0800ac90 	.word	0x0800ac90
+ 8000d68:	0800ac94 	.word	0x0800ac94
 
-08000d68 <proc_inv_cmd>:
+08000d6c <proc_inv_cmd>:
 
 //------------------------------------------------------------------------------------------------------------------
 
 
 void proc_inv_cmd(char* message)
 {
- 8000d68:	b580      	push	{r7, lr}
- 8000d6a:	b082      	sub	sp, #8
- 8000d6c:	af00      	add	r7, sp, #0
- 8000d6e:	6078      	str	r0, [r7, #4]
+ 8000d6c:	b580      	push	{r7, lr}
+ 8000d6e:	b082      	sub	sp, #8
+ 8000d70:	af00      	add	r7, sp, #0
+ 8000d72:	6078      	str	r0, [r7, #4]
 	send_UART("Invalid instruction. Type '?' for Help.");
- 8000d70:	4803      	ldr	r0, [pc, #12]	; (8000d80 <proc_inv_cmd+0x18>)
- 8000d72:	f001 f8d7 	bl	8001f24 <send_UART>
+ 8000d74:	4803      	ldr	r0, [pc, #12]	; (8000d84 <proc_inv_cmd+0x18>)
+ 8000d76:	f001 f8d5 	bl	8001f24 <send_UART>
 }
- 8000d76:	bf00      	nop
- 8000d78:	3708      	adds	r7, #8
- 8000d7a:	46bd      	mov	sp, r7
- 8000d7c:	bd80      	pop	{r7, pc}
- 8000d7e:	bf00      	nop
- 8000d80:	0800ac98 	.word	0x0800ac98
+ 8000d7a:	bf00      	nop
+ 8000d7c:	3708      	adds	r7, #8
+ 8000d7e:	46bd      	mov	sp, r7
+ 8000d80:	bd80      	pop	{r7, pc}
+ 8000d82:	bf00      	nop
+ 8000d84:	0800ac98 	.word	0x0800ac98
 
-08000d84 <proc_mr_cmd>:
+08000d88 <proc_mr_cmd>:
 
 
 void proc_mr_cmd(char* message)
 {
- 8000d84:	b5b0      	push	{r4, r5, r7, lr}
- 8000d86:	b088      	sub	sp, #32
- 8000d88:	af00      	add	r7, sp, #0
- 8000d8a:	6078      	str	r0, [r7, #4]
+ 8000d88:	b5b0      	push	{r4, r5, r7, lr}
+ 8000d8a:	b088      	sub	sp, #32
+ 8000d8c:	af00      	add	r7, sp, #0
+ 8000d8e:	6078      	str	r0, [r7, #4]
 	unsigned int addr, length;
 
 	if(sscanf((char*)message, "MR %x %x", &addr, &length) == 2)
- 8000d8c:	f107 030c 	add.w	r3, r7, #12
- 8000d90:	f107 0210 	add.w	r2, r7, #16
- 8000d94:	4932      	ldr	r1, [pc, #200]	; (8000e60 <proc_mr_cmd+0xdc>)
- 8000d96:	6878      	ldr	r0, [r7, #4]
- 8000d98:	f005 fe26 	bl	80069e8 <siscanf>
- 8000d9c:	4603      	mov	r3, r0
- 8000d9e:	2b02      	cmp	r3, #2
- 8000da0:	d157      	bne.n	8000e52 <proc_mr_cmd+0xce>
+ 8000d90:	f107 030c 	add.w	r3, r7, #12
+ 8000d94:	f107 0210 	add.w	r2, r7, #16
+ 8000d98:	4932      	ldr	r1, [pc, #200]	; (8000e64 <proc_mr_cmd+0xdc>)
+ 8000d9a:	6878      	ldr	r0, [r7, #4]
+ 8000d9c:	f005 fe24 	bl	80069e8 <siscanf>
+ 8000da0:	4603      	mov	r3, r0
+ 8000da2:	2b02      	cmp	r3, #2
+ 8000da4:	d157      	bne.n	8000e56 <proc_mr_cmd+0xce>
 	{
- 8000da2:	466b      	mov	r3, sp
- 8000da4:	461d      	mov	r5, r3
+ 8000da6:	466b      	mov	r3, sp
+ 8000da8:	461d      	mov	r5, r3
 		char data[length];
- 8000da6:	68fc      	ldr	r4, [r7, #12]
- 8000da8:	4623      	mov	r3, r4
- 8000daa:	3b01      	subs	r3, #1
- 8000dac:	61bb      	str	r3, [r7, #24]
- 8000dae:	4620      	mov	r0, r4
- 8000db0:	f04f 0100 	mov.w	r1, #0
- 8000db4:	f04f 0200 	mov.w	r2, #0
- 8000db8:	f04f 0300 	mov.w	r3, #0
- 8000dbc:	00cb      	lsls	r3, r1, #3
- 8000dbe:	ea43 7350 	orr.w	r3, r3, r0, lsr #29
- 8000dc2:	00c2      	lsls	r2, r0, #3
- 8000dc4:	4620      	mov	r0, r4
- 8000dc6:	f04f 0100 	mov.w	r1, #0
- 8000dca:	f04f 0200 	mov.w	r2, #0
- 8000dce:	f04f 0300 	mov.w	r3, #0
- 8000dd2:	00cb      	lsls	r3, r1, #3
- 8000dd4:	ea43 7350 	orr.w	r3, r3, r0, lsr #29
- 8000dd8:	00c2      	lsls	r2, r0, #3
- 8000dda:	1de3      	adds	r3, r4, #7
- 8000ddc:	08db      	lsrs	r3, r3, #3
- 8000dde:	00db      	lsls	r3, r3, #3
- 8000de0:	ebad 0d03 	sub.w	sp, sp, r3
- 8000de4:	466b      	mov	r3, sp
- 8000de6:	3300      	adds	r3, #0
- 8000de8:	617b      	str	r3, [r7, #20]
+ 8000daa:	68fc      	ldr	r4, [r7, #12]
+ 8000dac:	4623      	mov	r3, r4
+ 8000dae:	3b01      	subs	r3, #1
+ 8000db0:	61bb      	str	r3, [r7, #24]
+ 8000db2:	4620      	mov	r0, r4
+ 8000db4:	f04f 0100 	mov.w	r1, #0
+ 8000db8:	f04f 0200 	mov.w	r2, #0
+ 8000dbc:	f04f 0300 	mov.w	r3, #0
+ 8000dc0:	00cb      	lsls	r3, r1, #3
+ 8000dc2:	ea43 7350 	orr.w	r3, r3, r0, lsr #29
+ 8000dc6:	00c2      	lsls	r2, r0, #3
+ 8000dc8:	4620      	mov	r0, r4
+ 8000dca:	f04f 0100 	mov.w	r1, #0
+ 8000dce:	f04f 0200 	mov.w	r2, #0
+ 8000dd2:	f04f 0300 	mov.w	r3, #0
+ 8000dd6:	00cb      	lsls	r3, r1, #3
+ 8000dd8:	ea43 7350 	orr.w	r3, r3, r0, lsr #29
+ 8000ddc:	00c2      	lsls	r2, r0, #3
+ 8000dde:	1de3      	adds	r3, r4, #7
+ 8000de0:	08db      	lsrs	r3, r3, #3
+ 8000de2:	00db      	lsls	r3, r3, #3
+ 8000de4:	ebad 0d03 	sub.w	sp, sp, r3
+ 8000de8:	466b      	mov	r3, sp
+ 8000dea:	3300      	adds	r3, #0
+ 8000dec:	617b      	str	r3, [r7, #20]
 
 		if(memory_read(addr, length, data))
- 8000dea:	693b      	ldr	r3, [r7, #16]
- 8000dec:	68f9      	ldr	r1, [r7, #12]
- 8000dee:	697a      	ldr	r2, [r7, #20]
- 8000df0:	4618      	mov	r0, r3
- 8000df2:	f000 fabd 	bl	8001370 <memory_read>
- 8000df6:	4603      	mov	r3, r0
- 8000df8:	2b00      	cmp	r3, #0
- 8000dfa:	d025      	beq.n	8000e48 <proc_mr_cmd+0xc4>
+ 8000dee:	693b      	ldr	r3, [r7, #16]
+ 8000df0:	68f9      	ldr	r1, [r7, #12]
+ 8000df2:	697a      	ldr	r2, [r7, #20]
+ 8000df4:	4618      	mov	r0, r3
+ 8000df6:	f000 fabb 	bl	8001370 <memory_read>
+ 8000dfa:	4603      	mov	r3, r0
+ 8000dfc:	2b00      	cmp	r3, #0
+ 8000dfe:	d025      	beq.n	8000e4c <proc_mr_cmd+0xc4>
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
- 8000dfc:	f44f 7280 	mov.w	r2, #256	; 0x100
- 8000e00:	6879      	ldr	r1, [r7, #4]
- 8000e02:	4818      	ldr	r0, [pc, #96]	; (8000e64 <proc_mr_cmd+0xe0>)
- 8000e04:	f005 fe73 	bl	8006aee <strncpy>
+ 8000e00:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 8000e04:	6879      	ldr	r1, [r7, #4]
+ 8000e06:	4818      	ldr	r0, [pc, #96]	; (8000e68 <proc_mr_cmd+0xe0>)
+ 8000e08:	f005 fe71 	bl	8006aee <strncpy>
 
 			sprintf((char*) message, "Memory read: ");
- 8000e08:	4917      	ldr	r1, [pc, #92]	; (8000e68 <proc_mr_cmd+0xe4>)
- 8000e0a:	6878      	ldr	r0, [r7, #4]
- 8000e0c:	f005 fdcc 	bl	80069a8 <siprintf>
+ 8000e0c:	4917      	ldr	r1, [pc, #92]	; (8000e6c <proc_mr_cmd+0xe4>)
+ 8000e0e:	6878      	ldr	r0, [r7, #4]
+ 8000e10:	f005 fdca 	bl	80069a8 <siprintf>
 
 			for(int i = 0; i < length; i++)
- 8000e10:	2300      	movs	r3, #0
- 8000e12:	61fb      	str	r3, [r7, #28]
- 8000e14:	e010      	b.n	8000e38 <proc_mr_cmd+0xb4>
+ 8000e14:	2300      	movs	r3, #0
+ 8000e16:	61fb      	str	r3, [r7, #28]
+ 8000e18:	e010      	b.n	8000e3c <proc_mr_cmd+0xb4>
 			{
 				sprintf((char*) message + strlen((char*) message), "%02X ", data[i]);
- 8000e16:	6878      	ldr	r0, [r7, #4]
- 8000e18:	f7ff fa12 	bl	8000240 <strlen>
- 8000e1c:	4602      	mov	r2, r0
- 8000e1e:	687b      	ldr	r3, [r7, #4]
- 8000e20:	1898      	adds	r0, r3, r2
- 8000e22:	697a      	ldr	r2, [r7, #20]
- 8000e24:	69fb      	ldr	r3, [r7, #28]
- 8000e26:	4413      	add	r3, r2
- 8000e28:	781b      	ldrb	r3, [r3, #0]
- 8000e2a:	461a      	mov	r2, r3
- 8000e2c:	490f      	ldr	r1, [pc, #60]	; (8000e6c <proc_mr_cmd+0xe8>)
- 8000e2e:	f005 fdbb 	bl	80069a8 <siprintf>
+ 8000e1a:	6878      	ldr	r0, [r7, #4]
+ 8000e1c:	f7ff fa10 	bl	8000240 <strlen>
+ 8000e20:	4602      	mov	r2, r0
+ 8000e22:	687b      	ldr	r3, [r7, #4]
+ 8000e24:	1898      	adds	r0, r3, r2
+ 8000e26:	697a      	ldr	r2, [r7, #20]
+ 8000e28:	69fb      	ldr	r3, [r7, #28]
+ 8000e2a:	4413      	add	r3, r2
+ 8000e2c:	781b      	ldrb	r3, [r3, #0]
+ 8000e2e:	461a      	mov	r2, r3
+ 8000e30:	490f      	ldr	r1, [pc, #60]	; (8000e70 <proc_mr_cmd+0xe8>)
+ 8000e32:	f005 fdb9 	bl	80069a8 <siprintf>
 			for(int i = 0; i < length; i++)
- 8000e32:	69fb      	ldr	r3, [r7, #28]
- 8000e34:	3301      	adds	r3, #1
- 8000e36:	61fb      	str	r3, [r7, #28]
- 8000e38:	69fa      	ldr	r2, [r7, #28]
- 8000e3a:	68fb      	ldr	r3, [r7, #12]
- 8000e3c:	429a      	cmp	r2, r3
- 8000e3e:	d3ea      	bcc.n	8000e16 <proc_mr_cmd+0x92>
+ 8000e36:	69fb      	ldr	r3, [r7, #28]
+ 8000e38:	3301      	adds	r3, #1
+ 8000e3a:	61fb      	str	r3, [r7, #28]
+ 8000e3c:	69fa      	ldr	r2, [r7, #28]
+ 8000e3e:	68fb      	ldr	r3, [r7, #12]
+ 8000e40:	429a      	cmp	r2, r3
+ 8000e42:	d3ea      	bcc.n	8000e1a <proc_mr_cmd+0x92>
 			}
 			send_UART((char*) message);
- 8000e40:	6878      	ldr	r0, [r7, #4]
- 8000e42:	f001 f86f 	bl	8001f24 <send_UART>
- 8000e46:	e002      	b.n	8000e4e <proc_mr_cmd+0xca>
+ 8000e44:	6878      	ldr	r0, [r7, #4]
+ 8000e46:	f001 f86d 	bl	8001f24 <send_UART>
+ 8000e4a:	e002      	b.n	8000e52 <proc_mr_cmd+0xca>
 		}
 		else
 			send_UART("Invalid Memory Read instruction argument values.\r");
- 8000e48:	4809      	ldr	r0, [pc, #36]	; (8000e70 <proc_mr_cmd+0xec>)
- 8000e4a:	f001 f86b 	bl	8001f24 <send_UART>
- 8000e4e:	46ad      	mov	sp, r5
+ 8000e4c:	4809      	ldr	r0, [pc, #36]	; (8000e74 <proc_mr_cmd+0xec>)
+ 8000e4e:	f001 f869 	bl	8001f24 <send_UART>
+ 8000e52:	46ad      	mov	sp, r5
 	}
 	else
 		send_UART("Invalid Memory Read instruction syntax.");
 }
- 8000e50:	e002      	b.n	8000e58 <proc_mr_cmd+0xd4>
+ 8000e54:	e002      	b.n	8000e5c <proc_mr_cmd+0xd4>
 		send_UART("Invalid Memory Read instruction syntax.");
- 8000e52:	4808      	ldr	r0, [pc, #32]	; (8000e74 <proc_mr_cmd+0xf0>)
- 8000e54:	f001 f866 	bl	8001f24 <send_UART>
+ 8000e56:	4808      	ldr	r0, [pc, #32]	; (8000e78 <proc_mr_cmd+0xf0>)
+ 8000e58:	f001 f864 	bl	8001f24 <send_UART>
 }
- 8000e58:	bf00      	nop
- 8000e5a:	3720      	adds	r7, #32
- 8000e5c:	46bd      	mov	sp, r7
- 8000e5e:	bdb0      	pop	{r4, r5, r7, pc}
- 8000e60:	0800acc0 	.word	0x0800acc0
- 8000e64:	20010490 	.word	0x20010490
- 8000e68:	0800accc 	.word	0x0800accc
- 8000e6c:	0800acdc 	.word	0x0800acdc
- 8000e70:	0800ace4 	.word	0x0800ace4
- 8000e74:	0800ad18 	.word	0x0800ad18
+ 8000e5c:	bf00      	nop
+ 8000e5e:	3720      	adds	r7, #32
+ 8000e60:	46bd      	mov	sp, r7
+ 8000e62:	bdb0      	pop	{r4, r5, r7, pc}
+ 8000e64:	0800acc0 	.word	0x0800acc0
+ 8000e68:	20010490 	.word	0x20010490
+ 8000e6c:	0800accc 	.word	0x0800accc
+ 8000e70:	0800acdc 	.word	0x0800acdc
+ 8000e74:	0800ace4 	.word	0x0800ace4
+ 8000e78:	0800ad18 	.word	0x0800ad18
 
-08000e78 <proc_mw_cmd>:
+08000e7c <proc_mw_cmd>:
 
 
 void proc_mw_cmd(char* message)
 {
- 8000e78:	b580      	push	{r7, lr}
- 8000e7a:	b088      	sub	sp, #32
- 8000e7c:	af02      	add	r7, sp, #8
- 8000e7e:	6078      	str	r0, [r7, #4]
+ 8000e7c:	b580      	push	{r7, lr}
+ 8000e7e:	b088      	sub	sp, #32
+ 8000e80:	af02      	add	r7, sp, #8
+ 8000e82:	6078      	str	r0, [r7, #4]
 	unsigned int addr, length, data;
 
 	if(sscanf((char*) message, "MW %x %x %x", &addr, &length, &data) == 3)
- 8000e80:	f107 0110 	add.w	r1, r7, #16
- 8000e84:	f107 0214 	add.w	r2, r7, #20
- 8000e88:	f107 030c 	add.w	r3, r7, #12
- 8000e8c:	9300      	str	r3, [sp, #0]
- 8000e8e:	460b      	mov	r3, r1
- 8000e90:	4912      	ldr	r1, [pc, #72]	; (8000edc <proc_mw_cmd+0x64>)
- 8000e92:	6878      	ldr	r0, [r7, #4]
- 8000e94:	f005 fda8 	bl	80069e8 <siscanf>
- 8000e98:	4603      	mov	r3, r0
- 8000e9a:	2b03      	cmp	r3, #3
- 8000e9c:	d116      	bne.n	8000ecc <proc_mw_cmd+0x54>
+ 8000e84:	f107 0110 	add.w	r1, r7, #16
+ 8000e88:	f107 0214 	add.w	r2, r7, #20
+ 8000e8c:	f107 030c 	add.w	r3, r7, #12
+ 8000e90:	9300      	str	r3, [sp, #0]
+ 8000e92:	460b      	mov	r3, r1
+ 8000e94:	4912      	ldr	r1, [pc, #72]	; (8000ee0 <proc_mw_cmd+0x64>)
+ 8000e96:	6878      	ldr	r0, [r7, #4]
+ 8000e98:	f005 fda6 	bl	80069e8 <siscanf>
+ 8000e9c:	4603      	mov	r3, r0
+ 8000e9e:	2b03      	cmp	r3, #3
+ 8000ea0:	d116      	bne.n	8000ed0 <proc_mw_cmd+0x54>
 	{
 		if(memory_write(addr, length, data))
- 8000e9e:	697b      	ldr	r3, [r7, #20]
- 8000ea0:	6939      	ldr	r1, [r7, #16]
- 8000ea2:	68fa      	ldr	r2, [r7, #12]
- 8000ea4:	4618      	mov	r0, r3
- 8000ea6:	f000 fa97 	bl	80013d8 <memory_write>
- 8000eaa:	4603      	mov	r3, r0
- 8000eac:	2b00      	cmp	r3, #0
- 8000eae:	d009      	beq.n	8000ec4 <proc_mw_cmd+0x4c>
+ 8000ea2:	697b      	ldr	r3, [r7, #20]
+ 8000ea4:	6939      	ldr	r1, [r7, #16]
+ 8000ea6:	68fa      	ldr	r2, [r7, #12]
+ 8000ea8:	4618      	mov	r0, r3
+ 8000eaa:	f000 fa95 	bl	80013d8 <memory_write>
+ 8000eae:	4603      	mov	r3, r0
+ 8000eb0:	2b00      	cmp	r3, #0
+ 8000eb2:	d009      	beq.n	8000ec8 <proc_mw_cmd+0x4c>
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
- 8000eb0:	f44f 7280 	mov.w	r2, #256	; 0x100
- 8000eb4:	6879      	ldr	r1, [r7, #4]
- 8000eb6:	480a      	ldr	r0, [pc, #40]	; (8000ee0 <proc_mw_cmd+0x68>)
- 8000eb8:	f005 fe19 	bl	8006aee <strncpy>
+ 8000eb4:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 8000eb8:	6879      	ldr	r1, [r7, #4]
+ 8000eba:	480a      	ldr	r0, [pc, #40]	; (8000ee4 <proc_mw_cmd+0x68>)
+ 8000ebc:	f005 fe17 	bl	8006aee <strncpy>
 			send_UART("Memory written with success.");
- 8000ebc:	4809      	ldr	r0, [pc, #36]	; (8000ee4 <proc_mw_cmd+0x6c>)
- 8000ebe:	f001 f831 	bl	8001f24 <send_UART>
+ 8000ec0:	4809      	ldr	r0, [pc, #36]	; (8000ee8 <proc_mw_cmd+0x6c>)
+ 8000ec2:	f001 f82f 	bl	8001f24 <send_UART>
 		else
 			send_UART("Invalid Memory Write instruction argument values.");
 	}
 	else
 		send_UART("Invalid Memory Write instruction syntax.");
 }
- 8000ec2:	e006      	b.n	8000ed2 <proc_mw_cmd+0x5a>
+ 8000ec6:	e006      	b.n	8000ed6 <proc_mw_cmd+0x5a>
 			send_UART("Invalid Memory Write instruction argument values.");
- 8000ec4:	4808      	ldr	r0, [pc, #32]	; (8000ee8 <proc_mw_cmd+0x70>)
- 8000ec6:	f001 f82d 	bl	8001f24 <send_UART>
+ 8000ec8:	4808      	ldr	r0, [pc, #32]	; (8000eec <proc_mw_cmd+0x70>)
+ 8000eca:	f001 f82b 	bl	8001f24 <send_UART>
 }
- 8000eca:	e002      	b.n	8000ed2 <proc_mw_cmd+0x5a>
+ 8000ece:	e002      	b.n	8000ed6 <proc_mw_cmd+0x5a>
 		send_UART("Invalid Memory Write instruction syntax.");
- 8000ecc:	4807      	ldr	r0, [pc, #28]	; (8000eec <proc_mw_cmd+0x74>)
- 8000ece:	f001 f829 	bl	8001f24 <send_UART>
+ 8000ed0:	4807      	ldr	r0, [pc, #28]	; (8000ef0 <proc_mw_cmd+0x74>)
+ 8000ed2:	f001 f827 	bl	8001f24 <send_UART>
 }
- 8000ed2:	bf00      	nop
- 8000ed4:	3718      	adds	r7, #24
- 8000ed6:	46bd      	mov	sp, r7
- 8000ed8:	bd80      	pop	{r7, pc}
- 8000eda:	bf00      	nop
- 8000edc:	0800ad40 	.word	0x0800ad40
- 8000ee0:	20010490 	.word	0x20010490
- 8000ee4:	0800ad4c 	.word	0x0800ad4c
- 8000ee8:	0800ad6c 	.word	0x0800ad6c
- 8000eec:	0800ada0 	.word	0x0800ada0
+ 8000ed6:	bf00      	nop
+ 8000ed8:	3718      	adds	r7, #24
+ 8000eda:	46bd      	mov	sp, r7
+ 8000edc:	bd80      	pop	{r7, pc}
+ 8000ede:	bf00      	nop
+ 8000ee0:	0800ad40 	.word	0x0800ad40
+ 8000ee4:	20010490 	.word	0x20010490
+ 8000ee8:	0800ad4c 	.word	0x0800ad4c
+ 8000eec:	0800ad6c 	.word	0x0800ad6c
+ 8000ef0:	0800ada0 	.word	0x0800ada0
 
-08000ef0 <proc_mi_cmd>:
+08000ef4 <proc_mi_cmd>:
 
 
 void proc_mi_cmd(char* message)
 {
- 8000ef0:	b580      	push	{r7, lr}
- 8000ef2:	b084      	sub	sp, #16
- 8000ef4:	af00      	add	r7, sp, #0
- 8000ef6:	6078      	str	r0, [r7, #4]
+ 8000ef4:	b580      	push	{r7, lr}
+ 8000ef6:	b084      	sub	sp, #16
+ 8000ef8:	af00      	add	r7, sp, #0
+ 8000efa:	6078      	str	r0, [r7, #4]
 	unsigned int port_addr, pin_setting;
 
 	if(sscanf((char*) message, "MI %x %x", &port_addr, &pin_setting) == 2)
- 8000ef8:	f107 0308 	add.w	r3, r7, #8
- 8000efc:	f107 020c 	add.w	r2, r7, #12
- 8000f00:	4918      	ldr	r1, [pc, #96]	; (8000f64 <proc_mi_cmd+0x74>)
- 8000f02:	6878      	ldr	r0, [r7, #4]
- 8000f04:	f005 fd70 	bl	80069e8 <siscanf>
- 8000f08:	4603      	mov	r3, r0
- 8000f0a:	2b02      	cmp	r3, #2
- 8000f0c:	d123      	bne.n	8000f56 <proc_mi_cmd+0x66>
+ 8000efc:	f107 0308 	add.w	r3, r7, #8
+ 8000f00:	f107 020c 	add.w	r2, r7, #12
+ 8000f04:	4918      	ldr	r1, [pc, #96]	; (8000f68 <proc_mi_cmd+0x74>)
+ 8000f06:	6878      	ldr	r0, [r7, #4]
+ 8000f08:	f005 fd6e 	bl	80069e8 <siscanf>
+ 8000f0c:	4603      	mov	r3, r0
+ 8000f0e:	2b02      	cmp	r3, #2
+ 8000f10:	d123      	bne.n	8000f5a <proc_mi_cmd+0x66>
 	{
 		if(is_GPIO_pin_free(port_addr, pin_setting))
- 8000f0e:	68fb      	ldr	r3, [r7, #12]
- 8000f10:	68ba      	ldr	r2, [r7, #8]
- 8000f12:	4611      	mov	r1, r2
- 8000f14:	4618      	mov	r0, r3
- 8000f16:	f000 fcdf 	bl	80018d8 <is_GPIO_pin_free>
- 8000f1a:	4603      	mov	r3, r0
- 8000f1c:	2b00      	cmp	r3, #0
- 8000f1e:	d016      	beq.n	8000f4e <proc_mi_cmd+0x5e>
+ 8000f12:	68fb      	ldr	r3, [r7, #12]
+ 8000f14:	68ba      	ldr	r2, [r7, #8]
+ 8000f16:	4611      	mov	r1, r2
+ 8000f18:	4618      	mov	r0, r3
+ 8000f1a:	f000 fcdd 	bl	80018d8 <is_GPIO_pin_free>
+ 8000f1e:	4603      	mov	r3, r0
+ 8000f20:	2b00      	cmp	r3, #0
+ 8000f22:	d016      	beq.n	8000f52 <proc_mi_cmd+0x5e>
 		{
 			if(make_pin_input(port_addr, pin_setting))
- 8000f20:	68fb      	ldr	r3, [r7, #12]
- 8000f22:	68ba      	ldr	r2, [r7, #8]
- 8000f24:	4611      	mov	r1, r2
- 8000f26:	4618      	mov	r0, r3
- 8000f28:	f000 fa8e 	bl	8001448 <make_pin_input>
- 8000f2c:	4603      	mov	r3, r0
- 8000f2e:	2b00      	cmp	r3, #0
- 8000f30:	d009      	beq.n	8000f46 <proc_mi_cmd+0x56>
+ 8000f24:	68fb      	ldr	r3, [r7, #12]
+ 8000f26:	68ba      	ldr	r2, [r7, #8]
+ 8000f28:	4611      	mov	r1, r2
+ 8000f2a:	4618      	mov	r0, r3
+ 8000f2c:	f000 fa8c 	bl	8001448 <make_pin_input>
+ 8000f30:	4603      	mov	r3, r0
+ 8000f32:	2b00      	cmp	r3, #0
+ 8000f34:	d009      	beq.n	8000f4a <proc_mi_cmd+0x56>
 			{
 				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
- 8000f32:	f44f 7280 	mov.w	r2, #256	; 0x100
- 8000f36:	6879      	ldr	r1, [r7, #4]
- 8000f38:	480b      	ldr	r0, [pc, #44]	; (8000f68 <proc_mi_cmd+0x78>)
- 8000f3a:	f005 fdd8 	bl	8006aee <strncpy>
+ 8000f36:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 8000f3a:	6879      	ldr	r1, [r7, #4]
+ 8000f3c:	480b      	ldr	r0, [pc, #44]	; (8000f6c <proc_mi_cmd+0x78>)
+ 8000f3e:	f005 fdd6 	bl	8006aee <strncpy>
 				send_UART("Pin(s) set as input with success.");
- 8000f3e:	480b      	ldr	r0, [pc, #44]	; (8000f6c <proc_mi_cmd+0x7c>)
- 8000f40:	f000 fff0 	bl	8001f24 <send_UART>
+ 8000f42:	480b      	ldr	r0, [pc, #44]	; (8000f70 <proc_mi_cmd+0x7c>)
+ 8000f44:	f000 ffee 	bl	8001f24 <send_UART>
 		else
 			send_UART("At least one inputted pin is reserved to peripherals.");
 	}
 	else
 	  send_UART("Invalid Make Pin Input instruction syntax.");
 }
- 8000f44:	e00a      	b.n	8000f5c <proc_mi_cmd+0x6c>
+ 8000f48:	e00a      	b.n	8000f60 <proc_mi_cmd+0x6c>
 				send_UART("Invalid Make Pin Input instruction argument values.");
- 8000f46:	480a      	ldr	r0, [pc, #40]	; (8000f70 <proc_mi_cmd+0x80>)
- 8000f48:	f000 ffec 	bl	8001f24 <send_UART>
+ 8000f4a:	480a      	ldr	r0, [pc, #40]	; (8000f74 <proc_mi_cmd+0x80>)
+ 8000f4c:	f000 ffea 	bl	8001f24 <send_UART>
 }
- 8000f4c:	e006      	b.n	8000f5c <proc_mi_cmd+0x6c>
+ 8000f50:	e006      	b.n	8000f60 <proc_mi_cmd+0x6c>
 			send_UART("At least one inputted pin is reserved to peripherals.");
- 8000f4e:	4809      	ldr	r0, [pc, #36]	; (8000f74 <proc_mi_cmd+0x84>)
- 8000f50:	f000 ffe8 	bl	8001f24 <send_UART>
+ 8000f52:	4809      	ldr	r0, [pc, #36]	; (8000f78 <proc_mi_cmd+0x84>)
+ 8000f54:	f000 ffe6 	bl	8001f24 <send_UART>
 }
- 8000f54:	e002      	b.n	8000f5c <proc_mi_cmd+0x6c>
+ 8000f58:	e002      	b.n	8000f60 <proc_mi_cmd+0x6c>
 	  send_UART("Invalid Make Pin Input instruction syntax.");
- 8000f56:	4808      	ldr	r0, [pc, #32]	; (8000f78 <proc_mi_cmd+0x88>)
- 8000f58:	f000 ffe4 	bl	8001f24 <send_UART>
+ 8000f5a:	4808      	ldr	r0, [pc, #32]	; (8000f7c <proc_mi_cmd+0x88>)
+ 8000f5c:	f000 ffe2 	bl	8001f24 <send_UART>
 }
- 8000f5c:	bf00      	nop
- 8000f5e:	3710      	adds	r7, #16
- 8000f60:	46bd      	mov	sp, r7
- 8000f62:	bd80      	pop	{r7, pc}
- 8000f64:	0800adcc 	.word	0x0800adcc
- 8000f68:	20010490 	.word	0x20010490
- 8000f6c:	0800add8 	.word	0x0800add8
- 8000f70:	0800adfc 	.word	0x0800adfc
- 8000f74:	0800ae30 	.word	0x0800ae30
- 8000f78:	0800ae68 	.word	0x0800ae68
+ 8000f60:	bf00      	nop
+ 8000f62:	3710      	adds	r7, #16
+ 8000f64:	46bd      	mov	sp, r7
+ 8000f66:	bd80      	pop	{r7, pc}
+ 8000f68:	0800adcc 	.word	0x0800adcc
+ 8000f6c:	20010490 	.word	0x20010490
+ 8000f70:	0800add8 	.word	0x0800add8
+ 8000f74:	0800adfc 	.word	0x0800adfc
+ 8000f78:	0800ae30 	.word	0x0800ae30
+ 8000f7c:	0800ae68 	.word	0x0800ae68
 
-08000f7c <proc_mo_cmd>:
+08000f80 <proc_mo_cmd>:
 
 
 void proc_mo_cmd(char* message)
 {
- 8000f7c:	b580      	push	{r7, lr}
- 8000f7e:	b084      	sub	sp, #16
- 8000f80:	af00      	add	r7, sp, #0
- 8000f82:	6078      	str	r0, [r7, #4]
+ 8000f80:	b580      	push	{r7, lr}
+ 8000f82:	b084      	sub	sp, #16
+ 8000f84:	af00      	add	r7, sp, #0
+ 8000f86:	6078      	str	r0, [r7, #4]
 	unsigned int port_addr, pin_setting;
 
 	if(sscanf((char*) message, "MO %x %x", &port_addr, &pin_setting) == 2)
- 8000f84:	f107 0308 	add.w	r3, r7, #8
- 8000f88:	f107 020c 	add.w	r2, r7, #12
- 8000f8c:	4918      	ldr	r1, [pc, #96]	; (8000ff0 <proc_mo_cmd+0x74>)
- 8000f8e:	6878      	ldr	r0, [r7, #4]
- 8000f90:	f005 fd2a 	bl	80069e8 <siscanf>
- 8000f94:	4603      	mov	r3, r0
- 8000f96:	2b02      	cmp	r3, #2
- 8000f98:	d123      	bne.n	8000fe2 <proc_mo_cmd+0x66>
+ 8000f88:	f107 0308 	add.w	r3, r7, #8
+ 8000f8c:	f107 020c 	add.w	r2, r7, #12
+ 8000f90:	4918      	ldr	r1, [pc, #96]	; (8000ff4 <proc_mo_cmd+0x74>)
+ 8000f92:	6878      	ldr	r0, [r7, #4]
+ 8000f94:	f005 fd28 	bl	80069e8 <siscanf>
+ 8000f98:	4603      	mov	r3, r0
+ 8000f9a:	2b02      	cmp	r3, #2
+ 8000f9c:	d123      	bne.n	8000fe6 <proc_mo_cmd+0x66>
 	{
 		if(is_GPIO_pin_free(port_addr, pin_setting))
- 8000f9a:	68fb      	ldr	r3, [r7, #12]
- 8000f9c:	68ba      	ldr	r2, [r7, #8]
- 8000f9e:	4611      	mov	r1, r2
- 8000fa0:	4618      	mov	r0, r3
- 8000fa2:	f000 fc99 	bl	80018d8 <is_GPIO_pin_free>
- 8000fa6:	4603      	mov	r3, r0
- 8000fa8:	2b00      	cmp	r3, #0
- 8000faa:	d016      	beq.n	8000fda <proc_mo_cmd+0x5e>
+ 8000f9e:	68fb      	ldr	r3, [r7, #12]
+ 8000fa0:	68ba      	ldr	r2, [r7, #8]
+ 8000fa2:	4611      	mov	r1, r2
+ 8000fa4:	4618      	mov	r0, r3
+ 8000fa6:	f000 fc97 	bl	80018d8 <is_GPIO_pin_free>
+ 8000faa:	4603      	mov	r3, r0
+ 8000fac:	2b00      	cmp	r3, #0
+ 8000fae:	d016      	beq.n	8000fde <proc_mo_cmd+0x5e>
 		{
 			if(make_pin_output(port_addr, pin_setting))
- 8000fac:	68fb      	ldr	r3, [r7, #12]
- 8000fae:	68ba      	ldr	r2, [r7, #8]
- 8000fb0:	4611      	mov	r1, r2
- 8000fb2:	4618      	mov	r0, r3
- 8000fb4:	f000 fae4 	bl	8001580 <make_pin_output>
- 8000fb8:	4603      	mov	r3, r0
- 8000fba:	2b00      	cmp	r3, #0
- 8000fbc:	d009      	beq.n	8000fd2 <proc_mo_cmd+0x56>
+ 8000fb0:	68fb      	ldr	r3, [r7, #12]
+ 8000fb2:	68ba      	ldr	r2, [r7, #8]
+ 8000fb4:	4611      	mov	r1, r2
+ 8000fb6:	4618      	mov	r0, r3
+ 8000fb8:	f000 fae2 	bl	8001580 <make_pin_output>
+ 8000fbc:	4603      	mov	r3, r0
+ 8000fbe:	2b00      	cmp	r3, #0
+ 8000fc0:	d009      	beq.n	8000fd6 <proc_mo_cmd+0x56>
 			{
 				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
- 8000fbe:	f44f 7280 	mov.w	r2, #256	; 0x100
- 8000fc2:	6879      	ldr	r1, [r7, #4]
- 8000fc4:	480b      	ldr	r0, [pc, #44]	; (8000ff4 <proc_mo_cmd+0x78>)
- 8000fc6:	f005 fd92 	bl	8006aee <strncpy>
+ 8000fc2:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 8000fc6:	6879      	ldr	r1, [r7, #4]
+ 8000fc8:	480b      	ldr	r0, [pc, #44]	; (8000ff8 <proc_mo_cmd+0x78>)
+ 8000fca:	f005 fd90 	bl	8006aee <strncpy>
 				send_UART("Pin(s) set as output with success.");
- 8000fca:	480b      	ldr	r0, [pc, #44]	; (8000ff8 <proc_mo_cmd+0x7c>)
- 8000fcc:	f000 ffaa 	bl	8001f24 <send_UART>
+ 8000fce:	480b      	ldr	r0, [pc, #44]	; (8000ffc <proc_mo_cmd+0x7c>)
+ 8000fd0:	f000 ffa8 	bl	8001f24 <send_UART>
 		else
 			send_UART("At least one inputted pin is reserved to peripherals.");
 	}
 	else
 		send_UART("Invalid Make Pin Output instruction syntax.");
 }
- 8000fd0:	e00a      	b.n	8000fe8 <proc_mo_cmd+0x6c>
+ 8000fd4:	e00a      	b.n	8000fec <proc_mo_cmd+0x6c>
 				send_UART("Invalid Make Pin Output instruction argument values.");
- 8000fd2:	480a      	ldr	r0, [pc, #40]	; (8000ffc <proc_mo_cmd+0x80>)
- 8000fd4:	f000 ffa6 	bl	8001f24 <send_UART>
+ 8000fd6:	480a      	ldr	r0, [pc, #40]	; (8001000 <proc_mo_cmd+0x80>)
+ 8000fd8:	f000 ffa4 	bl	8001f24 <send_UART>
 }
- 8000fd8:	e006      	b.n	8000fe8 <proc_mo_cmd+0x6c>
+ 8000fdc:	e006      	b.n	8000fec <proc_mo_cmd+0x6c>
 			send_UART("At least one inputted pin is reserved to peripherals.");
- 8000fda:	4809      	ldr	r0, [pc, #36]	; (8001000 <proc_mo_cmd+0x84>)
- 8000fdc:	f000 ffa2 	bl	8001f24 <send_UART>
+ 8000fde:	4809      	ldr	r0, [pc, #36]	; (8001004 <proc_mo_cmd+0x84>)
+ 8000fe0:	f000 ffa0 	bl	8001f24 <send_UART>
 }
- 8000fe0:	e002      	b.n	8000fe8 <proc_mo_cmd+0x6c>
+ 8000fe4:	e002      	b.n	8000fec <proc_mo_cmd+0x6c>
 		send_UART("Invalid Make Pin Output instruction syntax.");
- 8000fe2:	4808      	ldr	r0, [pc, #32]	; (8001004 <proc_mo_cmd+0x88>)
- 8000fe4:	f000 ff9e 	bl	8001f24 <send_UART>
+ 8000fe6:	4808      	ldr	r0, [pc, #32]	; (8001008 <proc_mo_cmd+0x88>)
+ 8000fe8:	f000 ff9c 	bl	8001f24 <send_UART>
 }
- 8000fe8:	bf00      	nop
- 8000fea:	3710      	adds	r7, #16
- 8000fec:	46bd      	mov	sp, r7
- 8000fee:	bd80      	pop	{r7, pc}
- 8000ff0:	0800ae94 	.word	0x0800ae94
- 8000ff4:	20010490 	.word	0x20010490
- 8000ff8:	0800aea0 	.word	0x0800aea0
- 8000ffc:	0800aec4 	.word	0x0800aec4
- 8001000:	0800ae30 	.word	0x0800ae30
- 8001004:	0800aefc 	.word	0x0800aefc
+ 8000fec:	bf00      	nop
+ 8000fee:	3710      	adds	r7, #16
+ 8000ff0:	46bd      	mov	sp, r7
+ 8000ff2:	bd80      	pop	{r7, pc}
+ 8000ff4:	0800ae94 	.word	0x0800ae94
+ 8000ff8:	20010490 	.word	0x20010490
+ 8000ffc:	0800aea0 	.word	0x0800aea0
+ 8001000:	0800aec4 	.word	0x0800aec4
+ 8001004:	0800ae30 	.word	0x0800ae30
+ 8001008:	0800aefc 	.word	0x0800aefc
 
-08001008 <proc_rd_cmd>:
+0800100c <proc_rd_cmd>:
 
 
 void proc_rd_cmd(char* message)
 {
- 8001008:	b580      	push	{r7, lr}
- 800100a:	b08a      	sub	sp, #40	; 0x28
- 800100c:	af00      	add	r7, sp, #0
- 800100e:	6078      	str	r0, [r7, #4]
+ 800100c:	b580      	push	{r7, lr}
+ 800100e:	b08a      	sub	sp, #40	; 0x28
+ 8001010:	af00      	add	r7, sp, #0
+ 8001012:	6078      	str	r0, [r7, #4]
 	unsigned int port_addr, pin_setting;
 
 	if(sscanf((char*) message, "RD %x %x", &port_addr, &pin_setting) == 2)
- 8001010:	f107 031c 	add.w	r3, r7, #28
- 8001014:	f107 0220 	add.w	r2, r7, #32
- 8001018:	492a      	ldr	r1, [pc, #168]	; (80010c4 <proc_rd_cmd+0xbc>)
- 800101a:	6878      	ldr	r0, [r7, #4]
- 800101c:	f005 fce4 	bl	80069e8 <siscanf>
- 8001020:	4603      	mov	r3, r0
- 8001022:	2b02      	cmp	r3, #2
- 8001024:	d147      	bne.n	80010b6 <proc_rd_cmd+0xae>
+ 8001014:	f107 031c 	add.w	r3, r7, #28
+ 8001018:	f107 0220 	add.w	r2, r7, #32
+ 800101c:	492a      	ldr	r1, [pc, #168]	; (80010c8 <proc_rd_cmd+0xbc>)
+ 800101e:	6878      	ldr	r0, [r7, #4]
+ 8001020:	f005 fce2 	bl	80069e8 <siscanf>
+ 8001024:	4603      	mov	r3, r0
+ 8001026:	2b02      	cmp	r3, #2
+ 8001028:	d147      	bne.n	80010ba <proc_rd_cmd+0xae>
 	{
 		GPIO_PinState pin_values[16];
 
 		if(read_dig_input(port_addr, pin_setting, pin_values))
- 8001026:	6a3b      	ldr	r3, [r7, #32]
- 8001028:	69f9      	ldr	r1, [r7, #28]
- 800102a:	f107 020c 	add.w	r2, r7, #12
- 800102e:	4618      	mov	r0, r3
- 8001030:	f000 fb44 	bl	80016bc <read_dig_input>
- 8001034:	4603      	mov	r3, r0
- 8001036:	2b00      	cmp	r3, #0
- 8001038:	d039      	beq.n	80010ae <proc_rd_cmd+0xa6>
+ 800102a:	6a3b      	ldr	r3, [r7, #32]
+ 800102c:	69f9      	ldr	r1, [r7, #28]
+ 800102e:	f107 020c 	add.w	r2, r7, #12
+ 8001032:	4618      	mov	r0, r3
+ 8001034:	f000 fb42 	bl	80016bc <read_dig_input>
+ 8001038:	4603      	mov	r3, r0
+ 800103a:	2b00      	cmp	r3, #0
+ 800103c:	d039      	beq.n	80010b2 <proc_rd_cmd+0xa6>
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
- 800103a:	f44f 7280 	mov.w	r2, #256	; 0x100
- 800103e:	6879      	ldr	r1, [r7, #4]
- 8001040:	4821      	ldr	r0, [pc, #132]	; (80010c8 <proc_rd_cmd+0xc0>)
- 8001042:	f005 fd54 	bl	8006aee <strncpy>
+ 800103e:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 8001042:	6879      	ldr	r1, [r7, #4]
+ 8001044:	4821      	ldr	r0, [pc, #132]	; (80010cc <proc_rd_cmd+0xc0>)
+ 8001046:	f005 fd52 	bl	8006aee <strncpy>
 
 			sprintf((char*) message, "Digital input read: ");
- 8001046:	4921      	ldr	r1, [pc, #132]	; (80010cc <proc_rd_cmd+0xc4>)
- 8001048:	6878      	ldr	r0, [r7, #4]
- 800104a:	f005 fcad 	bl	80069a8 <siprintf>
+ 800104a:	4921      	ldr	r1, [pc, #132]	; (80010d0 <proc_rd_cmd+0xc4>)
+ 800104c:	6878      	ldr	r0, [r7, #4]
+ 800104e:	f005 fcab 	bl	80069a8 <siprintf>
 
 			for(int i = 15; i >= 0; i--)
- 800104e:	230f      	movs	r3, #15
- 8001050:	627b      	str	r3, [r7, #36]	; 0x24
- 8001052:	e025      	b.n	80010a0 <proc_rd_cmd+0x98>
+ 8001052:	230f      	movs	r3, #15
+ 8001054:	627b      	str	r3, [r7, #36]	; 0x24
+ 8001056:	e025      	b.n	80010a4 <proc_rd_cmd+0x98>
 			{
 				sprintf((char*) message + strlen((char*) message), "%d", pin_values[i]);
- 8001054:	6878      	ldr	r0, [r7, #4]
- 8001056:	f7ff f8f3 	bl	8000240 <strlen>
- 800105a:	4602      	mov	r2, r0
- 800105c:	687b      	ldr	r3, [r7, #4]
- 800105e:	1898      	adds	r0, r3, r2
- 8001060:	f107 020c 	add.w	r2, r7, #12
- 8001064:	6a7b      	ldr	r3, [r7, #36]	; 0x24
- 8001066:	4413      	add	r3, r2
- 8001068:	781b      	ldrb	r3, [r3, #0]
- 800106a:	461a      	mov	r2, r3
- 800106c:	4918      	ldr	r1, [pc, #96]	; (80010d0 <proc_rd_cmd+0xc8>)
- 800106e:	f005 fc9b 	bl	80069a8 <siprintf>
+ 8001058:	6878      	ldr	r0, [r7, #4]
+ 800105a:	f7ff f8f1 	bl	8000240 <strlen>
+ 800105e:	4602      	mov	r2, r0
+ 8001060:	687b      	ldr	r3, [r7, #4]
+ 8001062:	1898      	adds	r0, r3, r2
+ 8001064:	f107 020c 	add.w	r2, r7, #12
+ 8001068:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 800106a:	4413      	add	r3, r2
+ 800106c:	781b      	ldrb	r3, [r3, #0]
+ 800106e:	461a      	mov	r2, r3
+ 8001070:	4918      	ldr	r1, [pc, #96]	; (80010d4 <proc_rd_cmd+0xc8>)
+ 8001072:	f005 fc99 	bl	80069a8 <siprintf>
 
 				if(!(i % 4) && i)
- 8001072:	6a7b      	ldr	r3, [r7, #36]	; 0x24
- 8001074:	f003 0303 	and.w	r3, r3, #3
- 8001078:	2b00      	cmp	r3, #0
- 800107a:	d10e      	bne.n	800109a <proc_rd_cmd+0x92>
- 800107c:	6a7b      	ldr	r3, [r7, #36]	; 0x24
- 800107e:	2b00      	cmp	r3, #0
- 8001080:	d00b      	beq.n	800109a <proc_rd_cmd+0x92>
+ 8001076:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 8001078:	f003 0303 	and.w	r3, r3, #3
+ 800107c:	2b00      	cmp	r3, #0
+ 800107e:	d10e      	bne.n	800109e <proc_rd_cmd+0x92>
+ 8001080:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 8001082:	2b00      	cmp	r3, #0
+ 8001084:	d00b      	beq.n	800109e <proc_rd_cmd+0x92>
 					strcat((char*) message, " ");
- 8001082:	6878      	ldr	r0, [r7, #4]
- 8001084:	f7ff f8dc 	bl	8000240 <strlen>
- 8001088:	4603      	mov	r3, r0
- 800108a:	461a      	mov	r2, r3
- 800108c:	687b      	ldr	r3, [r7, #4]
- 800108e:	4413      	add	r3, r2
- 8001090:	4910      	ldr	r1, [pc, #64]	; (80010d4 <proc_rd_cmd+0xcc>)
- 8001092:	461a      	mov	r2, r3
- 8001094:	460b      	mov	r3, r1
- 8001096:	881b      	ldrh	r3, [r3, #0]
- 8001098:	8013      	strh	r3, [r2, #0]
+ 8001086:	6878      	ldr	r0, [r7, #4]
+ 8001088:	f7ff f8da 	bl	8000240 <strlen>
+ 800108c:	4603      	mov	r3, r0
+ 800108e:	461a      	mov	r2, r3
+ 8001090:	687b      	ldr	r3, [r7, #4]
+ 8001092:	4413      	add	r3, r2
+ 8001094:	4910      	ldr	r1, [pc, #64]	; (80010d8 <proc_rd_cmd+0xcc>)
+ 8001096:	461a      	mov	r2, r3
+ 8001098:	460b      	mov	r3, r1
+ 800109a:	881b      	ldrh	r3, [r3, #0]
+ 800109c:	8013      	strh	r3, [r2, #0]
 			for(int i = 15; i >= 0; i--)
- 800109a:	6a7b      	ldr	r3, [r7, #36]	; 0x24
- 800109c:	3b01      	subs	r3, #1
- 800109e:	627b      	str	r3, [r7, #36]	; 0x24
- 80010a0:	6a7b      	ldr	r3, [r7, #36]	; 0x24
- 80010a2:	2b00      	cmp	r3, #0
- 80010a4:	dad6      	bge.n	8001054 <proc_rd_cmd+0x4c>
+ 800109e:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 80010a0:	3b01      	subs	r3, #1
+ 80010a2:	627b      	str	r3, [r7, #36]	; 0x24
+ 80010a4:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 80010a6:	2b00      	cmp	r3, #0
+ 80010a8:	dad6      	bge.n	8001058 <proc_rd_cmd+0x4c>
 			}
 			send_UART((char*) message);
- 80010a6:	6878      	ldr	r0, [r7, #4]
- 80010a8:	f000 ff3c 	bl	8001f24 <send_UART>
+ 80010aa:	6878      	ldr	r0, [r7, #4]
+ 80010ac:	f000 ff3a 	bl	8001f24 <send_UART>
 		else
 			send_UART("Invalid Read Digital Input instruction argument values.");
 	}
 	else
 		send_UART("Invalid Read Digital Input instruction syntax.");
 }
- 80010ac:	e006      	b.n	80010bc <proc_rd_cmd+0xb4>
+ 80010b0:	e006      	b.n	80010c0 <proc_rd_cmd+0xb4>
 			send_UART("Invalid Read Digital Input instruction argument values.");
- 80010ae:	480a      	ldr	r0, [pc, #40]	; (80010d8 <proc_rd_cmd+0xd0>)
- 80010b0:	f000 ff38 	bl	8001f24 <send_UART>
+ 80010b2:	480a      	ldr	r0, [pc, #40]	; (80010dc <proc_rd_cmd+0xd0>)
+ 80010b4:	f000 ff36 	bl	8001f24 <send_UART>
 }
- 80010b4:	e002      	b.n	80010bc <proc_rd_cmd+0xb4>
+ 80010b8:	e002      	b.n	80010c0 <proc_rd_cmd+0xb4>
 		send_UART("Invalid Read Digital Input instruction syntax.");
- 80010b6:	4809      	ldr	r0, [pc, #36]	; (80010dc <proc_rd_cmd+0xd4>)
- 80010b8:	f000 ff34 	bl	8001f24 <send_UART>
+ 80010ba:	4809      	ldr	r0, [pc, #36]	; (80010e0 <proc_rd_cmd+0xd4>)
+ 80010bc:	f000 ff32 	bl	8001f24 <send_UART>
 }
- 80010bc:	bf00      	nop
- 80010be:	3728      	adds	r7, #40	; 0x28
- 80010c0:	46bd      	mov	sp, r7
- 80010c2:	bd80      	pop	{r7, pc}
- 80010c4:	0800af28 	.word	0x0800af28
- 80010c8:	20010490 	.word	0x20010490
- 80010cc:	0800af34 	.word	0x0800af34
- 80010d0:	0800af4c 	.word	0x0800af4c
- 80010d4:	0800af50 	.word	0x0800af50
- 80010d8:	0800af54 	.word	0x0800af54
- 80010dc:	0800af8c 	.word	0x0800af8c
+ 80010c0:	bf00      	nop
+ 80010c2:	3728      	adds	r7, #40	; 0x28
+ 80010c4:	46bd      	mov	sp, r7
+ 80010c6:	bd80      	pop	{r7, pc}
+ 80010c8:	0800af28 	.word	0x0800af28
+ 80010cc:	20010490 	.word	0x20010490
+ 80010d0:	0800af34 	.word	0x0800af34
+ 80010d4:	0800af4c 	.word	0x0800af4c
+ 80010d8:	0800af50 	.word	0x0800af50
+ 80010dc:	0800af54 	.word	0x0800af54
+ 80010e0:	0800af8c 	.word	0x0800af8c
 
-080010e0 <proc_wd_cmd>:
+080010e4 <proc_wd_cmd>:
 
 
 void proc_wd_cmd(char* message)
 {
- 80010e0:	b580      	push	{r7, lr}
- 80010e2:	b088      	sub	sp, #32
- 80010e4:	af02      	add	r7, sp, #8
- 80010e6:	6078      	str	r0, [r7, #4]
+ 80010e4:	b580      	push	{r7, lr}
+ 80010e6:	b088      	sub	sp, #32
+ 80010e8:	af02      	add	r7, sp, #8
+ 80010ea:	6078      	str	r0, [r7, #4]
 	unsigned int port_addr, pin_setting, pin_values;
 
 	if(sscanf((char*) message, "WD %x %x %x", &port_addr, &pin_setting, &pin_values) == 3)
- 80010e8:	f107 0110 	add.w	r1, r7, #16
- 80010ec:	f107 0214 	add.w	r2, r7, #20
- 80010f0:	f107 030c 	add.w	r3, r7, #12
- 80010f4:	9300      	str	r3, [sp, #0]
- 80010f6:	460b      	mov	r3, r1
- 80010f8:	4918      	ldr	r1, [pc, #96]	; (800115c <proc_wd_cmd+0x7c>)
- 80010fa:	6878      	ldr	r0, [r7, #4]
- 80010fc:	f005 fc74 	bl	80069e8 <siscanf>
- 8001100:	4603      	mov	r3, r0
- 8001102:	2b03      	cmp	r3, #3
- 8001104:	d123      	bne.n	800114e <proc_wd_cmd+0x6e>
+ 80010ec:	f107 0110 	add.w	r1, r7, #16
+ 80010f0:	f107 0214 	add.w	r2, r7, #20
+ 80010f4:	f107 030c 	add.w	r3, r7, #12
+ 80010f8:	9300      	str	r3, [sp, #0]
+ 80010fa:	460b      	mov	r3, r1
+ 80010fc:	4918      	ldr	r1, [pc, #96]	; (8001160 <proc_wd_cmd+0x7c>)
+ 80010fe:	6878      	ldr	r0, [r7, #4]
+ 8001100:	f005 fc72 	bl	80069e8 <siscanf>
+ 8001104:	4603      	mov	r3, r0
+ 8001106:	2b03      	cmp	r3, #3
+ 8001108:	d123      	bne.n	8001152 <proc_wd_cmd+0x6e>
 	{
 		if(is_GPIO_pin_free(port_addr, pin_setting))
- 8001106:	697b      	ldr	r3, [r7, #20]
- 8001108:	693a      	ldr	r2, [r7, #16]
- 800110a:	4611      	mov	r1, r2
- 800110c:	4618      	mov	r0, r3
- 800110e:	f000 fbe3 	bl	80018d8 <is_GPIO_pin_free>
- 8001112:	4603      	mov	r3, r0
- 8001114:	2b00      	cmp	r3, #0
- 8001116:	d016      	beq.n	8001146 <proc_wd_cmd+0x66>
+ 800110a:	697b      	ldr	r3, [r7, #20]
+ 800110c:	693a      	ldr	r2, [r7, #16]
+ 800110e:	4611      	mov	r1, r2
+ 8001110:	4618      	mov	r0, r3
+ 8001112:	f000 fbe1 	bl	80018d8 <is_GPIO_pin_free>
+ 8001116:	4603      	mov	r3, r0
+ 8001118:	2b00      	cmp	r3, #0
+ 800111a:	d016      	beq.n	800114a <proc_wd_cmd+0x66>
 		{
 			if(write_dig_output(port_addr, pin_setting, pin_values))
- 8001118:	697b      	ldr	r3, [r7, #20]
- 800111a:	6939      	ldr	r1, [r7, #16]
- 800111c:	68fa      	ldr	r2, [r7, #12]
- 800111e:	4618      	mov	r0, r3
- 8001120:	f000 fb16 	bl	8001750 <write_dig_output>
- 8001124:	4603      	mov	r3, r0
- 8001126:	2b00      	cmp	r3, #0
- 8001128:	d009      	beq.n	800113e <proc_wd_cmd+0x5e>
+ 800111c:	697b      	ldr	r3, [r7, #20]
+ 800111e:	6939      	ldr	r1, [r7, #16]
+ 8001120:	68fa      	ldr	r2, [r7, #12]
+ 8001122:	4618      	mov	r0, r3
+ 8001124:	f000 fb14 	bl	8001750 <write_dig_output>
+ 8001128:	4603      	mov	r3, r0
+ 800112a:	2b00      	cmp	r3, #0
+ 800112c:	d009      	beq.n	8001142 <proc_wd_cmd+0x5e>
 			{
 				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
- 800112a:	f44f 7280 	mov.w	r2, #256	; 0x100
- 800112e:	6879      	ldr	r1, [r7, #4]
- 8001130:	480b      	ldr	r0, [pc, #44]	; (8001160 <proc_wd_cmd+0x80>)
- 8001132:	f005 fcdc 	bl	8006aee <strncpy>
+ 800112e:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 8001132:	6879      	ldr	r1, [r7, #4]
+ 8001134:	480b      	ldr	r0, [pc, #44]	; (8001164 <proc_wd_cmd+0x80>)
+ 8001136:	f005 fcda 	bl	8006aee <strncpy>
 				send_UART("Digital output value wrote with success.");
- 8001136:	480b      	ldr	r0, [pc, #44]	; (8001164 <proc_wd_cmd+0x84>)
- 8001138:	f000 fef4 	bl	8001f24 <send_UART>
+ 800113a:	480b      	ldr	r0, [pc, #44]	; (8001168 <proc_wd_cmd+0x84>)
+ 800113c:	f000 fef2 	bl	8001f24 <send_UART>
 		else
 			send_UART("At least one inputted pin is reserved to peripherals.");
 	}
 	else
 		send_UART("Invalid Write Digital Output instruction syntax.");
 }
- 800113c:	e00a      	b.n	8001154 <proc_wd_cmd+0x74>
+ 8001140:	e00a      	b.n	8001158 <proc_wd_cmd+0x74>
 				send_UART("Invalid Write Digital Output instruction argument values.");
- 800113e:	480a      	ldr	r0, [pc, #40]	; (8001168 <proc_wd_cmd+0x88>)
- 8001140:	f000 fef0 	bl	8001f24 <send_UART>
+ 8001142:	480a      	ldr	r0, [pc, #40]	; (800116c <proc_wd_cmd+0x88>)
+ 8001144:	f000 feee 	bl	8001f24 <send_UART>
 }
- 8001144:	e006      	b.n	8001154 <proc_wd_cmd+0x74>
+ 8001148:	e006      	b.n	8001158 <proc_wd_cmd+0x74>
 			send_UART("At least one inputted pin is reserved to peripherals.");
- 8001146:	4809      	ldr	r0, [pc, #36]	; (800116c <proc_wd_cmd+0x8c>)
- 8001148:	f000 feec 	bl	8001f24 <send_UART>
+ 800114a:	4809      	ldr	r0, [pc, #36]	; (8001170 <proc_wd_cmd+0x8c>)
+ 800114c:	f000 feea 	bl	8001f24 <send_UART>
 }
- 800114c:	e002      	b.n	8001154 <proc_wd_cmd+0x74>
+ 8001150:	e002      	b.n	8001158 <proc_wd_cmd+0x74>
 		send_UART("Invalid Write Digital Output instruction syntax.");
- 800114e:	4808      	ldr	r0, [pc, #32]	; (8001170 <proc_wd_cmd+0x90>)
- 8001150:	f000 fee8 	bl	8001f24 <send_UART>
+ 8001152:	4808      	ldr	r0, [pc, #32]	; (8001174 <proc_wd_cmd+0x90>)
+ 8001154:	f000 fee6 	bl	8001f24 <send_UART>
 }
- 8001154:	bf00      	nop
- 8001156:	3718      	adds	r7, #24
- 8001158:	46bd      	mov	sp, r7
- 800115a:	bd80      	pop	{r7, pc}
- 800115c:	0800afbc 	.word	0x0800afbc
- 8001160:	20010490 	.word	0x20010490
- 8001164:	0800afc8 	.word	0x0800afc8
- 8001168:	0800aff4 	.word	0x0800aff4
- 800116c:	0800ae30 	.word	0x0800ae30
- 8001170:	0800b030 	.word	0x0800b030
- 8001174:	00000000 	.word	0x00000000
+ 8001158:	bf00      	nop
+ 800115a:	3718      	adds	r7, #24
+ 800115c:	46bd      	mov	sp, r7
+ 800115e:	bd80      	pop	{r7, pc}
+ 8001160:	0800afbc 	.word	0x0800afbc
+ 8001164:	20010490 	.word	0x20010490
+ 8001168:	0800afc8 	.word	0x0800afc8
+ 800116c:	0800aff4 	.word	0x0800aff4
+ 8001170:	0800ae30 	.word	0x0800ae30
+ 8001174:	0800b030 	.word	0x0800b030
 
 08001178 <proc_ra_cmd>:
 
@@ -2056,7 +2057,7 @@ void proc_last_cmd(char* message)
 		unsigned char cmd = check_command((char*) temp);
  8001298:	f107 0308 	add.w	r3, r7, #8
  800129c:	4618      	mov	r0, r3
- 800129e:	f7ff fcb9 	bl	8000c14 <check_command>
+ 800129e:	f7ff fcbb 	bl	8000c18 <check_command>
  80012a2:	4603      	mov	r3, r0
  80012a4:	f887 310b 	strb.w	r3, [r7, #267]	; 0x10b
 		exec_command[cmd]((char*) temp);
@@ -3169,7 +3170,7 @@ int main(void)
 		  unsigned char cmd = check_command((char*) message);
  80019bc:	1d3b      	adds	r3, r7, #4
  80019be:	4618      	mov	r0, r3
- 80019c0:	f7ff f928 	bl	8000c14 <check_command>
+ 80019c0:	f7ff f92a 	bl	8000c18 <check_command>
  80019c4:	4603      	mov	r3, r0
  80019c6:	f887 3107 	strb.w	r3, [r7, #263]	; 0x107
 		  exec_command[cmd]((char*) message);
@@ -5453,7 +5454,7 @@ void HAL_ADC_IRQHandler(ADC_HandleTypeDef* hadc)
 #else
     HAL_ADC_ConvCpltCallback(hadc);
  8002586:	6878      	ldr	r0, [r7, #4]
- 8002588:	f7fe fb2c 	bl	8000be4 <HAL_ADC_ConvCpltCallback>
+ 8002588:	f7fe fb2e 	bl	8000be8 <HAL_ADC_ConvCpltCallback>
 #endif /* USE_HAL_ADC_REGISTER_CALLBACKS */
     
     /* Clear regular group conversion flag */
