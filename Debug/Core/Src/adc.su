@@ -1,5 +1,6 @@
 adc.c:30:6:MX_ADC3_Init	24	static
 adc.c:75:6:HAL_ADC_MspInit	56	static
-adc.c:130:6:HAL_ADC_MspDeInit	16	static
-adc.c:174:6:config_ADC	32	static
-adc.c:185:10:read_ADC	16	static
+adc.c:133:6:HAL_ADC_MspDeInit	16	static
+adc.c:179:6:config_ADC	32	static
+adc.c:190:10:read_ADC	8	static
+adc.c:202:6:HAL_ADC_ConvCpltCallback	16	static

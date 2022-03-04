@@ -24,13 +24,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "commands.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

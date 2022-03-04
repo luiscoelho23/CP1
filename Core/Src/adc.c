@@ -189,18 +189,20 @@ void config_ADC(unsigned int channel)
 
 uint32_t read_ADC(void)
 {
-	volatile uint32_t adcValue;
 
-	if(HAL_ADC_Start(&hadc3) == HAL_OK)
+	if(HAL_ADC_Start_IT(&hadc3) == HAL_OK)
 	{
-	  if (HAL_ADC_PollForConversion(&hadc3, 1000) == HAL_OK)
-	  {
-		  adcValue = HAL_ADC_GetValue(&hadc3);
-	  }
-	  HAL_ADC_Stop(&hadc3);
+	  while(!Read);
+	  HAL_ADC_Stop_IT(&hadc3);
 	}
 
-	return adcValue;
+	return adc_value;
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	adc_value = HAL_ADC_GetValue(&hadc3);
+	Read = true;
 }
 
 /* USER CODE END 1 */

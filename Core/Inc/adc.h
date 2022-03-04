@@ -29,13 +29,14 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 extern ADC_HandleTypeDef hadc3;
 
 /* USER CODE BEGIN Private defines */
-
+bool Read;
+uint32_t adc_value;
 /* USER CODE END Private defines */
 
 void MX_ADC3_Init(void);
@@ -50,4 +51,3 @@ uint32_t read_ADC(void);
 #endif
 
 #endif /* __ADC_H__ */
-
