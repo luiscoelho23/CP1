@@ -19,7 +19,7 @@ uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char* message);
-void (*exec_command[])(char* message);
+void (*exec_command[11])(char*);
 
 void proc_inv_cmd(char* message);
 void proc_mr_cmd(char* message);

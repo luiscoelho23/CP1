@@ -21,6 +21,8 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
+bool Read;
+uint32_t adc_value;
 
 /* USER CODE END 0 */
 

@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    adc.h
+  * @file    tim.h
   * @brief   This file contains all the function prototypes for
-  *          the adc.c file
+  *          the tim.c file
   ******************************************************************************
   * @attention
   *
@@ -18,8 +18,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __ADC_H__
-#define __ADC_H__
+#ifndef __TIM_H__
+#define __TIM_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,24 +29,25 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
+#include "adc.h"
 /* USER CODE END Includes */
 
-extern ADC_HandleTypeDef hadc3;
+extern TIM_HandleTypeDef htim10;
 
 /* USER CODE BEGIN Private defines */
+#define ADC_BUF_SIZE 127
+
 /* USER CODE END Private defines */
 
-void MX_ADC3_Init(void);
+void MX_TIM10_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void config_ADC(unsigned int channel);
-uint32_t read_ADC(void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __ADC_H__ */
+#endif /* __TIM_H__ */
 
