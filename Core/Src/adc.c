@@ -196,6 +196,7 @@ uint32_t read_ADC(void)
 	  HAL_ADC_Stop_IT(&hadc3);
 	}
 
+
 	return adc_value;
 }
 
