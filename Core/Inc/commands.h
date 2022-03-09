@@ -18,7 +18,8 @@ enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, LAST, HELP, VER, SP, AC, FN,
 
 struct sp_config_t
 {
-	unsigned int addr3, unit, timeunit;
+	unsigned int addr3, unit;
+	char* timeunit;
 	bool filter;
 };
 
@@ -27,6 +28,7 @@ uint8_t memory[65536];
 
 unsigned char check_command(char* message);
 void (*exec_command[17])(char*);
+void config_sample();
 
 void proc_inv_cmd(char* message);
 void proc_mr_cmd(char* message);

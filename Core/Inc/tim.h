@@ -29,16 +29,16 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#include "adc.h"
+
 /* USER CODE END Includes */
 
-extern TIM_HandleTypeDef htim10;
+extern TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN Private defines */
-#define ADC_BUF_SIZE 127
+
 /* USER CODE END Private defines */
 
-void MX_TIM10_Init(void);
+void MX_TIM6_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 

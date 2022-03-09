@@ -92,8 +92,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART3_UART_Init();
-  MX_ADC3_Init();
-  MX_TIM10_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);

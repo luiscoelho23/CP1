@@ -1,6 +1,6 @@
 #include "commands.h"
 
-struct sp_config_t sp_config = {1,10,1,false};
+struct sp_config_t sp_config = {1,1,"s",false};
 
 unsigned char check_command(char* message)
 {
@@ -301,12 +301,18 @@ void proc_ver_cmd(char* message)
 
 void proc_sp_cmd(char* message)
 {
-	unsigned int timeunit, unit;
+	unsigned int unit;
+	char timeunit[2];
 
-	if(sscanf((char*)message, "SP %x %x", &timeunit, &unit) == 2)
+	if(sscanf((char*)message, "SP %s %x", timeunit, &unit) == 2)
 		{
-			sp_config.timeunit = timeunit;
-			sp_config.unit = unit;
+			if(!strcmp(timeunit,"ms") == 0 || !strcmp(timeunit,"s") == 0 || !strcmp(timeunit,"us") == 0)
+			{
+				sp_config.timeunit = timeunit;
+				sp_config.unit = unit;
+			}
+			else
+				send_UART("Invalid Sample Period instruction argument values.");
 		}
 		else
 			send_UART("Invalid Sample Period instruction syntax.");
@@ -318,7 +324,7 @@ void proc_ac_cmd(char* message)
 
 	if(sscanf((char*)message, "AC %x", &addr3) == 1)
 	{
-		if(addr3 < 0 || addr3 > 0x0F)
+		if(addr3 > 0 && addr3 <= 0x0F)
 			sp_config.addr3 = addr3;
 		else
 			send_UART("Invalid Analog Channel instruction argument values.");
@@ -349,13 +355,22 @@ void proc_ff_cmd(char* message)
 
 void proc_s_cmd(char* message)
 {
-	if(message[2] == '\r')
-	{
-		HAL_TIM_Base_Start_IT(&htim10);
-	}
-	else if (1)
-	{
 
+	unsigned int k_values;
+
+	if(message[1] == '\r')
+	{
+		software = false;
+		MX_ADC3_Init();
+		config_sample();
+		HAL_TIM_Base_Start_IT(&htim6);
+	}
+	else if(sscanf((char*)message, "S %x", &k_values) == 1)
+	{
+		software = false;
+		MX_ADC3_Init();
+		config_sample();
+		HAL_TIM_Base_Start_IT(&htim6);
 	}
 	else
 		send_UART("Invalid Filter instruction syntax.");
@@ -364,7 +379,10 @@ void proc_s_cmd(char* message)
 
 void proc_st_cmd(char* message)
 {
-	HAL_TIM_Base_Stop_IT(&htim10);
+	if(message[2] == '\r')
+		HAL_TIM_Base_Stop_IT(&htim6);
+	else
+		send_UART("Invalid Sample Stop instruction syntax.");
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -513,10 +531,18 @@ bool analog_read(unsigned int addr3, unsigned int* value)
 	if(addr3 < 0 || addr3 > 0x0F)
 		return false;
 
+	software = true;
+	MX_ADC3_Init();
 	config_ADC(addr3);
 	*value = read_ADC();
 
 	return true;
+}
+
+void config_sample()
+{
+	config_ADC(sp_config.addr3);
+
 }
 
 /* USER CODE END 4 */

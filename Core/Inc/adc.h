@@ -30,11 +30,14 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "tim.h"
 /* USER CODE END Includes */
 
 extern ADC_HandleTypeDef hadc3;
 
 /* USER CODE BEGIN Private defines */
+#define ADC_BUF_SIZE 127
+bool software;
 /* USER CODE END Private defines */
 
 void MX_ADC3_Init(void);

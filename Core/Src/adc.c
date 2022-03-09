@@ -21,6 +21,10 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
+
+uint32_t adc_buf[ADC_BUF_SIZE];
+uint32_t adc_buf_index = 0;
+
 bool Read;
 uint32_t adc_value;
 
@@ -39,7 +43,10 @@ void MX_ADC3_Init(void)
   ADC_ChannelConfTypeDef sConfig = {0};
 
   /* USER CODE BEGIN ADC3_Init 1 */
-
+  if(!software)
+	  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T6_TRGO;
+  else
+	  hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   /* USER CODE END ADC3_Init 1 */
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
@@ -49,8 +56,7 @@ void MX_ADC3_Init(void)
   hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc3.Init.ContinuousConvMode = DISABLE;
   hadc3.Init.DiscontinuousConvMode = DISABLE;
-  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
   hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc3.Init.NbrOfConversion = 1;
   hadc3.Init.DMAContinuousRequests = DISABLE;
@@ -197,15 +203,21 @@ uint32_t read_ADC(void)
 	  while(!Read);
 	  HAL_ADC_Stop_IT(&hadc3);
 	}
-
-
 	return adc_value;
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	adc_value = HAL_ADC_GetValue(&hadc3);
-	Read = true;
+		if(!software)
+		{
+			adc_buf[adc_buf_index++] = HAL_ADC_GetValue(&hadc3);
+			adc_buf_index &= ADC_BUF_SIZE;
+		}
+		else
+		{
+			adc_value = HAL_ADC_GetValue(&hadc3);
+			Read = true;
+		}
 }
 
 /* USER CODE END 1 */
