@@ -1,6 +1,6 @@
 #include "commands.h"
 
-struct sp_config_t sp_config = {1,1,"s",false};
+struct sp_config_t sp_config = {1,1, ADC_BUF_SIZE + 1,"s",false};
 
 unsigned char check_command(char* message)
 {
@@ -371,8 +371,9 @@ void proc_s_cmd(char* message)
 		HAL_ADC_Start_IT(&hadc3);
 		HAL_TIM_Base_Start_IT(&htim1);
 	}
-	else if(sscanf((char*)message, "S %x", &k_values) == 1)
+	else if(sscanf((char*)message, "S %d", &k_values) == 1)
 	{
+		sp_config.sp_limit = k_values;
 		software = false;
 		MX_ADC3_Init();
 		config_sample();

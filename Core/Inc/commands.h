@@ -18,7 +18,7 @@ enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, LAST, HELP, VER, SP, AC, FN,
 
 struct sp_config_t
 {
-	unsigned int addr3, unit;
+	unsigned int addr3, unit, sp_limit;
 	char* timeunit;
 	bool filter;
 };
