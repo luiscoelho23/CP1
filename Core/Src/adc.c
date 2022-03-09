@@ -52,16 +52,16 @@ void MX_ADC3_Init(void)
   hadc3.Init.ContinuousConvMode = DISABLE;
   hadc3.Init.DiscontinuousConvMode = DISABLE;
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T6_TRGO;
+  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_TRGO;
   hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc3.Init.NbrOfConversion = 1;
   hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
 
   /* USER CODE BEGIN ADC3_Init 1 */
-    if(software)
-    	hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  /* USER CODE END ADC3_Init 1 */
+        if(software)
+        	hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    /* USER CODE END ADC3_Init 1 */
 
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
   {
@@ -210,8 +210,6 @@ uint32_t read_ADC(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-
-	Read = true;
 	if(!software)
 	{
 		adc_buf[adc_buf_index++] = HAL_ADC_GetValue(&hadc3);

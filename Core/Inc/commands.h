@@ -27,8 +27,7 @@ uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char* message);
-void (*exec_command[17])(char*);
-void config_sample();
+void (*exec_command[18])(char*);
 
 void proc_inv_cmd(char* message);
 void proc_mr_cmd(char* message);
@@ -55,5 +54,7 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
 bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values);
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values);
 bool analog_read(unsigned int addr3, unsigned int* value);
+
+void config_sample(void);
 
 #endif /* __COMMANDS_H__ */

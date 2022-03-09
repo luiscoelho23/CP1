@@ -36,7 +36,7 @@ extern "C" {
 extern ADC_HandleTypeDef hadc3;
 
 /* USER CODE BEGIN Private defines */
-#define ADC_BUF_SIZE 127
+#define ADC_BUF_SIZE 255
 bool software;
 /* USER CODE END Private defines */
 

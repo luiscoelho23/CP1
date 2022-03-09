@@ -6,6 +6,10 @@ unsigned char check_command(char* message)
 {
 	char cmd = INV;
 
+	cmd += (!strncmp((char*) message, "VER", 3)) * VER;
+
+	cmd += (!strncmp((char*) message, "ST", 2)) * ST;
+
 	cmd += (!strncmp((char*) message, "MR", 2)) * MR;
 
 	cmd += (!strncmp((char*) message, "MW", 2)) * MW;
@@ -20,12 +24,6 @@ unsigned char check_command(char* message)
 
 	cmd += (!strncmp((char*) message, "RA", 2)) * RA;
 
-	cmd += (!strncmp((char*) message, "$", 1)) * LAST;
-
-	cmd += (!strncmp((char*) message, "?", 1)) * HELP;
-
-	cmd += (!strncmp((char*) message, "VER", 3)) * VER;
-
 	cmd += (!strncmp((char*) message, "SP", 2)) * SP;
 
 	cmd += (!strncmp((char*) message, "AC", 2)) * AC;
@@ -34,9 +32,16 @@ unsigned char check_command(char* message)
 
 	cmd += (!strncmp((char*) message, "FF", 2)) * FF;
 
-	cmd += (!strncmp((char*) message, "S", 1)) * S;
+	cmd += (!strncmp((char*) message, "S ", 2)) * S;
 
-	cmd += (!strncmp((char*) message, "ST", 2)) * ST;
+	cmd += (!strncmp((char*) message, "S\r", 2)) * S;
+
+	cmd += (!strncmp((char*) message, "$", 1)) * LAST;
+
+	cmd += (!strncmp((char*) message, "?", 1)) * HELP;
+
+	if(cmd > ST)
+		cmd = INV;
 
 	return cmd;
 }
@@ -363,14 +368,16 @@ void proc_s_cmd(char* message)
 		software = false;
 		MX_ADC3_Init();
 		config_sample();
-		HAL_TIM_Base_Start_IT(&htim6);
+		HAL_ADC_Start_IT(&hadc3);
+		HAL_TIM_Base_Start_IT(&htim1);
 	}
 	else if(sscanf((char*)message, "S %x", &k_values) == 1)
 	{
 		software = false;
 		MX_ADC3_Init();
 		config_sample();
-		HAL_TIM_Base_Start_IT(&htim6);
+		HAL_ADC_Start_IT(&hadc3);
+		HAL_TIM_Base_Start_IT(&htim1);
 	}
 	else
 		send_UART("Invalid Filter instruction syntax.");
@@ -380,7 +387,10 @@ void proc_s_cmd(char* message)
 void proc_st_cmd(char* message)
 {
 	if(message[2] == '\r')
-		HAL_TIM_Base_Stop_IT(&htim6);
+	{
+		HAL_ADC_Stop_IT(&hadc3);
+		HAL_TIM_Base_Stop_IT(&htim1);
+	}
 	else
 		send_UART("Invalid Sample Stop instruction syntax.");
 }
