@@ -92,12 +92,12 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM10_MspDeInit 1 */
   }
 }
-
+/*
 void adc_values_set(uint32_t *adc_buf_cp ,uint32_t *adc_buf_index_cp ){
 	*adc_buf_cp = *adc_buf;
 	*adc_buf_index_cp = adc_buf_index;
 }
-
+*/
 /* USER CODE BEGIN 1 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {

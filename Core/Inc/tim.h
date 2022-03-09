@@ -36,7 +36,6 @@ extern TIM_HandleTypeDef htim10;
 
 /* USER CODE BEGIN Private defines */
 #define ADC_BUF_SIZE 127
-
 /* USER CODE END Private defines */
 
 void MX_TIM10_Init(void);

@@ -1,5 +1,6 @@
 #include "commands.h"
 
+struct sp_config_t sp_config = {1,10,1,false};
 
 unsigned char check_command(char* message)
 {
@@ -25,6 +26,18 @@ unsigned char check_command(char* message)
 
 	cmd += (!strncmp((char*) message, "VER", 3)) * VER;
 
+	cmd += (!strncmp((char*) message, "SP", 2)) * SP;
+
+	cmd += (!strncmp((char*) message, "AC", 2)) * AC;
+
+	cmd += (!strncmp((char*) message, "FN", 2)) * FN;
+
+	cmd += (!strncmp((char*) message, "FF", 2)) * FF;
+
+	cmd += (!strncmp((char*) message, "S", 1)) * S;
+
+	cmd += (!strncmp((char*) message, "ST", 2)) * ST;
+
 	return cmd;
 }
 
@@ -40,7 +53,13 @@ void (*exec_command[])(char* message) = {
 		proc_ra_cmd,
 		proc_last_cmd,
 		proc_help_cmd,
-		proc_ver_cmd
+		proc_ver_cmd,
+		proc_sp_cmd,
+		proc_ac_cmd,
+		proc_fn_cmd,
+		proc_ff_cmd,
+		proc_s_cmd,
+		proc_st_cmd
 };
 
 
@@ -280,6 +299,73 @@ void proc_ver_cmd(char* message)
 		send_UART("Invalid VER instruction syntax.");
 }
 
+void proc_sp_cmd(char* message)
+{
+	unsigned int timeunit, unit;
+
+	if(sscanf((char*)message, "SP %x %x", &timeunit, &unit) == 2)
+		{
+			sp_config.timeunit = timeunit;
+			sp_config.unit = unit;
+		}
+		else
+			send_UART("Invalid Sample Period instruction syntax.");
+}
+
+void proc_ac_cmd(char* message)
+{
+	unsigned int addr3;
+
+	if(sscanf((char*)message, "AC %x", &addr3) == 1)
+	{
+		if(addr3 < 0 || addr3 > 0x0F)
+			sp_config.addr3 = addr3;
+		else
+			send_UART("Invalid Analog Channel instruction argument values.");
+	}
+	else
+		send_UART("Invalid Analog Channel instruction syntax.");
+}
+
+void proc_fn_cmd(char* message)
+{
+	if(message[2] == '\r')
+	{
+		sp_config.filter = true;
+	}
+	else
+		send_UART("Invalid Filter instruction syntax.");
+}
+
+void proc_ff_cmd(char* message)
+{
+	if(message[2] == '\r')
+	{
+		sp_config.filter = false;
+	}
+	else
+		send_UART("Invalid Filter instruction syntax.");
+}
+
+void proc_s_cmd(char* message)
+{
+	if(message[2] == '\r')
+	{
+		HAL_TIM_Base_Start_IT(&htim10);
+	}
+	else if (1)
+	{
+
+	}
+	else
+		send_UART("Invalid Filter instruction syntax.");
+
+}
+
+void proc_st_cmd(char* message)
+{
+	HAL_TIM_Base_Stop_IT(&htim10);
+}
 
 //------------------------------------------------------------------------------------------------------------------
 
