@@ -29,7 +29,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "commands.h"
 /* USER CODE END Includes */
 
 extern TIM_HandleTypeDef htim1;
@@ -41,7 +41,7 @@ extern TIM_HandleTypeDef htim1;
 void MX_TIM1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void MX_TIM1_Init1(struct sp_config_t sp_config);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

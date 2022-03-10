@@ -25,9 +25,51 @@
 uint32_t adc_buf[ADC_BUF_SIZE];
 uint32_t adc_buf_index = 0;
 
+bool software;
 bool Read;
 uint32_t adc_value;
 
+void MX_ADC3_Init1(bool software1)
+{
+  software = software1;
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc3.Instance = ADC3;
+  hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc3.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc3.Init.ContinuousConvMode = DISABLE;
+  hadc3.Init.DiscontinuousConvMode = DISABLE;
+  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_TRGO;
+  hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc3.Init.NbrOfConversion = 1;
+  hadc3.Init.DMAContinuousRequests = DISABLE;
+  hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+
+  if(software)
+	  hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+
+
+  if (HAL_ADC_Init(&hadc3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc3, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc3;
@@ -58,10 +100,6 @@ void MX_ADC3_Init(void)
   hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
 
-  /* USER CODE BEGIN ADC3_Init 1 */
-        if(software)
-        	hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    /* USER CODE END ADC3_Init 1 */
 
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
   {

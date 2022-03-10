@@ -309,12 +309,13 @@ void proc_sp_cmd(char* message)
 	unsigned int unit;
 	char timeunit[2];
 
-	if(sscanf((char*)message, "SP %s %x", timeunit, &unit) == 2)
+	if(sscanf((char*)message, "SP %s %d", timeunit, &unit) == 2)
 		{
 			if(!strcmp(timeunit,"ms") == 0 || !strcmp(timeunit,"s") == 0 || !strcmp(timeunit,"us") == 0)
 			{
-				sp_config.timeunit = timeunit;
+				strcpy(sp_config.timeunit,timeunit);
 				sp_config.unit = unit;
+				send_UART("Sampling timeunit and units changed.");
 			}
 			else
 				send_UART("Invalid Sample Period instruction argument values.");
@@ -330,7 +331,10 @@ void proc_ac_cmd(char* message)
 	if(sscanf((char*)message, "AC %x", &addr3) == 1)
 	{
 		if(addr3 > 0 && addr3 <= 0x0F)
+		{
 			sp_config.addr3 = addr3;
+			send_UART("Analog channel for Sampling changed.");
+		}
 		else
 			send_UART("Invalid Analog Channel instruction argument values.");
 	}
@@ -343,6 +347,7 @@ void proc_fn_cmd(char* message)
 	if(message[2] == '\r')
 	{
 		sp_config.filter = true;
+		send_UART("Filter ON");
 	}
 	else
 		send_UART("Invalid Filter instruction syntax.");
@@ -353,6 +358,7 @@ void proc_ff_cmd(char* message)
 	if(message[2] == '\r')
 	{
 		sp_config.filter = false;
+		send_UART("Filter OFF");
 	}
 	else
 		send_UART("Invalid Filter instruction syntax.");
@@ -365,8 +371,7 @@ void proc_s_cmd(char* message)
 
 	if(message[1] == '\r')
 	{
-		software = false;
-		MX_ADC3_Init();
+		MX_ADC3_Init1(false);
 		config_sample();
 		HAL_ADC_Start_IT(&hadc3);
 		HAL_TIM_Base_Start_IT(&htim1);
@@ -374,8 +379,7 @@ void proc_s_cmd(char* message)
 	else if(sscanf((char*)message, "S %d", &k_values) == 1)
 	{
 		sp_config.sp_limit = k_values;
-		software = false;
-		MX_ADC3_Init();
+		MX_ADC3_Init1(false);
 		config_sample();
 		HAL_ADC_Start_IT(&hadc3);
 		HAL_TIM_Base_Start_IT(&htim1);
@@ -542,8 +546,7 @@ bool analog_read(unsigned int addr3, unsigned int* value)
 	if(addr3 < 0 || addr3 > 0x0F)
 		return false;
 
-	software = true;
-	MX_ADC3_Init();
+	MX_ADC3_Init1(true);
 	config_ADC(addr3);
 	*value = read_ADC();
 
@@ -553,7 +556,7 @@ bool analog_read(unsigned int addr3, unsigned int* value)
 void config_sample()
 {
 	config_ADC(sp_config.addr3);
-
+	MX_TIM1_Init1(sp_config);
 }
 
 /* USER CODE END 4 */

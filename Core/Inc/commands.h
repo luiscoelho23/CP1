@@ -5,23 +5,27 @@
 extern "C" {
 #endif
 
-#include "adc.h"
-#include "usart.h"
-#include "gpio.h"
-#include "tim.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
-enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, LAST, HELP, VER, SP, AC, FN, FF, S, ST};
-
 struct sp_config_t
 {
 	unsigned int addr3, unit, sp_limit;
-	char* timeunit;
+	char timeunit[2];
 	bool filter;
 };
+
+#include "adc.h"
+#include "usart.h"
+#include "gpio.h"
+#include "tim.h"
+
+
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, LAST, HELP, VER, SP, AC, FN, FF, S, ST};
+
+
 
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];

@@ -36,13 +36,13 @@ extern "C" {
 extern ADC_HandleTypeDef hadc3;
 
 /* USER CODE BEGIN Private defines */
-#define ADC_BUF_SIZE 255
-bool software;
+#define ADC_BUF_SIZE 4095
 /* USER CODE END Private defines */
 
 void MX_ADC3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void MX_ADC3_Init1(bool software1);
 void config_ADC(unsigned int channel);
 uint32_t read_ADC(void);
 /* USER CODE END Prototypes */
