@@ -246,6 +246,14 @@ uint32_t read_ADC(void)
 	return adc_value;
 }
 
+void reset_adc_buf(void)
+{
+	for(int i = 0 ; i < ADC_BUF_SIZE - 1 ; i++)
+		adc_buf[i] = 0;
+
+	adc_buf_index = 0;
+}
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if(software)
@@ -255,8 +263,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	}
 	else
 	{
-		adc_buf[adc_buf_index++ & ADC_BUF_SIZE] = HAL_ADC_GetValue(&hadc3);
-		//analog_write(0,adc_buf[adc_buf_index++]);
+		adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
+		process_buf(adc_buf, adc_buf_index);
+		adc_buf_index++;
+		adc_buf_index &= ADC_BUF_SIZE;
 	}
 }
 

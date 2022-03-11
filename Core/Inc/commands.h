@@ -10,11 +10,17 @@ extern "C" {
 #include <stdbool.h>
 #include <string.h>
 
+#define a 0.4
+#define M 10
+
+enum filter_type_t { Inf = 1, Fin};
+
 struct sp_config_t
 {
 	unsigned int addr3, unit, sp_limit;
 	char timeunit[2];
 	bool filter;
+	enum filter_type_t filter_type;
 };
 
 #include "dac.h"
@@ -23,14 +29,13 @@ struct sp_config_t
 #include "gpio.h"
 #include "tim.h"
 
-
 enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST};
 
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char* message);
-void (*exec_command[19])(char*);
+void (*exec_command[21])(char*);
 
 void proc_inv_cmd(char* message);
 void proc_mr_cmd(char* message);
@@ -47,8 +52,10 @@ void proc_ver_cmd(char* message);
 
 void proc_sp_cmd(char* message);
 void proc_ac_cmd(char* message);
-void proc_fn_cmd(char* message);
-void proc_ff_cmd(char* message);
+void proc_fni_cmd(char* message);
+void proc_ffi_cmd(char* message);
+void proc_fnf_cmd(char* message);
+void proc_fff_cmd(char* message);
 void proc_s_cmd(char* message);
 void proc_st_cmd(char* message);
 
@@ -60,5 +67,7 @@ bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinSt
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values);
 bool analog_read(unsigned int addr3, unsigned int* value);
 bool analog_write(unsigned int addr3, unsigned int value);
+
+void process_buf(uint32_t* adc_buf , uint32_t adc_buf_index);
 
 #endif /* __COMMANDS_H__ */

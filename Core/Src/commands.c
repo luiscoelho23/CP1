@@ -1,12 +1,26 @@
 #include "commands.h"
 
-struct sp_config_t sp_config = {1,1, ADC_BUF_SIZE + 1,"s",false};
+struct sp_config_t sp_config = {1,1, ADC_BUF_SIZE + 1,"s",false,Fin};
+
+uint32_t y_buf[ADC_BUF_SIZE];
+
+unsigned int counter = 0;
+
+float coef[10] = {-0.0416,-0.0865,0.0000,0.2018,0.3742,0.3742,0.2018,0.0000,-0.0865,-0.0416};
 
 unsigned char check_command(char* message)
 {
 	char cmd = INV;
 
 	cmd += (!strncmp((char*) message, "VER", 3)) * VER;
+
+	cmd += (!strncmp((char*) message, "FNF", 3)) * FNF;
+
+	cmd += (!strncmp((char*) message, "FFF", 3)) * FFF;
+
+	cmd += (!strncmp((char*) message, "FNI", 3)) * FNI;
+
+	cmd += (!strncmp((char*) message, "FFI", 3)) * FFI;
 
 	cmd += (!strncmp((char*) message, "ST", 2)) * ST;
 
@@ -29,10 +43,6 @@ unsigned char check_command(char* message)
 	cmd += (!strncmp((char*) message, "SP", 2)) * SP;
 
 	cmd += (!strncmp((char*) message, "AC", 2)) * AC;
-
-	cmd += (!strncmp((char*) message, "FN", 2)) * FN;
-
-	cmd += (!strncmp((char*) message, "FF", 2)) * FF;
 
 	cmd += (!strncmp((char*) message, "S ", 2)) * S;
 
@@ -64,8 +74,10 @@ void (*exec_command[])(char* message) = {
 		proc_ver_cmd,
 		proc_sp_cmd,
 		proc_ac_cmd,
-		proc_fn_cmd,
-		proc_ff_cmd,
+		proc_fni_cmd,
+		proc_ffi_cmd,
+		proc_fnf_cmd,
+		proc_fff_cmd,
 		proc_s_cmd,
 		proc_st_cmd
 };
@@ -368,30 +380,64 @@ void proc_ac_cmd(char* message)
 		send_UART("Invalid Analog Channel instruction syntax.");
 }
 
-void proc_fn_cmd(char* message)
+void proc_fni_cmd(char* message)
 {
-	if(message[2] == '\r')
+	if(message[3] == '\r')
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
-
+		sp_config.filter_type = Inf;
 		sp_config.filter = true;
 		send_UART("Filter ON.");
 	}
 	else
-		send_UART("Invalid Filter On instruction syntax.");
+		send_UART("Invalid IRR Filter On instruction syntax.");
 }
 
-void proc_ff_cmd(char* message)
+void proc_ffi_cmd(char* message)
 {
-	if(message[2] == '\r')
+	if(message[3] == '\r')
 	{
-		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
-
-		sp_config.filter = false;
-		send_UART("Filter OFF");
+		if(sp_config.filter_type == Inf && sp_config.filter){
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+			sp_config.filter_type = Inf;
+			sp_config.filter = false;
+			send_UART("Filter OFF");
+		}
+		else
+			send_UART("IRR Filter is already off.");
 	}
 	else
-		send_UART("Invalid Filter Off instruction syntax.");
+		send_UART("Invalid IRR Filter Off instruction syntax.");
+}
+
+void proc_fnf_cmd(char* message)
+{
+	if(message[3] == '\r')
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		sp_config.filter_type = Fin;
+		sp_config.filter = true;
+		send_UART("Filter ON.");
+	}
+	else
+		send_UART("Invalid FIR Filter On instruction syntax.");
+}
+
+void proc_fff_cmd(char* message)
+{
+	if(message[3] == '\r')
+	{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		if(sp_config.filter_type == Inf && sp_config.filter){
+			sp_config.filter_type = Fin;
+			sp_config.filter = false;
+			send_UART("Filter OFF");
+		}
+		else
+			send_UART("FIR Filter is already off.");
+	}
+	else
+		send_UART("Invalid FIR Filter Off instruction syntax.");
 }
 
 void proc_s_cmd(char* message)
@@ -402,6 +448,8 @@ void proc_s_cmd(char* message)
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
+		counter = 0;
+		sp_config.sp_limit = 0;
 		MX_ADC3_Init1(false);
 		config_ADC(sp_config.addr3);
 		MX_TIM1_Init1(sp_config);
@@ -412,6 +460,7 @@ void proc_s_cmd(char* message)
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
+		counter = 0;
 		sp_config.sp_limit = k_values;
 		MX_ADC3_Init1(false);
 		config_ADC(sp_config.addr3);
@@ -426,15 +475,21 @@ void proc_s_cmd(char* message)
 
 void proc_st_cmd(char* message)
 {
-	if(message[2] == '\r')
+	if(counter > 0)
 	{
-		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		if(message[2] == '\r')
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
-		HAL_ADC_Stop_IT(&hadc3);
-		HAL_TIM_Base_Stop_IT(&htim1);
+			HAL_ADC_Stop_IT(&hadc3);
+			HAL_TIM_Base_Stop_IT(&htim1);
+			send_UART("Sampling Stopped.");
+		}
+		else
+			send_UART("Invalid Stop Sampling instruction syntax.");
 	}
 	else
-		send_UART("Invalid Stop Sampling instruction syntax.");
+		send_UART("Sampling is not running.");
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -600,6 +655,43 @@ bool analog_write(unsigned int addr3, unsigned int value)
 	    return true;
 	}else
 		return false;
+
+}
+
+void process_buf(uint32_t* x_buf, uint32_t n)
+{
+	if(sp_config.filter)
+	{
+		if(sp_config.filter_type == Fin)
+		{
+			unsigned int temp = 0;
+
+			for(int i = 0 ; i <= M; i++)
+			{
+				temp += coef[i] * x_buf[n-i];
+			}
+			y_buf[n] = temp;
+			analog_write(0,y_buf[n]);
+		}
+		if(sp_config.filter_type == Inf)
+		{
+			y_buf[(n+1) & ADC_BUF_SIZE] = a*y_buf[n] + (1-a)*x_buf[n];
+			analog_write(0,y_buf[n]);
+		}
+	}else{
+		analog_write(0,x_buf[n]);
+	}
+
+	counter ++;
+
+	if(sp_config.sp_limit > 0)
+		if(counter == sp_config.sp_limit)
+		{
+			counter = 0;
+			HAL_ADC_Stop_IT(&hadc3);
+			HAL_TIM_Base_Stop_IT(&htim1);
+			send_UART("Sampling Stopped.");
+		}
 
 }
 

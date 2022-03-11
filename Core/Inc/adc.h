@@ -31,6 +31,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 #include "tim.h"
+#include "commands.h"
 /* USER CODE END Includes */
 
 extern ADC_HandleTypeDef hadc3;
@@ -44,6 +45,7 @@ void MX_ADC3_Init(void);
 /* USER CODE BEGIN Prototypes */
 void MX_ADC3_Init1(bool software1);
 void config_ADC(unsigned int channel);
+void reset_adc_buf(void);
 uint32_t read_ADC(void);
 /* USER CODE END Prototypes */
 
