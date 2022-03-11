@@ -24,7 +24,7 @@ struct sp_config_t
 #include "tim.h"
 
 
-enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FN, FF, S, ST};
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST};
 
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
