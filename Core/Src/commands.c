@@ -335,6 +335,8 @@ void proc_sp_cmd(char* message)
 		{
 			if(!strcmp(timeunit,"ms") == 0 || !strcmp(timeunit,"s") == 0 || !strcmp(timeunit,"us") == 0)
 			{
+				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 				strcpy(sp_config.timeunit,timeunit);
 				sp_config.unit = unit;
 				send_UART("Sampling timeunit and units changed with success.");
@@ -354,6 +356,8 @@ void proc_ac_cmd(char* message)
 	{
 		if(addr3 > 0 && addr3 <= 0x0F)
 		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 			sp_config.addr3 = addr3;
 			send_UART("Analog Channel for Sampling changed with success.");
 		}
@@ -368,6 +372,8 @@ void proc_fn_cmd(char* message)
 {
 	if(message[2] == '\r')
 	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 		sp_config.filter = true;
 		send_UART("Filter ON.");
 	}
@@ -379,6 +385,8 @@ void proc_ff_cmd(char* message)
 {
 	if(message[2] == '\r')
 	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 		sp_config.filter = false;
 		send_UART("Filter OFF");
 	}
@@ -392,6 +400,8 @@ void proc_s_cmd(char* message)
 
 	if(message[1] == '\r')
 	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 		MX_ADC3_Init1(false);
 		config_ADC(sp_config.addr3);
 		MX_TIM1_Init1(sp_config);
@@ -400,6 +410,8 @@ void proc_s_cmd(char* message)
 	}
 	else if(sscanf((char*)message, "S %d", &k_values) == 1)
 	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 		sp_config.sp_limit = k_values;
 		MX_ADC3_Init1(false);
 		config_ADC(sp_config.addr3);
@@ -416,6 +428,8 @@ void proc_st_cmd(char* message)
 {
 	if(message[2] == '\r')
 	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
 		HAL_ADC_Stop_IT(&hadc3);
 		HAL_TIM_Base_Stop_IT(&htim1);
 	}

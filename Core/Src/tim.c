@@ -23,18 +23,18 @@
 /* USER CODE BEGIN 0 */
 void MX_TIM1_Init1(struct sp_config_t sp_config)
 {
-
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 	TIM_SlaveConfigTypeDef sSlaveConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-	unsigned int mul1 = 1 , mul2 = 1;
-	if(!strncmp(sp_config.timeunit,"ms",2))
+	unsigned int mul1 = 1, mul2 = 1;
+
+	if(!strncmp(sp_config.timeunit,"us",2))
+	{
+	}
+	else if(!strncmp(sp_config.timeunit,"ms",2))
 	{
 		mul1 = 1000;
-	}
-	else if(!strncmp(sp_config.timeunit,"us",2))
-	{
 	}
 	else if(!strncmp(sp_config.timeunit,"s",1))
 	{

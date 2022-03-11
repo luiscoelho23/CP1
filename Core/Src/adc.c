@@ -90,7 +90,7 @@ void MX_ADC3_Init(void)
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc3.Instance = ADC3;
-  hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
   hadc3.Init.Resolution = ADC_RESOLUTION_12B;
   hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc3.Init.ContinuousConvMode = DISABLE;
@@ -248,16 +248,15 @@ uint32_t read_ADC(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	if(!software)
-	{
-		adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
-		adc_buf_index &= ADC_BUF_SIZE;
-		analog_write(0,adc_buf[adc_buf_index++]);
-	}
-	else
+	if(software)
 	{
 		adc_value = HAL_ADC_GetValue(&hadc3);
 		Read = true;
+	}
+	else
+	{
+		adc_buf[adc_buf_index++ & ADC_BUF_SIZE] = HAL_ADC_GetValue(&hadc3);
+		//analog_write(0,adc_buf[adc_buf_index++]);
 	}
 }
 
