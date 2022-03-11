@@ -84,7 +84,9 @@ void MX_ADC3_Init(void)
 
   ADC_ChannelConfTypeDef sConfig = {0};
 
+  /* USER CODE BEGIN ADC3_Init 1 */
 
+  /* USER CODE END ADC3_Init 1 */
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc3.Instance = ADC3;
@@ -99,8 +101,6 @@ void MX_ADC3_Init(void)
   hadc3.Init.NbrOfConversion = 1;
   hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-
-
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
   {
     Error_Handler();
@@ -250,8 +250,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if(!software)
 	{
-		adc_buf[adc_buf_index++] = HAL_ADC_GetValue(&hadc3);
+		adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
 		adc_buf_index &= ADC_BUF_SIZE;
+		analog_write(0,adc_buf[adc_buf_index++]);
 	}
 	else
 	{

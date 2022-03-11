@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dac.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -91,9 +92,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC3_Init();
   MX_USART3_UART_Init();
+  MX_ADC3_Init();
   MX_TIM1_Init();
+  MX_DAC_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);

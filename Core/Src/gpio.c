@@ -67,10 +67,10 @@ void MX_GPIO_Init(void)
 
 bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 {
-	//	ADC3
+	//	ADC3 e DAC
 
 	if(port_addr == 1)
-		if(pin_setting & 0x600F)
+		if(pin_setting & 0x603F)
 			return false;
 
 	if(port_addr == 3)

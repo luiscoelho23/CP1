@@ -24,6 +24,8 @@ unsigned char check_command(char* message)
 
 	cmd += (!strncmp((char*) message, "RA", 2)) * RA;
 
+	cmd += (!strncmp((char*) message, "WA", 2)) * WA;
+
 	cmd += (!strncmp((char*) message, "SP", 2)) * SP;
 
 	cmd += (!strncmp((char*) message, "AC", 2)) * AC;
@@ -56,6 +58,7 @@ void (*exec_command[])(char* message) = {
 		proc_rd_cmd,
 		proc_wd_cmd,
 		proc_ra_cmd,
+		proc_wa_cmd,
 		proc_last_cmd,
 		proc_help_cmd,
 		proc_ver_cmd,
@@ -249,6 +252,25 @@ void proc_ra_cmd(char* message)
 	}
 	else
 		send_UART("Invalid Analog Read instruction syntax.");
+}
+
+void proc_wa_cmd(char* message)
+{
+    unsigned int addr3, volts;
+
+    if(sscanf((char*) message, "WA %x %d", &addr3, &volts) == 2)
+    {
+    	float value = (float) volts * 4095 / 3.3;
+        if(analog_write(addr3, value))
+        {
+            strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+            send_UART("Analog value wrote with success.");
+        }
+        else
+            send_UART("Invalid Analog Write instruction argument values.");
+    }
+    else
+        send_UART("Invalid Analog Write instruction syntax.");
 }
 
 
@@ -552,6 +574,19 @@ bool analog_read(unsigned int addr3, unsigned int* value)
 	*value = read_ADC();
 
 	return true;
+}
+
+bool analog_write(unsigned int addr3, unsigned int value)
+{
+	if(addr3 < 0 || addr3 > 0x01)
+		return false;
+
+	if(HAL_DAC_Start(&hdac, (addr3 << addr3)) == HAL_OK){
+	    HAL_DAC_SetValue(&hdac, (addr3 << addr3), DAC_ALIGN_12B_R, value);
+	    return true;
+	}else
+		return false;
+
 }
 
 /* USER CODE END 4 */
