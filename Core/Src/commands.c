@@ -273,6 +273,7 @@ void proc_wa_cmd(char* message)
     if(sscanf((char*) message, "WA %x %d", &addr3, &volts) == 2)
     {
     	float value = (float) volts * 4095 / 3.3;
+
         if(analog_write(addr3, value))
         {
             strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
@@ -658,6 +659,13 @@ bool analog_write(unsigned int addr3, unsigned int value)
 
 }
 
+char* mystrcat( char* dest, char* src )
+{
+     while (*dest) dest++;
+     while (*dest++ = *src++);
+     return --dest;
+}
+
 void process_buf(uint32_t* x_buf, uint32_t n)
 {
 	if(sp_config.filter)
@@ -682,6 +690,20 @@ void process_buf(uint32_t* x_buf, uint32_t n)
 		analog_write(0,x_buf[n]);
 	}
 
+	char *message, *aux;
+
+	itoa(n+1, aux, 10);
+	strcat(message, aux);
+	strcat(message, " va");
+	itoa(x_buf[n], aux, 10);
+	strcat(message, aux);
+	strcat(message, " vf");
+	itoa(y_buf[n], aux, 10);
+	strcat(message, aux);
+
+	//sprintf(message, "n%lu va%lu vf%lu", n, x_buf[n], y_buf[n]);
+	send_UART(message);
+
 	counter ++;
 
 	if(sp_config.sp_limit > 0)
@@ -692,7 +714,6 @@ void process_buf(uint32_t* x_buf, uint32_t n)
 			HAL_TIM_Base_Stop_IT(&htim1);
 			send_UART("Sampling Stopped.");
 		}
-
 }
 
 /* USER CODE END 4 */
