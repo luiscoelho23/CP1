@@ -27,5 +27,4 @@ commands.c:589:6:read_dig_input	48	static
 commands.c:614:6:write_dig_output	40	static
 commands.c:637:6:analog_read	16	static
 commands.c:649:6:analog_write	16	static
-commands.c:662:7:mystrcat	16	static
-commands.c:669:6:process_buf	32	static
+commands.c:661:6:process_buf	24	static
