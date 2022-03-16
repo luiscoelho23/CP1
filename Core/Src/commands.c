@@ -1,6 +1,6 @@
 #include "commands.h"
 
-struct sp_config_t sp_config = {1,1, ADC_BUF_SIZE + 1,"s",false,Fin};
+struct sp_config_t sp_config = {1,1, ADC_BUF_SIZE + 1,"s",Nf};
 
 uint32_t y_buf[ADC_BUF_SIZE];
 
@@ -387,7 +387,6 @@ void proc_fni_cmd(char* message)
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 		sp_config.filter_type = Inf;
-		sp_config.filter = true;
 		send_UART("Filter ON.");
 	}
 	else
@@ -398,10 +397,9 @@ void proc_ffi_cmd(char* message)
 {
 	if(message[3] == '\r')
 	{
-		if(sp_config.filter_type == Inf && sp_config.filter){
+		if(sp_config.filter_type == Inf){
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
-			sp_config.filter_type = Inf;
-			sp_config.filter = false;
+			sp_config.filter_type = Nf;
 			send_UART("Filter OFF");
 		}
 		else
@@ -417,7 +415,6 @@ void proc_fnf_cmd(char* message)
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 		sp_config.filter_type = Fin;
-		sp_config.filter = true;
 		send_UART("Filter ON.");
 	}
 	else
@@ -429,9 +426,8 @@ void proc_fff_cmd(char* message)
 	if(message[3] == '\r')
 	{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
-		if(sp_config.filter_type == Inf && sp_config.filter){
-			sp_config.filter_type = Fin;
-			sp_config.filter = false;
+		if(sp_config.filter_type == Fin){
+			sp_config.filter_type = Nf;
 			send_UART("Filter OFF");
 		}
 		else
@@ -449,6 +445,7 @@ void proc_s_cmd(char* message)
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
+		reset_adc_buf();
 		counter = 0;
 		sp_config.sp_limit = 0;
 		MX_ADC3_Init1(false);
@@ -461,6 +458,7 @@ void proc_s_cmd(char* message)
 	{
 		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
+		reset_adc_buf();
 		counter = 0;
 		sp_config.sp_limit = k_values;
 		MX_ADC3_Init1(false);
@@ -482,6 +480,7 @@ void proc_st_cmd(char* message)
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 			counter = 0;
+			analog_write(0,0);
 			HAL_ADC_Stop_IT(&hadc3);
 			HAL_TIM_Base_Stop_IT(&htim1);
 			send_UART("Sampling Stopped.");
@@ -646,56 +645,73 @@ bool analog_read(unsigned int addr3, unsigned int* value)
 	return true;
 }
 
-bool analog_write(unsigned int addr3, unsigned int value)
+bool analog_write(unsigned int addr3, uint32_t value)
 {
 	if(addr3 < 0 || addr3 > 0x01)
 		return false;
 
-	if(HAL_DAC_Start(&hdac, (addr3 << addr3)) == HAL_OK){
-	    HAL_DAC_SetValue(&hdac, (addr3 << addr3), DAC_ALIGN_12B_R, value);
+	if(HAL_DAC_Start(&hdac, (addr3 ? DAC_CHANNEL_2 : DAC_CHANNEL_1)) == HAL_OK){
+	    HAL_DAC_SetValue(&hdac, (addr3 ? DAC_CHANNEL_2 : DAC_CHANNEL_1), DAC_ALIGN_12B_R, value);
 	    return true;
 	}else
 		return false;
 }
 
-void process_buf(uint32_t* x_buf, uint32_t n)
-{
-	if(sp_config.filter)
-	{
-		if(sp_config.filter_type == Fin)
-		{
-			unsigned int temp = 0;
+void (*process_buf_func[])(uint32_t* x_buf, int n) = {
+	process_buf_nf,
+	process_buf_if,
+	process_buf_ff
 
-			for(int i = 0 ; i <= M; i++)
-			{
-				temp += coef[i] * x_buf[n-i];
-			}
-			y_buf[n] = temp;
-			analog_write(0,y_buf[n]);
-		}
-		if(sp_config.filter_type == Inf)
-		{
-			y_buf[(n+1) & ADC_BUF_SIZE] = a*y_buf[n] + (1-a)*x_buf[n];
-			analog_write(0,y_buf[n]);
-		}
-	}else{
-		analog_write(0,x_buf[n]);
+};
+
+void process_buf_nf(uint32_t* x_buf, int n)
+{
+	y_buf[n] = x_buf[n];
+	analog_write(0,y_buf[n]);
+}
+
+void process_buf_if(uint32_t* x_buf, int n)
+{
+	y_buf[(n+1) & (ADC_BUF_SIZE - 1)] = a*y_buf[n] + (1-a)*x_buf[n];
+	analog_write(0,y_buf[n]);
+}
+
+void process_buf_ff(uint32_t* x_buf, int n)
+{
+	unsigned int temp = 0;
+
+	for(int i = 0 ; i <= M; i++)
+	{
+		temp += 0.1 * x_buf[(n-i) & (ADC_BUF_SIZE - 1)];
 	}
+	y_buf[n] = temp;
+	analog_write(0,y_buf[n]);
+}
+
+void process_buf(uint32_t* x_buf, int n)
+{
+	process_buf_func[sp_config.filter_type](x_buf,n);
+
 	counter ++;
 
-	/*char message[21];
-	sprintf(message, "n%d va%lu vf%lu\r", counter , x_buf[n], y_buf[n]);
-	send_UART(message);*/
-
 	if(sp_config.sp_limit > 0)
+	{
+		char message[22] = {"\0"};
+		sprintf(message, "%d;%lu;%lu;", counter , x_buf[n], y_buf[n]);
+		send_UART(message);
+
 		if(counter == sp_config.sp_limit)
 		{
-			while(is_transmitting_to_UART());
 			counter = 0;
+			analog_write(0,0);
 			HAL_ADC_Stop_IT(&hadc3);
 			HAL_TIM_Base_Stop_IT(&htim1);
-			send_UART("Sampling Stopped.");
+		    HAL_NVIC_SetPriority(ADC_IRQn, 1, 0);
+			while(is_transmitting_to_UART());
+			HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+			send_UART("Sampling Stopped.\n>");
 		}
+	}
 }
 
 /* USER CODE END 4 */

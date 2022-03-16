@@ -35,7 +35,6 @@ void MX_ADC3_Init1(bool software1)
 
   ADC_ChannelConfTypeDef sConfig = {0};
 
-
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc3.Instance = ADC3;
@@ -170,7 +169,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* ADC3 interrupt Init */
-    HAL_NVIC_SetPriority(ADC_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC3_MspInit 1 */
 
@@ -266,7 +265,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 		adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
 		process_buf(adc_buf, adc_buf_index);
 		adc_buf_index++;
-		adc_buf_index &= ADC_BUF_SIZE;
+		adc_buf_index &= ADC_BUF_SIZE - 1;
 	}
 }
 

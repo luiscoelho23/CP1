@@ -13,13 +13,12 @@ extern "C" {
 #define a 0.4
 #define M 10
 
-enum filter_type_t { Inf = 1, Fin};
+enum filter_type_t { Nf, Inf = 1, Fin};
 
 struct sp_config_t
 {
 	unsigned int addr3, unit, sp_limit;
 	char timeunit[2];
-	bool filter;
 	enum filter_type_t filter_type;
 };
 
@@ -34,30 +33,30 @@ enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC,
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
-unsigned char check_command(char* message);
+unsigned char check_command(char*);
 void (*exec_command[21])(char*);
 
-void proc_inv_cmd(char* message);
-void proc_mr_cmd(char* message);
-void proc_mw_cmd(char* message);
-void proc_mi_cmd(char* message);
-void proc_mo_cmd(char* message);
-void proc_rd_cmd(char* message);
-void proc_wd_cmd(char* message);
-void proc_ra_cmd(char* message);
-void proc_wa_cmd(char* message);
-void proc_last_cmd(char* message);
-void proc_help_cmd(char* message);
-void proc_ver_cmd(char* message);
+void proc_inv_cmd(char*);
+void proc_mr_cmd(char*);
+void proc_mw_cmd(char*);
+void proc_mi_cmd(char*);
+void proc_mo_cmd(char*);
+void proc_rd_cmd(char*);
+void proc_wd_cmd(char*);
+void proc_ra_cmd(char*);
+void proc_wa_cmd(char*);
+void proc_last_cmd(char*);
+void proc_help_cmd(char*);
+void proc_ver_cmd(char*);
 
-void proc_sp_cmd(char* message);
-void proc_ac_cmd(char* message);
-void proc_fni_cmd(char* message);
-void proc_ffi_cmd(char* message);
-void proc_fnf_cmd(char* message);
-void proc_fff_cmd(char* message);
-void proc_s_cmd(char* message);
-void proc_st_cmd(char* message);
+void proc_sp_cmd(char*);
+void proc_ac_cmd(char*);
+void proc_fni_cmd(char*);
+void proc_ffi_cmd(char*);
+void proc_fnf_cmd(char*);
+void proc_fff_cmd(char*);
+void proc_s_cmd(char*);
+void proc_st_cmd(char*);
 
 bool memory_read(unsigned int addr, unsigned int length, char* data);
 bool memory_write(unsigned int addr, unsigned int length, int data);
@@ -66,8 +65,14 @@ bool make_pin_output(unsigned int port_addr, unsigned int pin_setting);
 bool read_dig_input(unsigned int port_addr, unsigned int pin_setting, GPIO_PinState* pin_values);
 bool write_dig_output(unsigned int port_addr, unsigned int pin_setting, unsigned int pin_values);
 bool analog_read(unsigned int addr3, unsigned int* value);
-bool analog_write(unsigned int addr3, unsigned int value);
+bool analog_write(unsigned int addr3, uint32_t value);
 
-void process_buf(uint32_t* adc_buf , uint32_t adc_buf_index);
+void process_buf(uint32_t*, int);
+
+void (*process_buf_func[3])(uint32_t*, int);
+
+void process_buf_nf(uint32_t*, int);
+void process_buf_if(uint32_t*, int);
+void process_buf_ff(uint32_t*, int);
 
 #endif /* __COMMANDS_H__ */
