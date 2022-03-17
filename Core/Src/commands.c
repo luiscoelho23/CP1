@@ -666,18 +666,23 @@ void (*process_buf_func[])(uint32_t* x_buf, int n) = {
 
 void process_buf_nf(uint32_t* x_buf, int n)
 {
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	y_buf[n] = x_buf[n];
 	analog_write(0,y_buf[n]);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
 void process_buf_if(uint32_t* x_buf, int n)
 {
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	y_buf[(n+1) & (ADC_BUF_SIZE - 1)] = a*y_buf[n] + (1-a)*x_buf[n];
 	analog_write(0,y_buf[n]);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
 void process_buf_ff(uint32_t* x_buf, int n)
 {
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	unsigned int temp = 0;
 
 	for(int i = 0 ; i <= M; i++)
@@ -686,6 +691,7 @@ void process_buf_ff(uint32_t* x_buf, int n)
 	}
 	y_buf[n] = temp;
 	analog_write(0,y_buf[n]);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
 void process_buf(uint32_t* x_buf, int n)

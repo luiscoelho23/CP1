@@ -29,5 +29,5 @@ commands.c:636:6:analog_read	16	static
 commands.c:648:6:analog_write	16	static
 commands.c:667:6:process_buf_nf	16	static
 commands.c:673:6:process_buf_if	16	static
-commands.c:679:6:process_buf_ff	24	static
-commands.c:691:6:process_buf	48	static
+commands.c:681:6:process_buf_ff	24	static
+commands.c:693:6:process_buf	48	static
