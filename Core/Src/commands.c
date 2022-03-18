@@ -6,7 +6,13 @@ uint32_t y_buf[ADC_BUF_SIZE];
 
 unsigned int counter = 0;
 
-float coef[10] = {-0.0416,-0.0865,0.0000,0.2018,0.3742,0.3742,0.2018,0.0000,-0.0865,-0.0416};
+float coef[26] = {-0.0067, -0.0095, -0.0108, -0.0095, -0.0043, 0.0056, 0.0203, 0.0391, 0.0605, 0.0822, 0.1015, 0.1161,
+					0.1240, 0.1240, 0.1161, 0.1015, 0.0822, 0.0605, 0.0391, 0.0203, 0.0056, -0.0043, -0.0095, -0.0108,
+					-0.0095, -0.0067};
+
+float coef_ak[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.01};
+
+float coef_bk[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.01};
 
 unsigned char check_command(char* message)
 {
@@ -666,32 +672,33 @@ void (*process_buf_func[])(uint32_t* x_buf, int n) = {
 
 void process_buf_nf(uint32_t* x_buf, int n)
 {
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	y_buf[n] = x_buf[n];
 	analog_write(0,y_buf[n]);
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
 void process_buf_if(uint32_t* x_buf, int n)
 {
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-	y_buf[(n+1) & (ADC_BUF_SIZE - 1)] = a*y_buf[n] + (1-a)*x_buf[n];
+	unsigned int temp = 0;
+
+	for(int i = 0 ; i < 10; i++)
+		{
+			temp += coef_ak[i] * y_buf[(n-i) & (ADC_BUF_SIZE - 1)];
+			temp += coef_bk[i] * x_buf[(n-i) & (ADC_BUF_SIZE - 1)];
+		}
+	y_buf[n] = temp;
 	analog_write(0,y_buf[n]);
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
 void process_buf_ff(uint32_t* x_buf, int n)
 {
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	unsigned int temp = 0;
 
-	for(int i = 0 ; i <= M; i++)
+	for(int i = 0 ; i < M; i++)
 	{
-		temp += 0.1 * x_buf[(n-i) & (ADC_BUF_SIZE - 1)];
+		temp += coef[i] * x_buf[(n-i) & (ADC_BUF_SIZE - 1)];
 	}
 	y_buf[n] = temp;
 	analog_write(0,y_buf[n]);
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
 void process_buf(uint32_t* x_buf, int n)

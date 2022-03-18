@@ -11,7 +11,7 @@ extern "C" {
 #include <string.h>
 
 #define a 0.4
-#define M 10
+#define M 26
 
 enum filter_type_t { Nf, Inf = 1, Fin};
 

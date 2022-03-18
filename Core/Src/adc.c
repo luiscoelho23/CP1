@@ -28,6 +28,7 @@ uint32_t adc_buf_index = 0;
 bool software;
 bool Read;
 uint32_t adc_value;
+bool run = 0;
 
 void MX_ADC3_Init1(bool software1)
 {
@@ -255,6 +256,7 @@ void reset_adc_buf(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
+
 	if(software)
 	{
 		adc_value = HAL_ADC_GetValue(&hadc3);
@@ -262,10 +264,11 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	}
 	else
 	{
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 		adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
 		process_buf(adc_buf, adc_buf_index);
 		adc_buf_index++;
-		adc_buf_index &= ADC_BUF_SIZE - 1;
+		adc_buf_index &= ADC_BUF_SIZE - 1;;
 	}
 }
 
