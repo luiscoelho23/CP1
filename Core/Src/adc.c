@@ -256,20 +256,26 @@ void reset_adc_buf(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-
-	if(software)
-	{
-		adc_value = HAL_ADC_GetValue(&hadc3);
-		Read = true;
-	}
-	else
-	{
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-		adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
-		process_buf(adc_buf, adc_buf_index);
-		adc_buf_index++;
-		adc_buf_index &= ADC_BUF_SIZE - 1;;
-	}
+	adc_it[software]();
 }
+
+void (*adc_it[])() = {
+	timer_adc_it,
+	software_adc_it
+};
+
+void software_adc_it(){
+
+	adc_value = HAL_ADC_GetValue(&hadc3);
+	Read = true;
+}
+
+void timer_adc_it(){
+	adc_buf[adc_buf_index] = HAL_ADC_GetValue(&hadc3);
+	process_buf(adc_buf, adc_buf_index);
+	adc_buf_index++;
+	adc_buf_index &= ADC_BUF_SIZE - 1;
+}
+
 
 /* USER CODE END 1 */

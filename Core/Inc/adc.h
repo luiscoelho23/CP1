@@ -47,6 +47,13 @@ void MX_ADC3_Init1(bool software1);
 void config_ADC(unsigned int channel);
 void reset_adc_buf(void);
 uint32_t read_ADC(void);
+
+void (*adc_it[2])();
+
+void software_adc_it();
+void timer_adc_it();
+
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

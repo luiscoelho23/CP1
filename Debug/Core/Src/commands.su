@@ -28,6 +28,6 @@ commands.c:619:6:write_dig_output	40	static
 commands.c:642:6:analog_read	16	static
 commands.c:654:6:analog_write	16	static
 commands.c:673:6:process_buf_nf	16	static
-commands.c:679:6:process_buf_if	24	static
-commands.c:692:6:process_buf_ff	24	static
-commands.c:704:6:process_buf	48	static
+commands.c:679:6:process_buf_if	16	static
+commands.c:697:6:process_buf_ff	24	static
+commands.c:709:6:process_buf	48	static
