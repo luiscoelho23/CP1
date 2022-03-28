@@ -16,52 +16,57 @@ float coef_bk[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.
 */
 unsigned char check_command(char* message)
 {
-	char cmd = INV;
+    char cmd = INV;
 
-	cmd += (!strncmp((char*) message, "VER", 3)) * VER;
+    if((!strncmp((char*) message, "VER", 3)))
+        cmd = VER;
+    else if((!strncmp((char*) message, "FNF", 3))){
+        cmd = FNF;
+    }else if((!strncmp((char*) message, "FFF", 3))){
+        cmd = FFF;
+    }else if((!strncmp((char*) message, "FNI", 3))){
+        cmd = FNI;
+    }else if((!strncmp((char*) message, "FFI", 3))){
+        cmd = FFI;
+    }else if((!strncmp((char*) message, "ST", 2))){
+        cmd = ST;
+    }else if((!strncmp((char*) message, "MR", 2))){
+        cmd = FFI;
+    }else if((!strncmp((char*) message, "MW", 2))){
+        cmd = MW;
+    }else if((!strncmp((char*) message, "MI", 2))){
+        cmd = MI;
+    }else if((!strncmp((char*) message, "MO", 2))){
+        cmd = MO;
+    }else if((!strncmp((char*) message, "RD", 2))){
+        cmd = RD;
+    }else if((!strncmp((char*) message, "WD", 2))){
+        cmd = WD;
+    }else if((!strncmp((char*) message, "RA", 2))){
+        cmd = RA;
+    }else if((!strncmp((char*) message, "WA", 2))){
+        cmd = WA;
+    }else if((!strncmp((char*) message, "SP", 2))){
+        cmd = SP;
+    }else if((!strncmp((char*) message, "AC", 2))){
+        cmd = AC;
+    }else if((!strncmp((char*) message, "UN", 2))){
+        cmd = UN;
+    }else if((!strncmp((char*) message, "EN", 2))){
+        cmd = EN;
+    }else if( (!strncmp((char*) message, "CS ", 2))){
+        cmd = CS;
+    }else if((!strncmp((char*) message, "VR", 2))){
+        cmd = VR;
+    }else if((!strncmp((char*) message, "$", 1))){
+        cmd = LAST;
+    }else if((!strncmp((char*) message, "?", 1))){
+        cmd = HELP;
+    }else if((!strncmp((char*) message, "S", 1))){
+        cmd = S;
+    }else cmd = INV;
 
-	cmd += (!strncmp((char*) message, "FNF", 3)) * FNF;
-
-	cmd += (!strncmp((char*) message, "FFF", 3)) * FFF;
-
-	cmd += (!strncmp((char*) message, "FNI", 3)) * FNI;
-
-	cmd += (!strncmp((char*) message, "FFI", 3)) * FFI;
-
-	cmd += (!strncmp((char*) message, "ST", 2)) * ST;
-
-	cmd += (!strncmp((char*) message, "MR", 2)) * MR;
-
-	cmd += (!strncmp((char*) message, "MW", 2)) * MW;
-
-	cmd += (!strncmp((char*) message, "MI", 2)) * MI;
-
-	cmd += (!strncmp((char*) message, "MO", 2)) * MO;
-
-	cmd += (!strncmp((char*) message, "RD", 2)) * RD;
-
-	cmd += (!strncmp((char*) message, "WD", 2)) * WD;
-
-	cmd += (!strncmp((char*) message, "RA", 2)) * RA;
-
-	cmd += (!strncmp((char*) message, "WA", 2)) * WA;
-
-	cmd += (!strncmp((char*) message, "SP", 2)) * SP;
-
-	cmd += (!strncmp((char*) message, "AC", 2)) * AC;
-
-	cmd += (!strncmp((char*) message, "S ", 2)) * S;
-
-	cmd += (!strncmp((char*) message, "S\r", 2)) * S;
-
-	cmd += (!strncmp((char*) message, "$", 1)) * LAST;
-
-	cmd += (!strncmp((char*) message, "?", 1)) * HELP;
-
-	if(cmd > ST)
-		cmd = INV;
-
-	return cmd;
+    return cmd;
 }
 
 
@@ -85,7 +90,11 @@ void (*exec_command[])(char* message) = {
 		proc_fnf_cmd,
 		proc_fff_cmd,
 		proc_s_cmd,
-		proc_st_cmd
+		proc_st_cmd,
+		proc_cs_cmd,
+		proc_en_cmd,
+		proc_un_cmd,
+		proc_vr_cmd
 };
 
 
@@ -497,6 +506,46 @@ void proc_st_cmd(char* message)
 	else
 		send_UART("Sampling is not running.");
 }
+
+
+void proc_cs_cmd(char* message)
+{
+ return;
+}
+
+
+void proc_en_cmd(char* message)
+{
+ return;
+}
+
+
+void proc_un_cmd(char* message)
+{
+	char sign;
+	int val;
+
+	if(sscanf((char*)message, "UN %c%d", &sign, &val) == 2)
+	{
+		if(val >= 0 && val <= 100 && (sign == '+' || sign == '-'))
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+			send_UART("");
+		}
+		else
+			send_UART("Invalid Normalized Voltage instruction argument values.");
+	}
+	else
+		send_UART("Invalid Normalized Voltage instruction syntax.");
+}
+
+
+void proc_vr_cmd(char* message)
+{
+return;
+}
+
 
 //------------------------------------------------------------------------------------------------------------------
 

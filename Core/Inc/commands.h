@@ -28,13 +28,13 @@ struct sp_config_t
 #include "gpio.h"
 #include "tim.h"
 
-enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST};
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST, CS, EN, UN, VR };
 
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char*);
-void (*exec_command[21])(char*);
+void (*exec_command[25])(char*);
 
 void proc_inv_cmd(char*);
 void proc_mr_cmd(char*);
@@ -57,6 +57,11 @@ void proc_fnf_cmd(char*);
 void proc_fff_cmd(char*);
 void proc_s_cmd(char*);
 void proc_st_cmd(char*);
+
+void proc_cs_cmd(char*);
+void proc_en_cmd(char*);
+void proc_un_cmd(char*);
+void proc_vr_cmd(char*);
 
 bool memory_read(unsigned int addr, unsigned int length, char* data);
 bool memory_write(unsigned int addr, unsigned int length, int data);
