@@ -109,8 +109,8 @@ int main(void)
   HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);
   send_UART(PROMPT);
 
-  TIM2->CCR4 = 30;
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+
+
 
   /* USER CODE END 2 */
 

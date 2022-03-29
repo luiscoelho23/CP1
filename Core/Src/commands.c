@@ -20,51 +20,60 @@ unsigned char check_command(char* message)
 
     if((!strncmp((char*) message, "VER", 3)))
         cmd = VER;
-    else if((!strncmp((char*) message, "FNF", 3))){
+    else if((!strncmp((char*) message, "FNF", 3)))
         cmd = FNF;
-    }else if((!strncmp((char*) message, "FFF", 3))){
+    else if((!strncmp((char*) message, "FFF", 3)))
         cmd = FFF;
-    }else if((!strncmp((char*) message, "FNI", 3))){
+    else if((!strncmp((char*) message, "FNI", 3)))
         cmd = FNI;
-    }else if((!strncmp((char*) message, "FFI", 3))){
+    else if((!strncmp((char*) message, "FFI", 3)))
         cmd = FFI;
-    }else if((!strncmp((char*) message, "ST", 2))){
+    else if((!strncmp((char*) message, "ST", 2)))
         cmd = ST;
-    }else if((!strncmp((char*) message, "MR", 2))){
+    else if((!strncmp((char*) message, "MR", 2)))
         cmd = FFI;
-    }else if((!strncmp((char*) message, "MW", 2))){
+    else if((!strncmp((char*) message, "MW", 2)))
         cmd = MW;
-    }else if((!strncmp((char*) message, "MI", 2))){
+    else if((!strncmp((char*) message, "MI", 2)))
         cmd = MI;
-    }else if((!strncmp((char*) message, "MO", 2))){
+    else if((!strncmp((char*) message, "MO", 2)))
         cmd = MO;
-    }else if((!strncmp((char*) message, "RD", 2))){
+    else if((!strncmp((char*) message, "RD", 2)))
         cmd = RD;
-    }else if((!strncmp((char*) message, "WD", 2))){
+    else if((!strncmp((char*) message, "WD", 2)))
         cmd = WD;
-    }else if((!strncmp((char*) message, "RA", 2))){
+    else if((!strncmp((char*) message, "RA", 2)))
         cmd = RA;
-    }else if((!strncmp((char*) message, "WA", 2))){
+    else if((!strncmp((char*) message, "WA", 2)))
         cmd = WA;
-    }else if((!strncmp((char*) message, "SP", 2))){
+    else if((!strncmp((char*) message, "SP", 2)))
         cmd = SP;
-    }else if((!strncmp((char*) message, "AC", 2))){
+    else if((!strncmp((char*) message, "AC", 2)))
         cmd = AC;
-    }else if((!strncmp((char*) message, "UN", 2))){
+    else if((!strncmp((char*) message, "UN", 2)))
         cmd = UN;
-    }else if((!strncmp((char*) message, "EN", 2))){
+    else if((!strncmp((char*) message, "EN", 2)))
         cmd = EN;
-    }else if( (!strncmp((char*) message, "CS ", 2))){
+    else if( (!strncmp((char*) message, "CS", 2)))
         cmd = CS;
-    }else if((!strncmp((char*) message, "VR", 2))){
+    else if((!strncmp((char*) message, "VR", 2)))
         cmd = VR;
-    }else if((!strncmp((char*) message, "$", 1))){
+    else if((!strncmp((char*) message, "HW", 2)))
+		cmd = HW;
+    else if((!strncmp((char*) message, "FSW", 2)))
+		cmd = FSW;
+    else if((!strncmp((char*) message, "SW", 2)))
+		cmd = SW;
+    else if((!strncmp((char*) message, "STW", 2)))
+		cmd = STW;
+    else if((!strncmp((char*) message, "$", 1)))
         cmd = LAST;
-    }else if((!strncmp((char*) message, "?", 1))){
+    else if((!strncmp((char*) message, "?", 1)))
         cmd = HELP;
-    }else if((!strncmp((char*) message, "S", 1))){
+    else if((!strncmp((char*) message, "S", 1)))
         cmd = S;
-    }else cmd = INV;
+    else
+    	cmd = INV;
 
     return cmd;
 }
@@ -94,7 +103,11 @@ void (*exec_command[])(char* message) = {
 		proc_cs_cmd,
 		proc_en_cmd,
 		proc_un_cmd,
-		proc_vr_cmd
+		proc_vr_cmd,
+		proc_hw_cmd,
+		proc_fsw_cmd,
+		proc_sw_cmd,
+		proc_stw_cmd
 };
 
 
@@ -412,7 +425,8 @@ void proc_ffi_cmd(char* message)
 {
 	if(message[3] == '\r')
 	{
-		if(sp_config.filter_type == Inf){
+		if(sp_config.filter_type == Inf)
+		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 			sp_config.filter_type = Nf;
 			send_UART("Filter OFF");
@@ -510,13 +524,63 @@ void proc_st_cmd(char* message)
 
 void proc_cs_cmd(char* message)
 {
- return;
+	int val;
+
+	if(sscanf((char*) message, "CS %d", &val) == 1)
+	{
+		if(val == 0 || val == 1)
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+			if(val)
+			{
+				mode = true;
+				send_UART("");
+			}
+			else
+			{
+				mode = false;
+				send_UART("");
+			}
+		}
+		else
+			send_UART("Invalid Control System instruction argument values.");
+	}
+	else
+		send_UART("Invalid Control System instruction syntax.");
 }
 
 
 void proc_en_cmd(char* message)
 {
- return;
+	int val;
+
+	if(sscanf((char*) message, "EN %d", &val) == 1)
+	{
+		if(val == 0 || val == 1)
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+			if(val)
+			{
+				HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+
+				send_UART("System enabled with success.");
+				enable = true;
+			}
+			else
+			{
+				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
+
+				send_UART("System disabled with success.");
+				enable = false;
+			}
+		}
+		else
+			send_UART("Invalid Enable instruction argument values.");
+	}
+	else
+		send_UART("Invalid Enable instruction syntax.");
 }
 
 
@@ -525,13 +589,20 @@ void proc_un_cmd(char* message)
 	char sign;
 	int val;
 
-	if(sscanf((char*)message, "UN %c%d", &sign, &val) == 2)
+	if(sscanf((char*) message, "UN %c%d", &sign, &val) == 2)
 	{
 		if(val >= 0 && val <= 100 && (sign == '+' || sign == '-'))
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
-			send_UART("");
+			TIM2->CCR4 = duty_cycle = val;
+
+			if(sign == '+')
+				direction = true;
+			else
+				direction = false;
+
+			send_UART("PWM average voltage changed with success.");
 		}
 		else
 			send_UART("Invalid Normalized Voltage instruction argument values.");
@@ -543,9 +614,50 @@ void proc_un_cmd(char* message)
 
 void proc_vr_cmd(char* message)
 {
-return;
+	char sign;
+	int val;
+
+	if(sscanf((char*) message, "VR %c%d", &sign, &val) == 2)
+	{
+		if(val >= 0 && val <= 160 && (sign == '+' || sign == '-'))
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+			speed = val;
+
+			if(sign == '+')
+				direction = true;
+			else
+				direction = false;
+
+			send_UART("Speed changed with success.");
+		}
+		else
+			send_UART("Invalid Reference Speed instruction argument values.");
+	}
+	else
+		send_UART("Invalid Reference Speed instruction syntax.");
 }
 
+void proc_hw_cmd(char* message)
+{
+	return;
+}
+
+void proc_fsw_cmd(char* message)
+{
+	return;
+}
+
+void proc_sw_cmd(char* message)
+{
+	return;
+}
+
+void proc_stw_cmd(char* message)
+{
+	return;
+}
 
 //------------------------------------------------------------------------------------------------------------------
 

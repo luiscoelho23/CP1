@@ -9,11 +9,19 @@ extern "C" {
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "dac.h"
+#include "adc.h"
+#include "usart.h"
+#include "gpio.h"
+#include "tim.h"
+
+bool mode, enable, direction;
+int duty_cycle, speed;
 
 #define a 0.4
 #define M 26
 
-enum filter_type_t { Nf, Inf = 1, Fin};
+enum filter_type_t { Nf, Inf = 1, Fin };
 
 struct sp_config_t
 {
@@ -22,19 +30,13 @@ struct sp_config_t
 	enum filter_type_t filter_type;
 };
 
-#include "dac.h"
-#include "adc.h"
-#include "usart.h"
-#include "gpio.h"
-#include "tim.h"
-
-enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST, CS, EN, UN, VR };
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST, CS, EN, UN, VR, HW, FSW, SW, STW };
 
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char*);
-void (*exec_command[25])(char*);
+void (*exec_command[29])(char*);
 
 void proc_inv_cmd(char*);
 void proc_mr_cmd(char*);
@@ -62,6 +64,11 @@ void proc_cs_cmd(char*);
 void proc_en_cmd(char*);
 void proc_un_cmd(char*);
 void proc_vr_cmd(char*);
+void proc_hw_cmd(char*);
+void proc_fsw_cmd(char*);
+void proc_sw_cmd(char*);
+void proc_stw_cmd(char*);
+
 
 bool memory_read(unsigned int addr, unsigned int length, char* data);
 bool memory_write(unsigned int addr, unsigned int length, int data);
