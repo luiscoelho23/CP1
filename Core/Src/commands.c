@@ -14,6 +14,11 @@ float coef_ak[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.
 
 float coef_bk[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.01};
 */
+
+bool mode_speed = false, enable = false, direction = false;
+unsigned int duty_cycle = 0, speed = 0;
+
+
 unsigned char check_command(char* message)
 {
     char cmd = INV;
@@ -72,6 +77,10 @@ unsigned char check_command(char* message)
         cmd = HELP;
     else if((!strncmp((char*) message, "S", 1)))
         cmd = S;
+    else if((!strncmp((char*) message, "/", 1)))
+		cmd = INC;
+    else if((!strncmp((char*) message, "\\", 1)))
+		cmd = DEC;
     else
     	cmd = INV;
 
@@ -104,6 +113,8 @@ void (*exec_command[])(char* message) = {
 		proc_en_cmd,
 		proc_un_cmd,
 		proc_vr_cmd,
+		proc_inc_cmd,
+		proc_dec_cmd,
 		proc_hw_cmd,
 		proc_fsw_cmd,
 		proc_sw_cmd,
@@ -524,6 +535,9 @@ void proc_st_cmd(char* message)
 
 void proc_cs_cmd(char* message)
 {
+	enable = false;
+	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
+
 	int val;
 
 	if(sscanf((char*) message, "CS %d", &val) == 1)
@@ -534,13 +548,13 @@ void proc_cs_cmd(char* message)
 
 			if(val)
 			{
-				mode = true;
-				send_UART("");
+				mode_speed = true;
+				send_UART("Speed control mode selected.");
 			}
 			else
 			{
-				mode = false;
-				send_UART("");
+				mode_speed = false;
+				send_UART("PWM control mode selected.");
 			}
 		}
 		else
@@ -563,15 +577,21 @@ void proc_en_cmd(char* message)
 
 			if(val)
 			{
-				HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-
 				send_UART("System enabled with success.");
 				enable = true;
+
+				if(mode_speed)
+				{
+					// start speed mode
+				}
+				else
+				{
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+				}
 			}
 			else
 			{
 				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
-
 				send_UART("System disabled with success.");
 				enable = false;
 			}
@@ -588,19 +608,51 @@ void proc_un_cmd(char* message)
 {
 	char sign;
 	int val;
+	int args_read;
 
-	if(sscanf((char*) message, "UN %c%d", &sign, &val) == 2)
+	if((args_read = sscanf((char*) message, "UN %c%d", &sign, &val)) == 2)
 	{
 		if(val >= 0 && val <= 100 && (sign == '+' || sign == '-'))
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
-			TIM2->CCR4 = duty_cycle = val;
-
 			if(sign == '+')
+			{
+				if(!direction)
+				{
+					for(int i = duty_cyle; i > 0; i--)
+					{
+						TIM2->CCR4 = i;
+						HAL_Delay(10);
+					}
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
+				}
+
+				TIM2->CCR4 = duty_cycle = val;
 				direction = true;
+			}
 			else
+			{
+				if(direction)
+				{
+					TIM2->CCR4 = 0;
+					HAL_Delay(100);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
+				}
+
+				TIM2->CCR4 = duty_cycle = val;
 				direction = false;
+			}
+
+			send_UART("PWM average voltage changed with success.");
+		}
+		else if(args_read == 1 && sign == '0')
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+			TIM2->CCR4 = duty_cycle = 0;
 
 			send_UART("PWM average voltage changed with success.");
 		}
@@ -619,8 +671,9 @@ void proc_vr_cmd(char* message)
 
 	if(sscanf((char*) message, "VR %c%d", &sign, &val) == 2)
 	{
-		if(val >= 0 && val <= 160 && (sign == '+' || sign == '-'))
+		if(val >= 0 && val <= 160)
 		{
+			if(sign == '+' || sign == '-')
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
 			speed = val;
@@ -637,6 +690,68 @@ void proc_vr_cmd(char* message)
 	}
 	else
 		send_UART("Invalid Reference Speed instruction syntax.");
+}
+
+void proc_inc_cmd(char* message)
+{
+	strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+	if(mode_speed)
+	{
+		if(speed < 156)
+			speed += 5;
+		else
+			speed = 160;
+
+		sprintf(message, "Speed updated to %d rpm.", speed);
+	}
+	else
+	{
+		if(duty_cycle < 96)
+		{
+			duty_cycle += 5;
+			TIM2->CCR4 = duty_cycle;
+		}
+		else
+		{
+			duty_cycle = 100;
+			TIM2->CCR4 = duty_cycle;
+		}
+
+		sprintf((char*) message, "Duty cycle updated to %d%%.", duty_cycle);
+	}
+
+	send_UART(message);
+}
+
+void proc_dec_cmd(char* message)
+{
+	if(mode_speed)
+	{
+		if(speed > 4)
+			speed -= 5;
+		else
+			speed = 0;
+
+		sprintf((char*) message, "Speed updated to %d rpm.", speed);
+	}
+	else
+	{
+		if(duty_cycle > 4)
+		{
+			duty_cycle -= 5;
+			TIM2->CCR4 = duty_cycle;
+		}
+		else
+		{
+			duty_cycle = 0;
+			TIM2->CCR4 = duty_cycle;
+		}
+
+		sprintf((char*) message, "Duty cycle updated to %d%%.", duty_cycle);
+	}
+
+	send_UART(message);
 }
 
 void proc_hw_cmd(char* message)
@@ -658,6 +773,7 @@ void proc_stw_cmd(char* message)
 {
 	return;
 }
+
 
 //------------------------------------------------------------------------------------------------------------------
 

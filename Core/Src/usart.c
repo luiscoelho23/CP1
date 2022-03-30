@@ -171,7 +171,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	if(flagCPP)
 		return;
 
-	if(UART_RX_buffer[UART_RX_index] == '\r') //		CARRIAGE RETURN
+	if(UART_RX_buffer[UART_RX_index] == '\r' || UART_RX_buffer[UART_RX_index] == '\\' || UART_RX_buffer[UART_RX_index] == '/')
 	{
 		UART_RX_index = 0;
 		flagCPP = true;
@@ -185,15 +185,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 			else
 				UART_RX_index -= 2;
 		}
-
-		if(UART_RX_buffer[UART_RX_index] == 0x1B) //	ESCAPE
+		else if(UART_RX_buffer[UART_RX_index] == 0x1B) //	ESCAPE
+		{
 			UART_RX_index = -1;
-
-		if(UART_RX_buffer[UART_RX_index] == '$') //		$
+		}
+		else if(UART_RX_buffer[UART_RX_index] == '$') //		$
 		{
 			UART_RX_index = 0;
 			UART_RX_buffer[0] = '$';
 		}
+
+
 
 		HAL_UART_Receive_IT(&huart3, &UART_RX_buffer[++UART_RX_index], 1);
 	}

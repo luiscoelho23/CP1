@@ -7,4 +7,4 @@ usart.c:147:6:reset_UART	8	static
 usart.c:155:6:send_UART	16	static
 usart.c:164:6:read_UART	16	static
 usart.c:169:6:HAL_UART_RxCpltCallback	16	static
-usart.c:202:6:HAL_UART_TxCpltCallback	16	static
+usart.c:204:6:HAL_UART_TxCpltCallback	16	static

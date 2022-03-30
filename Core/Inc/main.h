@@ -57,6 +57,12 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define RV_Pin GPIO_PIN_15
+#define RV_GPIO_Port GPIOE
+#define FW_Pin GPIO_PIN_10
+#define FW_GPIO_Port GPIOB
+#define PWM_Pin GPIO_PIN_11
+#define PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
