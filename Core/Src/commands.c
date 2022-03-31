@@ -620,30 +620,50 @@ void proc_un_cmd(char* message)
 			{
 				if(!direction)
 				{
-					for(int i = duty_cyle; i > 0; i--)
+					for(int i = duty_cyle; i > 0; --i)
 					{
-						TIM2->CCR4 = i;
-						HAL_Delay(10);
+						TIM2->CCR4 = dutycyle = i;
+						HAL_Delay(5);
 					}
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
 				}
+
 				if(duty_cyle > val)
-					for(int i )
-				TIM2->CCR4 = duty_cycle = val;
+					for(int i = dutycyle; i > val ; --i){
+						TIM2->CCR4 = dutycyle = i;
+						HAL_Delay(5);
+					}
+				else if(duty_cycle < val)
+					for(int i = duty_cycle; i < val ; ++i){
+						TIM2->CCR4 = dutycyle = i;
+						HAL_Delay(5);
+					}
+
 				direction = true;
 			}
 			else
 			{
 				if(direction)
 				{
-					TIM2->CCR4 = 0;
-					HAL_Delay(100);
+					for(int i = duty_cyle; i > 0; --i){
+						TIM2->CCR4 = dutycyle = i;
+						HAL_Delay(5);
+					}
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
 				}
 
-				TIM2->CCR4 = duty_cycle = val;
+				if(duty_cyle > val)
+					for(int i = dutycyle; i > val; --i){
+						TIM2->CCR4 = dutycyle = i;
+						HAL_Delay(5);
+					}
+				else if(duty_cycle < val)
+					for(int i = duty_cycle; i < val; ++i){
+						TIM2->CCR4 = dutycyle = i;
+						HAL_Delay(5);
+					}
 				direction = false;
 			}
 
