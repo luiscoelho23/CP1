@@ -628,7 +628,8 @@ void proc_un_cmd(char* message)
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
 				}
-
+				if(duty_cyle > val)
+					for(int i )
 				TIM2->CCR4 = duty_cycle = val;
 				direction = true;
 			}
