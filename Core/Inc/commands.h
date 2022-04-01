@@ -10,6 +10,9 @@ extern "C" {
 #include <stdbool.h>
 #include <string.h>
 
+#define RV 0 // '-'
+#define FW 1 // '+'
+
 #define a 0.4
 #define M 26
 

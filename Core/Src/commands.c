@@ -535,6 +535,7 @@ void proc_st_cmd(char* message)
 
 void proc_cs_cmd(char* message)
 {
+	// DISABLE ALL
 	enable = false;
 	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
 
@@ -591,6 +592,7 @@ void proc_en_cmd(char* message)
 			}
 			else
 			{
+				// DISABLE ALL
 				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
 				send_UART("System disabled with success.");
 				enable = false;
@@ -625,20 +627,27 @@ void proc_un_cmd(char* message)
 						TIM2->CCR4 = duty_cycle = i;
 						HAL_Delay(5);
 					}
+
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
 				}
 
 				if(duty_cycle > val)
-					for(int i = duty_cycle; i > val ; --i){
+				{
+					for(int i = duty_cycle; i > val; --i)
+					{
 						TIM2->CCR4 = duty_cycle = i;
 						HAL_Delay(5);
 					}
+				}
 				else if(duty_cycle < val)
-					for(int i = duty_cycle; i < val ; ++i){
+				{
+					for(int i = duty_cycle; i < val; ++i)
+					{
 						TIM2->CCR4 = duty_cycle = i;
 						HAL_Delay(5);
 					}
+				}
 
 				direction = true;
 			}
@@ -646,34 +655,52 @@ void proc_un_cmd(char* message)
 			{
 				if(direction)
 				{
-					for(int i = duty_cycle; i > 0; --i){
+					for(int i = duty_cycle; i > 0; --i)
+					{
 						TIM2->CCR4 = duty_cycle = i;
 						HAL_Delay(5);
 					}
+
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
 				}
 
 				if(duty_cycle > val)
-					for(int i = duty_cycle; i > val; --i){
+				{
+					for(int i = duty_cycle; i > val; --i)
+					{
 						TIM2->CCR4 = duty_cycle = i;
 						HAL_Delay(5);
 					}
+				}
 				else if(duty_cycle < val)
-					for(int i = duty_cycle; i < val; ++i){
+				{
+					for(int i = duty_cycle; i < val; ++i)
+					{
 						TIM2->CCR4 = duty_cycle = i;
 						HAL_Delay(5);
 					}
+				}
+
 				direction = false;
 			}
 
 			send_UART("PWM average voltage changed with success.");
 		}
-		else if(args_read == 1 && sign == '0')
+		else
+			send_UART("Invalid Normalized Voltage instruction argument values.");
+	}
+	else if(sscanf((char*) message, "UN %d", &val) == 1)
+	{
+		if(!val)
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
-			TIM2->CCR4 = duty_cycle = 0;
+			for(int i = duty_cycle; i > 0; --i)
+			{
+				TIM2->CCR4 = duty_cycle = i;
+				HAL_Delay(5);
+			}
 
 			send_UART("PWM average voltage changed with success.");
 		}
@@ -730,13 +757,19 @@ void proc_inc_cmd(char* message)
 	{
 		if(duty_cycle < 96)
 		{
-			duty_cycle += 5;
-			TIM2->CCR4 = duty_cycle;
+			for(int i = 0; i < 5; ++i)
+			{
+				TIM2->CCR4 = ++duty_cycle;
+				HAL_Delay(5);
+			}
 		}
 		else
 		{
-			duty_cycle = 100;
-			TIM2->CCR4 = duty_cycle;
+			while(duty_cycle != 100)
+			{
+				TIM2->CCR4 = ++duty_cycle;
+				HAL_Delay(5);
+			}
 		}
 
 		sprintf((char*) message, "Duty cycle updated to %d%%.", duty_cycle);
@@ -760,13 +793,19 @@ void proc_dec_cmd(char* message)
 	{
 		if(duty_cycle > 4)
 		{
-			duty_cycle -= 5;
-			TIM2->CCR4 = duty_cycle;
+			for(int i = 5; i > 0; --i)
+			{
+				TIM2->CCR4 = --duty_cycle;
+				HAL_Delay(5);
+			}
 		}
 		else
 		{
-			duty_cycle = 0;
-			TIM2->CCR4 = duty_cycle;
+			while(duty_cycle != 0)
+			{
+				TIM2->CCR4 = --duty_cycle;
+				HAL_Delay(5);
+			}
 		}
 
 		sprintf((char*) message, "Duty cycle updated to %d%%.", duty_cycle);
