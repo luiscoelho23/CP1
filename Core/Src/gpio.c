@@ -125,12 +125,13 @@ bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	/*
-	if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13))
-	{
+	bool read_dir = HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13);
 
-	}
-	*/
+	static unsigned int pulses = 0;
+	pulses++;
+
+	if(pulses < LM_EN)
+
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 

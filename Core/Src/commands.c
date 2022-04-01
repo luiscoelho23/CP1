@@ -1085,6 +1085,12 @@ void process_buf(uint32_t* x_buf, int n)
 	}
 }
 
+
+void setDirection(bool dir)
+{
+	direction = dir;
+}
+
 /* USER CODE END 4 */
 
 /**

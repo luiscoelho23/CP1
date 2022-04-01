@@ -30,6 +30,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "commands.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
