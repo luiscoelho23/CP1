@@ -18,6 +18,8 @@ float coef_bk[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.
 bool mode_speed = false, enable = false, direction = false;
 unsigned int duty_cycle = 0, speed = 0;
 
+#define RECOVERY_TIME_MS 10
+
 
 unsigned char check_command(char* message)
 {
@@ -622,10 +624,10 @@ void proc_un_cmd(char* message)
 			{
 				if(!direction)
 				{
-					for(int i = duty_cycle; i > 0; --i)
+					for(int i = duty_cycle; i > 0; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i;
-						HAL_Delay(5);
+						TIM2->CCR4 = duty_cycle = i - 1;
+						HAL_Delay(RECOVERY_TIME_MS);
 					}
 
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
@@ -634,18 +636,18 @@ void proc_un_cmd(char* message)
 
 				if(duty_cycle > val)
 				{
-					for(int i = duty_cycle; i > val; --i)
+					for(int i = duty_cycle; i > val; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i;
-						HAL_Delay(5);
+						TIM2->CCR4 = duty_cycle = i - 1;
+						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
 				else if(duty_cycle < val)
 				{
-					for(int i = duty_cycle; i < val; ++i)
+					for(int i = duty_cycle; i < val; i++)
 					{
-						TIM2->CCR4 = duty_cycle = i;
-						HAL_Delay(5);
+						TIM2->CCR4 = duty_cycle = i + 1;
+						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
 
@@ -655,10 +657,10 @@ void proc_un_cmd(char* message)
 			{
 				if(direction)
 				{
-					for(int i = duty_cycle; i > 0; --i)
+					for(int i = duty_cycle; i > 0; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i;
-						HAL_Delay(5);
+						TIM2->CCR4 = duty_cycle = i - 1;
+						HAL_Delay(RECOVERY_TIME_MS);
 					}
 
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
@@ -667,18 +669,18 @@ void proc_un_cmd(char* message)
 
 				if(duty_cycle > val)
 				{
-					for(int i = duty_cycle; i > val; --i)
+					for(int i = duty_cycle; i > val; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i;
-						HAL_Delay(5);
+						TIM2->CCR4 = duty_cycle = i - 1;
+						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
 				else if(duty_cycle < val)
 				{
-					for(int i = duty_cycle; i < val; ++i)
+					for(int i = duty_cycle; i < val; i++)
 					{
-						TIM2->CCR4 = duty_cycle = i;
-						HAL_Delay(5);
+						TIM2->CCR4 = duty_cycle = i + 1;
+						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
 
@@ -696,10 +698,10 @@ void proc_un_cmd(char* message)
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
-			for(int i = duty_cycle; i > 0; --i)
+			for(int i = duty_cycle; i > 0; i--)
 			{
-				TIM2->CCR4 = duty_cycle = i;
-				HAL_Delay(5);
+				TIM2->CCR4 = duty_cycle = i - 1;
+				HAL_Delay(RECOVERY_TIME_MS);
 			}
 
 			send_UART("PWM average voltage changed with success.");
@@ -760,7 +762,7 @@ void proc_inc_cmd(char* message)
 			for(int i = 0; i < 5; ++i)
 			{
 				TIM2->CCR4 = ++duty_cycle;
-				HAL_Delay(5);
+				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
 		else
@@ -768,7 +770,7 @@ void proc_inc_cmd(char* message)
 			while(duty_cycle != 100)
 			{
 				TIM2->CCR4 = ++duty_cycle;
-				HAL_Delay(5);
+				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
 
@@ -796,7 +798,7 @@ void proc_dec_cmd(char* message)
 			for(int i = 5; i > 0; --i)
 			{
 				TIM2->CCR4 = --duty_cycle;
-				HAL_Delay(5);
+				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
 		else
@@ -804,7 +806,7 @@ void proc_dec_cmd(char* message)
 			while(duty_cycle != 0)
 			{
 				TIM2->CCR4 = --duty_cycle;
-				HAL_Delay(5);
+				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
 
