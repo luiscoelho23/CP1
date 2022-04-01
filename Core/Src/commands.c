@@ -757,9 +757,16 @@ void proc_inc_cmd(char* message)
 	}
 	else
 	{
-		if(duty_cycle < 96)
+		if(duty_cycle == 0)
 		{
-			for(int i = 0; i < 5; ++i)
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
+			direction = true;
+		}
+
+		if(direction)
+		{
+			for(int i = 0; i < 5 && duty_cycle < 100; ++i)
 			{
 				TIM2->CCR4 = ++duty_cycle;
 				HAL_Delay(RECOVERY_TIME_MS);
@@ -767,9 +774,9 @@ void proc_inc_cmd(char* message)
 		}
 		else
 		{
-			while(duty_cycle != 100)
+			for(int i = 0; i < 5 && duty_cycle > 0; ++i)
 			{
-				TIM2->CCR4 = ++duty_cycle;
+				TIM2->CCR4 = --duty_cycle;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
@@ -793,17 +800,24 @@ void proc_dec_cmd(char* message)
 	}
 	else
 	{
-		if(duty_cycle > 4)
+		if(duty_cycle == 0)
 		{
-			for(int i = 5; i > 0; --i)
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
+			direction = false;
+		}
+
+		if(!direction)
+		{
+			for(int i = 0; i < 5 && duty_cycle < 100; ++i)
 			{
-				TIM2->CCR4 = --duty_cycle;
+				TIM2->CCR4 = ++duty_cycle;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
 		else
 		{
-			while(duty_cycle != 0)
+			for(int i = 0; i < 5 && duty_cycle > 0; ++i)
 			{
 				TIM2->CCR4 = --duty_cycle;
 				HAL_Delay(RECOVERY_TIME_MS);

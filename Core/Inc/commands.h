@@ -10,6 +10,9 @@ extern "C" {
 #include <stdbool.h>
 #include <string.h>
 
+#define LM_EN 100
+#define LM_RES 50
+
 #define RV 0 // '-'
 #define FW 1 // '+'
 
@@ -89,5 +92,7 @@ void (*process_buf_func[3])(uint32_t*, int);
 void process_buf_nf(uint32_t*, int);
 void process_buf_if(uint32_t*, int);
 void process_buf_ff(uint32_t*, int);
+
+void setDirection(bool dir);
 
 #endif /* __COMMANDS_H__ */
