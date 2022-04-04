@@ -35,6 +35,10 @@ unsigned char check_command(char* message)
         cmd = FNI;
     else if((!strncmp((char*) message, "FFI", 3)))
         cmd = FFI;
+    else if((!strncmp((char*) message, "FSW", 3)))
+    	cmd = FSW;
+    else if((!strncmp((char*) message, "STW",3)))
+		cmd = STW;
     else if((!strncmp((char*) message, "ST", 2)))
         cmd = ST;
     else if((!strncmp((char*) message, "MR", 2)))
@@ -67,12 +71,8 @@ unsigned char check_command(char* message)
         cmd = VR;
     else if((!strncmp((char*) message, "HW", 2)))
 		cmd = HW;
-    else if((!strncmp((char*) message, "FSW", 2)))
-		cmd = FSW;
     else if((!strncmp((char*) message, "SW", 2)))
 		cmd = SW;
-    else if((!strncmp((char*) message, "STW", 2)))
-		cmd = STW;
     else if((!strncmp((char*) message, "$", 1)))
         cmd = LAST;
     else if((!strncmp((char*) message, "?", 1)))
@@ -832,22 +832,63 @@ void proc_dec_cmd(char* message)
 
 void proc_hw_cmd(char* message)
 {
-	return;
+	unsigned int unit;
+	char timeunit[2];
+
+	if(sscanf((char*)message, "HW %s %d", timeunit, &unit) == 2)
+		{
+			if(!strcmp(timeunit,"ms") == 0 || !strcmp(timeunit,"s") == 0 || !strcmp(timeunit,"us") == 0)
+			{
+				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+				strcpy(sp_config.timeunit,timeunit);
+				sp_config.unit = unit;
+				send_UART("Sampling timeunit and units changed with success.");
+			}
+			else
+				send_UART("Invalid Sample Period instruction argument values.");
+		}
+		else
+			send_UART("Invalid Sample Period instruction syntax.");
 }
 
 void proc_fsw_cmd(char* message)
 {
-	return;
+
 }
 
 void proc_sw_cmd(char* message)
 {
-	return;
+	unsigned int k_values;
+
+	if(message[2] == '\r')
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		sp_config.sp_limit = 0;
+		MX_TIM3_Init1(sp_config);
+		HAL_TIM_Base_Start_IT(&htim3);
+	}
+	else if(sscanf((char*)message, "SW %d", &k_values) == 1)
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		sp_config.sp_limit = k_values;
+		MX_TIM3_Init1(sp_config);
+		HAL_TIM_Base_Start_IT(&htim3);
+	}
+	else
+		send_UART("Invalid Sample instruction syntax.");
 }
 
 void proc_stw_cmd(char* message)
 {
-	return;
+	if(message[3] == '\r')
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		HAL_TIM_Base_Stop_IT(&htim3);
+		send_UART("Sampling Stopped.");
+	}
+	else
+		send_UART("Invalid Stop Sampling instruction syntax.");
 }
 
 
