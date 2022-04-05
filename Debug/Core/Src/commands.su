@@ -41,3 +41,4 @@ commands.c:1026:6:process_buf_nf	16	static
 commands.c:1032:6:process_buf_if	16	static
 commands.c:1050:6:process_buf_ff	24	static
 commands.c:1062:6:process_buf	48	static
+commands.c:1089:6:setDirection	16	static
