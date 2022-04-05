@@ -23,7 +23,7 @@
 /* USER CODE BEGIN 0 */
 
 unsigned int speed;
-unsigned int units = u_rpm;
+char units = u_rpm;
 float sp_period_s;
 char* message;
 
