@@ -65,7 +65,7 @@ unsigned char check_command(char* message)
         cmd = UN;
     else if((!strncmp((char*) message, "EN", 2)))
         cmd = EN;
-    else if( (!strncmp((char*) message, "CS", 2)))
+    else if((!strncmp((char*) message, "CS", 2)))
         cmd = CS;
     else if((!strncmp((char*) message, "VR", 2)))
         cmd = VR;
@@ -854,7 +854,21 @@ void proc_hw_cmd(char* message)
 
 void proc_fsw_cmd(char* message)
 {
+	char units[4];
 
+	if(sscanf((char*)message, "FSW %s", units) == 1)
+		{
+			if(!strcmp(units,"hz") == 0 || !strcmp(units,"rps") == 0 || !strcmp(units,"rads") == 0 || !strcmp(units,"rpm") == 0)
+			{
+				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+				set_units(units);
+				send_UART("Sampling units changed with success.");
+			}
+			else
+				send_UART("Invalid FSW instruction argument values.");
+		}
+		else
+			send_UART("Invalid FSW instruction syntax.");
 }
 
 void proc_sw_cmd(char* message)

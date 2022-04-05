@@ -22,7 +22,8 @@
 
 /* USER CODE BEGIN 0 */
 
-unsigned int rpm;
+unsigned int speed;
+char units = u_rpm;
 float sp_period_s;
 char* message;
 
@@ -385,15 +386,58 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	if (htim == &htim3 )
 	{
 
-		rpm = n_pulses() * 60 /960 / sp_period_s;
+		process_units[units]();
 
-		sprintf((char*) message, "Rpm: %d.", rpm);
 		send_UART(message);
 	}
+}
+
+void (*process_units[])() = {
+		process_units_rpm,
+		process_units_rps,
+		process_units_hz,
+		process_units_rads
+};
+
+void process_units_rads()
+{
+
+	sprintf((char*) message, "rads: %d.", speed);
+}
+
+void process_units_rps()
+{
+
+	sprintf((char*) message, "rps: %d.", speed);
+}
+
+void process_units_hz()
+{
+
+	sprintf((char*) message, "hz: %d.", speed);
+}
+
+void process_units_rpm()
+{
+	speed = n_pulses() * 60 /960 / sp_period_s;
+	sprintf((char*) message, "rpm: %d.", speed);
+}
+
+void set_units(char s_units[4])
+{
+	if(!strcmp(s_units,"hz") == 0)
+		units = u_hz;
+	else if(!strcmp(s_units,"rps") == 0)
+		units = u_rps;
+	else if(!strcmp(s_units,"rads") == 0)
+		units = u_rads;
+	else if(!strcmp(s_units,"rpm") == 0)
+		units = u_rpm;
 }
 /* USER CODE END 1 */
