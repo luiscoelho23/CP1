@@ -39,11 +39,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   00018f80  00000000  00000000  000712ae  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
+<<<<<<< Updated upstream
  18 .debug_str    0010423a  00000000  00000000  0008a22e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  19 .comment      00000053  00000000  00000000  0018e468  2**0
                   CONTENTS, READONLY
  20 .debug_frame  000064f8  00000000  00000000  0018e4bc  2**2
+=======
+ 18 .debug_str    00104269  00000000  00000000  0008a22e  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 19 .comment      00000053  00000000  00000000  0018e497  2**0
+                  CONTENTS, READONLY
+ 20 .debug_frame  000064f8  00000000  00000000  0018e4ec  2**2
+>>>>>>> Stashed changes
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1455,31 +1463,31 @@ unsigned char check_command(char* message)
  8000e1c:	230f      	movs	r3, #15
  8000e1e:	73fb      	strb	r3, [r7, #15]
  8000e20:	e104      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "ST", 2)))
- 8000e22:	2202      	movs	r2, #2
+    else if((!strncmp((char*) message, "STW", 3)))
+ 8000e22:	2203      	movs	r2, #3
  8000e24:	4989      	ldr	r1, [pc, #548]	; (800104c <check_command+0x2a4>)
  8000e26:	6878      	ldr	r0, [r7, #4]
  8000e28:	f008 fe2b 	bl	8009a82 <strncmp>
  8000e2c:	4603      	mov	r3, r0
  8000e2e:	2b00      	cmp	r3, #0
  8000e30:	d102      	bne.n	8000e38 <check_command+0x90>
-        cmd = ST;
- 8000e32:	2313      	movs	r3, #19
+		cmd = STW;
+ 8000e32:	231d      	movs	r3, #29
  8000e34:	73fb      	strb	r3, [r7, #15]
  8000e36:	e0f9      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "MR", 2)))
- 8000e38:	2202      	movs	r2, #2
+    else if((!strncmp((char*) message, "FSW", 3)))
+ 8000e38:	2203      	movs	r2, #3
  8000e3a:	4985      	ldr	r1, [pc, #532]	; (8001050 <check_command+0x2a8>)
  8000e3c:	6878      	ldr	r0, [r7, #4]
  8000e3e:	f008 fe20 	bl	8009a82 <strncmp>
  8000e42:	4603      	mov	r3, r0
  8000e44:	2b00      	cmp	r3, #0
  8000e46:	d102      	bne.n	8000e4e <check_command+0xa6>
-        cmd = FFI;
- 8000e48:	230f      	movs	r3, #15
+		cmd = FSW;
+ 8000e48:	231b      	movs	r3, #27
  8000e4a:	73fb      	strb	r3, [r7, #15]
  8000e4c:	e0ee      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "MW", 2)))
+    else if((!strncmp((char*) message, "ST", 2)))
  8000e4e:	2202      	movs	r2, #2
  8000e50:	4980      	ldr	r1, [pc, #512]	; (8001054 <check_command+0x2ac>)
  8000e52:	6878      	ldr	r0, [r7, #4]
@@ -1487,11 +1495,11 @@ unsigned char check_command(char* message)
  8000e58:	4603      	mov	r3, r0
  8000e5a:	2b00      	cmp	r3, #0
  8000e5c:	d102      	bne.n	8000e64 <check_command+0xbc>
-        cmd = MW;
- 8000e5e:	2302      	movs	r3, #2
+        cmd = ST;
+ 8000e5e:	2313      	movs	r3, #19
  8000e60:	73fb      	strb	r3, [r7, #15]
  8000e62:	e0e3      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "MI", 2)))
+    else if((!strncmp((char*) message, "MR", 2)))
  8000e64:	2202      	movs	r2, #2
  8000e66:	497c      	ldr	r1, [pc, #496]	; (8001058 <check_command+0x2b0>)
  8000e68:	6878      	ldr	r0, [r7, #4]
@@ -1499,11 +1507,11 @@ unsigned char check_command(char* message)
  8000e6e:	4603      	mov	r3, r0
  8000e70:	2b00      	cmp	r3, #0
  8000e72:	d102      	bne.n	8000e7a <check_command+0xd2>
-        cmd = MI;
- 8000e74:	2303      	movs	r3, #3
+        cmd = FFI;
+ 8000e74:	230f      	movs	r3, #15
  8000e76:	73fb      	strb	r3, [r7, #15]
  8000e78:	e0d8      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "MO", 2)))
+    else if((!strncmp((char*) message, "MW", 2)))
  8000e7a:	2202      	movs	r2, #2
  8000e7c:	4977      	ldr	r1, [pc, #476]	; (800105c <check_command+0x2b4>)
  8000e7e:	6878      	ldr	r0, [r7, #4]
@@ -1511,11 +1519,11 @@ unsigned char check_command(char* message)
  8000e84:	4603      	mov	r3, r0
  8000e86:	2b00      	cmp	r3, #0
  8000e88:	d102      	bne.n	8000e90 <check_command+0xe8>
-        cmd = MO;
- 8000e8a:	2304      	movs	r3, #4
+        cmd = MW;
+ 8000e8a:	2302      	movs	r3, #2
  8000e8c:	73fb      	strb	r3, [r7, #15]
  8000e8e:	e0cd      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "RD", 2)))
+    else if((!strncmp((char*) message, "MI", 2)))
  8000e90:	2202      	movs	r2, #2
  8000e92:	4973      	ldr	r1, [pc, #460]	; (8001060 <check_command+0x2b8>)
  8000e94:	6878      	ldr	r0, [r7, #4]
@@ -1523,11 +1531,11 @@ unsigned char check_command(char* message)
  8000e9a:	4603      	mov	r3, r0
  8000e9c:	2b00      	cmp	r3, #0
  8000e9e:	d102      	bne.n	8000ea6 <check_command+0xfe>
-        cmd = RD;
- 8000ea0:	2305      	movs	r3, #5
+        cmd = MI;
+ 8000ea0:	2303      	movs	r3, #3
  8000ea2:	73fb      	strb	r3, [r7, #15]
  8000ea4:	e0c2      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "WD", 2)))
+    else if((!strncmp((char*) message, "MO", 2)))
  8000ea6:	2202      	movs	r2, #2
  8000ea8:	496e      	ldr	r1, [pc, #440]	; (8001064 <check_command+0x2bc>)
  8000eaa:	6878      	ldr	r0, [r7, #4]
@@ -1535,11 +1543,11 @@ unsigned char check_command(char* message)
  8000eb0:	4603      	mov	r3, r0
  8000eb2:	2b00      	cmp	r3, #0
  8000eb4:	d102      	bne.n	8000ebc <check_command+0x114>
-        cmd = WD;
- 8000eb6:	2306      	movs	r3, #6
+        cmd = MO;
+ 8000eb6:	2304      	movs	r3, #4
  8000eb8:	73fb      	strb	r3, [r7, #15]
  8000eba:	e0b7      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "RA", 2)))
+    else if((!strncmp((char*) message, "RD", 2)))
  8000ebc:	2202      	movs	r2, #2
  8000ebe:	496a      	ldr	r1, [pc, #424]	; (8001068 <check_command+0x2c0>)
  8000ec0:	6878      	ldr	r0, [r7, #4]
@@ -1547,11 +1555,11 @@ unsigned char check_command(char* message)
  8000ec6:	4603      	mov	r3, r0
  8000ec8:	2b00      	cmp	r3, #0
  8000eca:	d102      	bne.n	8000ed2 <check_command+0x12a>
-        cmd = RA;
- 8000ecc:	2307      	movs	r3, #7
+        cmd = RD;
+ 8000ecc:	2305      	movs	r3, #5
  8000ece:	73fb      	strb	r3, [r7, #15]
  8000ed0:	e0ac      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "WA", 2)))
+    else if((!strncmp((char*) message, "WD", 2)))
  8000ed2:	2202      	movs	r2, #2
  8000ed4:	4965      	ldr	r1, [pc, #404]	; (800106c <check_command+0x2c4>)
  8000ed6:	6878      	ldr	r0, [r7, #4]
@@ -1559,11 +1567,11 @@ unsigned char check_command(char* message)
  8000edc:	4603      	mov	r3, r0
  8000ede:	2b00      	cmp	r3, #0
  8000ee0:	d102      	bne.n	8000ee8 <check_command+0x140>
-        cmd = WA;
- 8000ee2:	2308      	movs	r3, #8
+        cmd = WD;
+ 8000ee2:	2306      	movs	r3, #6
  8000ee4:	73fb      	strb	r3, [r7, #15]
  8000ee6:	e0a1      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "SP", 2)))
+    else if((!strncmp((char*) message, "RA", 2)))
  8000ee8:	2202      	movs	r2, #2
  8000eea:	4961      	ldr	r1, [pc, #388]	; (8001070 <check_command+0x2c8>)
  8000eec:	6878      	ldr	r0, [r7, #4]
@@ -1571,11 +1579,11 @@ unsigned char check_command(char* message)
  8000ef2:	4603      	mov	r3, r0
  8000ef4:	2b00      	cmp	r3, #0
  8000ef6:	d102      	bne.n	8000efe <check_command+0x156>
-        cmd = SP;
- 8000ef8:	230c      	movs	r3, #12
+        cmd = RA;
+ 8000ef8:	2307      	movs	r3, #7
  8000efa:	73fb      	strb	r3, [r7, #15]
  8000efc:	e096      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "AC", 2)))
+    else if((!strncmp((char*) message, "WA", 2)))
  8000efe:	2202      	movs	r2, #2
  8000f00:	495c      	ldr	r1, [pc, #368]	; (8001074 <check_command+0x2cc>)
  8000f02:	6878      	ldr	r0, [r7, #4]
@@ -1583,11 +1591,11 @@ unsigned char check_command(char* message)
  8000f08:	4603      	mov	r3, r0
  8000f0a:	2b00      	cmp	r3, #0
  8000f0c:	d102      	bne.n	8000f14 <check_command+0x16c>
-        cmd = AC;
- 8000f0e:	230d      	movs	r3, #13
+        cmd = WA;
+ 8000f0e:	2308      	movs	r3, #8
  8000f10:	73fb      	strb	r3, [r7, #15]
  8000f12:	e08b      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "UN", 2)))
+    else if((!strncmp((char*) message, "SP", 2)))
  8000f14:	2202      	movs	r2, #2
  8000f16:	4958      	ldr	r1, [pc, #352]	; (8001078 <check_command+0x2d0>)
  8000f18:	6878      	ldr	r0, [r7, #4]
@@ -1595,11 +1603,11 @@ unsigned char check_command(char* message)
  8000f1e:	4603      	mov	r3, r0
  8000f20:	2b00      	cmp	r3, #0
  8000f22:	d102      	bne.n	8000f2a <check_command+0x182>
-        cmd = UN;
- 8000f24:	2316      	movs	r3, #22
+        cmd = SP;
+ 8000f24:	230c      	movs	r3, #12
  8000f26:	73fb      	strb	r3, [r7, #15]
  8000f28:	e080      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "EN", 2)))
+    else if((!strncmp((char*) message, "AC", 2)))
  8000f2a:	2202      	movs	r2, #2
  8000f2c:	4953      	ldr	r1, [pc, #332]	; (800107c <check_command+0x2d4>)
  8000f2e:	6878      	ldr	r0, [r7, #4]
@@ -1607,11 +1615,11 @@ unsigned char check_command(char* message)
  8000f34:	4603      	mov	r3, r0
  8000f36:	2b00      	cmp	r3, #0
  8000f38:	d102      	bne.n	8000f40 <check_command+0x198>
-        cmd = EN;
- 8000f3a:	2315      	movs	r3, #21
+        cmd = AC;
+ 8000f3a:	230d      	movs	r3, #13
  8000f3c:	73fb      	strb	r3, [r7, #15]
  8000f3e:	e075      	b.n	800102c <check_command+0x284>
-    else if( (!strncmp((char*) message, "CS", 2)))
+    else if((!strncmp((char*) message, "UN", 2)))
  8000f40:	2202      	movs	r2, #2
  8000f42:	494f      	ldr	r1, [pc, #316]	; (8001080 <check_command+0x2d8>)
  8000f44:	6878      	ldr	r0, [r7, #4]
@@ -1619,11 +1627,11 @@ unsigned char check_command(char* message)
  8000f4a:	4603      	mov	r3, r0
  8000f4c:	2b00      	cmp	r3, #0
  8000f4e:	d102      	bne.n	8000f56 <check_command+0x1ae>
-        cmd = CS;
- 8000f50:	2314      	movs	r3, #20
+        cmd = UN;
+ 8000f50:	2316      	movs	r3, #22
  8000f52:	73fb      	strb	r3, [r7, #15]
  8000f54:	e06a      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "VR", 2)))
+    else if((!strncmp((char*) message, "EN", 2)))
  8000f56:	2202      	movs	r2, #2
  8000f58:	494a      	ldr	r1, [pc, #296]	; (8001084 <check_command+0x2dc>)
  8000f5a:	6878      	ldr	r0, [r7, #4]
@@ -1631,11 +1639,11 @@ unsigned char check_command(char* message)
  8000f60:	4603      	mov	r3, r0
  8000f62:	2b00      	cmp	r3, #0
  8000f64:	d102      	bne.n	8000f6c <check_command+0x1c4>
-        cmd = VR;
- 8000f66:	2317      	movs	r3, #23
+        cmd = EN;
+ 8000f66:	2315      	movs	r3, #21
  8000f68:	73fb      	strb	r3, [r7, #15]
  8000f6a:	e05f      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "HW", 2)))
+    else if((!strncmp((char*) message, "CS", 2)))
  8000f6c:	2202      	movs	r2, #2
  8000f6e:	4946      	ldr	r1, [pc, #280]	; (8001088 <check_command+0x2e0>)
  8000f70:	6878      	ldr	r0, [r7, #4]
@@ -1643,11 +1651,11 @@ unsigned char check_command(char* message)
  8000f76:	4603      	mov	r3, r0
  8000f78:	2b00      	cmp	r3, #0
  8000f7a:	d102      	bne.n	8000f82 <check_command+0x1da>
-		cmd = HW;
- 8000f7c:	231a      	movs	r3, #26
+        cmd = CS;
+ 8000f7c:	2314      	movs	r3, #20
  8000f7e:	73fb      	strb	r3, [r7, #15]
  8000f80:	e054      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "FSW", 2)))
+    else if((!strncmp((char*) message, "VR", 2)))
  8000f82:	2202      	movs	r2, #2
  8000f84:	4941      	ldr	r1, [pc, #260]	; (800108c <check_command+0x2e4>)
  8000f86:	6878      	ldr	r0, [r7, #4]
@@ -1655,11 +1663,11 @@ unsigned char check_command(char* message)
  8000f8c:	4603      	mov	r3, r0
  8000f8e:	2b00      	cmp	r3, #0
  8000f90:	d102      	bne.n	8000f98 <check_command+0x1f0>
-		cmd = FSW;
- 8000f92:	231b      	movs	r3, #27
+        cmd = VR;
+ 8000f92:	2317      	movs	r3, #23
  8000f94:	73fb      	strb	r3, [r7, #15]
  8000f96:	e049      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "SW", 2)))
+    else if((!strncmp((char*) message, "HW", 2)))
  8000f98:	2202      	movs	r2, #2
  8000f9a:	493d      	ldr	r1, [pc, #244]	; (8001090 <check_command+0x2e8>)
  8000f9c:	6878      	ldr	r0, [r7, #4]
@@ -1667,11 +1675,11 @@ unsigned char check_command(char* message)
  8000fa2:	4603      	mov	r3, r0
  8000fa4:	2b00      	cmp	r3, #0
  8000fa6:	d102      	bne.n	8000fae <check_command+0x206>
-		cmd = SW;
- 8000fa8:	231c      	movs	r3, #28
+		cmd = HW;
+ 8000fa8:	231a      	movs	r3, #26
  8000faa:	73fb      	strb	r3, [r7, #15]
  8000fac:	e03e      	b.n	800102c <check_command+0x284>
-    else if((!strncmp((char*) message, "STW", 2)))
+    else if((!strncmp((char*) message, "SW", 2)))
  8000fae:	2202      	movs	r2, #2
  8000fb0:	4938      	ldr	r1, [pc, #224]	; (8001094 <check_command+0x2ec>)
  8000fb2:	6878      	ldr	r0, [r7, #4]
@@ -1679,8 +1687,8 @@ unsigned char check_command(char* message)
  8000fb8:	4603      	mov	r3, r0
  8000fba:	2b00      	cmp	r3, #0
  8000fbc:	d102      	bne.n	8000fc4 <check_command+0x21c>
-		cmd = STW;
- 8000fbe:	231d      	movs	r3, #29
+		cmd = SW;
+ 8000fbe:	231c      	movs	r3, #28
  8000fc0:	73fb      	strb	r3, [r7, #15]
  8000fc2:	e033      	b.n	800102c <check_command+0x284>
     else if((!strncmp((char*) message, "$", 1)))
@@ -2747,28 +2755,28 @@ void proc_sp_cmd(char* message)
  8001772:	2b02      	cmp	r3, #2
  8001774:	d131      	bne.n	80017da <proc_sp_cmd+0x82>
 		{
-			if(!strcmp(timeunit,"ms") == 0 || !strcmp(timeunit,"s") == 0 || !strcmp(timeunit,"us") == 0)
+			if(strcmp(timeunit,"ms") == 0 || strcmp(timeunit,"s") == 0 || strcmp(timeunit,"us") == 0)
  8001776:	f107 0308 	add.w	r3, r7, #8
  800177a:	491c      	ldr	r1, [pc, #112]	; (80017ec <proc_sp_cmd+0x94>)
  800177c:	4618      	mov	r0, r3
  800177e:	f7fe fd5f 	bl	8000240 <strcmp>
  8001782:	4603      	mov	r3, r0
  8001784:	2b00      	cmp	r3, #0
- 8001786:	d111      	bne.n	80017ac <proc_sp_cmd+0x54>
+ 8001786:	d011      	beq.n	80017ac <proc_sp_cmd+0x54>
  8001788:	f107 0308 	add.w	r3, r7, #8
  800178c:	4918      	ldr	r1, [pc, #96]	; (80017f0 <proc_sp_cmd+0x98>)
  800178e:	4618      	mov	r0, r3
  8001790:	f7fe fd56 	bl	8000240 <strcmp>
  8001794:	4603      	mov	r3, r0
  8001796:	2b00      	cmp	r3, #0
- 8001798:	d108      	bne.n	80017ac <proc_sp_cmd+0x54>
+ 8001798:	d008      	beq.n	80017ac <proc_sp_cmd+0x54>
  800179a:	f107 0308 	add.w	r3, r7, #8
  800179e:	4915      	ldr	r1, [pc, #84]	; (80017f4 <proc_sp_cmd+0x9c>)
  80017a0:	4618      	mov	r0, r3
  80017a2:	f7fe fd4d 	bl	8000240 <strcmp>
  80017a6:	4603      	mov	r3, r0
  80017a8:	2b00      	cmp	r3, #0
- 80017aa:	d012      	beq.n	80017d2 <proc_sp_cmd+0x7a>
+ 80017aa:	d112      	bne.n	80017d2 <proc_sp_cmd+0x7a>
 			{
 				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
  80017ac:	f44f 7280 	mov.w	r2, #256	; 0x100
@@ -5778,6 +5786,10 @@ void MX_GPIO_Init(void)
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
  8002b7a:	2028      	movs	r0, #40	; 0x28
  8002b7c:	f001 fcb3 	bl	80044e6 <HAL_NVIC_EnableIRQ>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 }
  8002b80:	bf00      	nop
  8002b82:	3730      	adds	r7, #48	; 0x30
@@ -8037,6 +8049,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
  80037d4:	20018738 	.word	0x20018738
 
 080037d8 <Reset_Handler>:
+<<<<<<< Updated upstream
 
     .section  .text.Reset_Handler
   .weak  Reset_Handler
@@ -8134,6 +8147,48 @@ LoopFillZerobss:
 Default_Handler:
 Infinite_Loop:
   b  Infinite_Loop
+=======
+ 80037d8:	f8df d034 	ldr.w	sp, [pc, #52]	; 8003810 <LoopFillZerobss+0x12>
+ 80037dc:	480d      	ldr	r0, [pc, #52]	; (8003814 <LoopFillZerobss+0x16>)
+ 80037de:	490e      	ldr	r1, [pc, #56]	; (8003818 <LoopFillZerobss+0x1a>)
+ 80037e0:	4a0e      	ldr	r2, [pc, #56]	; (800381c <LoopFillZerobss+0x1e>)
+ 80037e2:	2300      	movs	r3, #0
+ 80037e4:	e002      	b.n	80037ec <LoopCopyDataInit>
+
+080037e6 <CopyDataInit>:
+ 80037e6:	58d4      	ldr	r4, [r2, r3]
+ 80037e8:	50c4      	str	r4, [r0, r3]
+ 80037ea:	3304      	adds	r3, #4
+
+080037ec <LoopCopyDataInit>:
+ 80037ec:	18c4      	adds	r4, r0, r3
+ 80037ee:	428c      	cmp	r4, r1
+ 80037f0:	d3f9      	bcc.n	80037e6 <CopyDataInit>
+ 80037f2:	4a0b      	ldr	r2, [pc, #44]	; (8003820 <LoopFillZerobss+0x22>)
+ 80037f4:	4c0b      	ldr	r4, [pc, #44]	; (8003824 <LoopFillZerobss+0x26>)
+ 80037f6:	2300      	movs	r3, #0
+ 80037f8:	e001      	b.n	80037fe <LoopFillZerobss>
+
+080037fa <FillZerobss>:
+ 80037fa:	6013      	str	r3, [r2, #0]
+ 80037fc:	3204      	adds	r2, #4
+
+080037fe <LoopFillZerobss>:
+ 80037fe:	42a2      	cmp	r2, r4
+ 8003800:	d3fb      	bcc.n	80037fa <FillZerobss>
+ 8003802:	f7ff fc39 	bl	8003078 <SystemInit>
+ 8003806:	f005 fa2b 	bl	8008c60 <__libc_init_array>
+ 800380a:	f7ff fa3d 	bl	8002c88 <main>
+ 800380e:	4770      	bx	lr
+ 8003810:	20080000 	.word	0x20080000
+ 8003814:	20000000 	.word	0x20000000
+ 8003818:	200002e8 	.word	0x200002e8
+ 800381c:	0800ed74 	.word	0x0800ed74
+ 8003820:	200002e8 	.word	0x200002e8
+ 8003824:	200187d0 	.word	0x200187d0
+
+08003828 <CAN1_RX0_IRQHandler>:
+>>>>>>> Stashed changes
  8003828:	e7fe      	b.n	8003828 <CAN1_RX0_IRQHandler>
 
 0800382a <HAL_Init>:

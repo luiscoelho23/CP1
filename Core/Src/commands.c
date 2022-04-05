@@ -35,6 +35,10 @@ unsigned char check_command(char* message)
         cmd = FNI;
     else if((!strncmp((char*) message, "FFI", 3)))
         cmd = FFI;
+    else if((!strncmp((char*) message, "STW", 3)))
+		cmd = STW;
+    else if((!strncmp((char*) message, "FSW", 3)))
+		cmd = FSW;
     else if((!strncmp((char*) message, "ST", 2)))
         cmd = ST;
     else if((!strncmp((char*) message, "MR", 2)))
@@ -61,18 +65,14 @@ unsigned char check_command(char* message)
         cmd = UN;
     else if((!strncmp((char*) message, "EN", 2)))
         cmd = EN;
-    else if( (!strncmp((char*) message, "CS", 2)))
+    else if((!strncmp((char*) message, "CS", 2)))
         cmd = CS;
     else if((!strncmp((char*) message, "VR", 2)))
         cmd = VR;
     else if((!strncmp((char*) message, "HW", 2)))
 		cmd = HW;
-    else if((!strncmp((char*) message, "FSW", 2)))
-		cmd = FSW;
     else if((!strncmp((char*) message, "SW", 2)))
 		cmd = SW;
-    else if((!strncmp((char*) message, "STW", 2)))
-		cmd = STW;
     else if((!strncmp((char*) message, "$", 1)))
         cmd = LAST;
     else if((!strncmp((char*) message, "?", 1)))
@@ -387,7 +387,7 @@ void proc_sp_cmd(char* message)
 
 	if(sscanf((char*)message, "SP %s %d", timeunit, &unit) == 2)
 		{
-			if(!strcmp(timeunit,"ms") == 0 || !strcmp(timeunit,"s") == 0 || !strcmp(timeunit,"us") == 0)
+			if(strcmp(timeunit,"ms") == 0 || strcmp(timeunit,"s") == 0 || strcmp(timeunit,"us") == 0)
 			{
 				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
