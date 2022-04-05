@@ -36,7 +36,6 @@ extern "C" {
 /* USER CODE BEGIN Private defines */
 bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting);
 void blink_LED();
-unsigned int n_pulses();
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);
