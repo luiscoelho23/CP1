@@ -40,7 +40,7 @@ uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char*);
-void (*exec_command[31])(char*);
+void (*exec_command[30])(char*);
 
 void proc_inv_cmd(char*);
 void proc_mr_cmd(char*);
