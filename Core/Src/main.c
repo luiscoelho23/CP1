@@ -104,13 +104,15 @@ int main(void)
   MX_TIM1_Init();
   MX_DAC_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+
+  HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+  reset_pulses();
 
   HAL_UART_Receive_IT(&huart3, UART_RX_buffer, 1);
   send_UART(PROMPT);
-
-
-
 
   /* USER CODE END 2 */
 

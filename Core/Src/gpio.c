@@ -87,9 +87,13 @@ void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 /* USER CODE BEGIN 2 */
+unsigned int pulses = 0;
+bool read_dir;
+unsigned int pulses_tim = 0;
 
 bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 {
@@ -124,14 +128,34 @@ bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	bool read_dir = HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13);
+	read_dir = HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13);
 
-	static unsigned int pulses = 0;
-	pulses++;
+	if(get_count_pulses_mode())
+		pulses++;
+	else
+	{
+		TIM4->CNT = 0;
+		pulses_tim = get_tim4_counter();
+		reset_tim4_counter();
+	}
 
-	if(pulses < LM_EN)
 
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+}
+
+void reset_pulses(void)
+{
+	pulses = 0;
+}
+
+float get_pulses_tim(void)
+{
+	return pulses_tim * 0.00005 ;
+}
+
+unsigned int get_n_pulses(void)
+{
+	return pulses;
 }
 
 void blink_LED()
@@ -141,5 +165,8 @@ void blink_LED()
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 }
 
-
+bool get_dir(void)
+{
+	return read_dir;
+}
 /* USER CODE END 2 */

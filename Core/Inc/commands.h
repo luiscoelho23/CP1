@@ -10,8 +10,7 @@ extern "C" {
 #include <stdbool.h>
 #include <string.h>
 
-#define LM_EN 100
-#define LM_RES 50
+#define LM_EN 10
 
 #define RV 0 // '-'
 #define FW 1 // '+'

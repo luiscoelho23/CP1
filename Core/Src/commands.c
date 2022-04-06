@@ -832,22 +832,82 @@ void proc_dec_cmd(char* message)
 
 void proc_hw_cmd(char* message)
 {
-	return;
+	unsigned int unit;
+	char timeunit[2];
+
+	if(sscanf((char*)message, "HW %s %d", timeunit, &unit) == 2)
+		{
+			if(strcmp(timeunit,"ms") == 0 || strcmp(timeunit,"s") == 0 || strcmp(timeunit,"us") == 0)
+			{
+				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+				strcpy(sp_config.timeunit,timeunit);
+				sp_config.unit = unit;
+				send_UART("Sampling timeunit and units changed with success.");
+			}
+			else
+				send_UART("Invalid Sample Period instruction argument values.");
+		}
+		else
+			send_UART("Invalid Sample Period instruction syntax.");
 }
 
 void proc_fsw_cmd(char* message)
 {
-	return;
+	char units[5] = {0};
+
+	if(sscanf((char*)message, "FSW %s", units) == 1)
+		{
+			if(strcmp(units,"hz") == 0 || strcmp(units,"rps") == 0 || strcmp(units,"rads") == 0 || strcmp(units,"rpm") == 0)
+			{
+				strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+				set_units(units);
+				send_UART("Sampling units changed with success.");
+			}
+			else
+				send_UART("Invalid FSW instruction argument values.");
+		}
+		else
+			send_UART("Invalid FSW instruction syntax.");
 }
 
 void proc_sw_cmd(char* message)
 {
-	return;
+	unsigned int k_values;
+
+	if(message[2] == '\r')
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		sp_config.sp_limit = 0;
+		MX_TIM3_Init1(sp_config);
+		HAL_TIM_Base_Start_IT(&htim3);
+		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+	}
+	else if(sscanf((char*)message, "SW %d", &k_values) == 1)
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		sp_config.sp_limit = k_values;
+		MX_TIM3_Init1(sp_config);
+		HAL_TIM_Base_Start_IT(&htim3);
+		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+	}
+	else
+		send_UART("Invalid Sample instruction syntax.");
 }
 
 void proc_stw_cmd(char* message)
 {
-	return;
+	if(message[3] == '\r')
+	{
+		strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		HAL_TIM_Base_Stop_IT(&htim3);
+		HAL_TIM_Base_Stop_IT(&htim4);
+		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+		reset_pulses();
+		send_UART("Sampling Stopped.");
+	}
+	else
+		send_UART("Invalid Stop Sampling instruction syntax.");
 }
 
 

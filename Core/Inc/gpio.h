@@ -41,7 +41,10 @@ void blink_LED();
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+float get_pulses_tim(void);
+unsigned int get_n_pulses(void);
+bool get_dir(void);
+void reset_pulses(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

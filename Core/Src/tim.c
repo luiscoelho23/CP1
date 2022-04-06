@@ -21,6 +21,19 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
+
+float speed_buffer[SPEED_BUFF_SIZE];
+int speed_buffer_index = 0;
+
+unsigned int tim4_counter = 0;
+unsigned int tim4_counter_ant = 0;
+bool count_pulses_mode = 1;
+bool was_reset = 0;
+float speed;
+unsigned int units = u_rpm;
+float sp_period_s;
+char* message;
+
 void MX_TIM1_Init1(struct sp_config_t sp_config)
 {
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
@@ -38,8 +51,8 @@ void MX_TIM1_Init1(struct sp_config_t sp_config)
 	}
 	else if(!strncmp(sp_config.timeunit,"s",1))
 	{
-		mul1 = 10000;
-		mul2 = 100;
+		mul1 = 20000;
+		mul2 = 50;
 	}
 
 	htim1.Instance = TIM1;
@@ -73,10 +86,99 @@ void MX_TIM1_Init1(struct sp_config_t sp_config)
   	}
 }
 
+void MX_TIM3_Init1(struct sp_config_t sp_config)
+{
+
+	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+	TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+	unsigned int mul1 = 1, mul2 = 1;
+
+	if(!strncmp(sp_config.timeunit,"us",2))
+	{
+		sp_period_s = 0.000001 * sp_config.unit;
+	}
+	else if(!strncmp(sp_config.timeunit,"ms",2))
+	{
+		sp_period_s = 0.001 * sp_config.unit;
+		mul1 = 1000;
+	}
+	else if(!strncmp(sp_config.timeunit,"s",1))
+	{
+		sp_period_s = 1 * sp_config.unit;
+		mul1 = 20000;
+		mul2 = 50;
+	}
+
+	htim3.Instance = TIM3;
+	htim3.Init.Prescaler = 2 * mul1;
+	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim3.Init.Period = ((sp_config.unit * 48 * mul2)-1) & 65535;
+	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+}
+
+void MX_TIM4_Init1(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 0;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 65535;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+
+}
+
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
 
 /* TIM1 init function */
 void MX_TIM1_Init(void)
@@ -174,6 +276,86 @@ void MX_TIM2_Init(void)
   HAL_TIM_MspPostInit(&htim2);
 
 }
+/* TIM3 init function */
+void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 96;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 1-1;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+/* TIM4 init function */
+void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 48-1;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 100-1;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+
+}
 
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 {
@@ -187,7 +369,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     __HAL_RCC_TIM1_CLK_ENABLE();
 
     /* TIM1 interrupt Init */
-    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 
@@ -203,6 +385,36 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE BEGIN TIM2_MspInit 1 */
 
   /* USER CODE END TIM2_MspInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM3)
+  {
+  /* USER CODE BEGIN TIM3_MspInit 0 */
+
+  /* USER CODE END TIM3_MspInit 0 */
+    /* TIM3 clock enable */
+    __HAL_RCC_TIM3_CLK_ENABLE();
+
+    /* TIM3 interrupt Init */
+    HAL_NVIC_SetPriority(TIM3_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(TIM3_IRQn);
+  /* USER CODE BEGIN TIM3_MspInit 1 */
+
+  /* USER CODE END TIM3_MspInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM4)
+  {
+  /* USER CODE BEGIN TIM4_MspInit 0 */
+
+  /* USER CODE END TIM4_MspInit 0 */
+    /* TIM4 clock enable */
+    __HAL_RCC_TIM4_CLK_ENABLE();
+
+    /* TIM4 interrupt Init */
+    HAL_NVIC_SetPriority(TIM4_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(TIM4_IRQn);
+  /* USER CODE BEGIN TIM4_MspInit 1 */
+
+  /* USER CODE END TIM4_MspInit 1 */
   }
 }
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
@@ -261,8 +473,199 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM2_MspDeInit 1 */
   }
+  else if(tim_baseHandle->Instance==TIM3)
+  {
+  /* USER CODE BEGIN TIM3_MspDeInit 0 */
+
+  /* USER CODE END TIM3_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM3_CLK_DISABLE();
+
+    /* TIM3 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM3_IRQn);
+  /* USER CODE BEGIN TIM3_MspDeInit 1 */
+
+  /* USER CODE END TIM3_MspDeInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM4)
+  {
+  /* USER CODE BEGIN TIM4_MspDeInit 0 */
+
+  /* USER CODE END TIM4_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM4_CLK_DISABLE();
+
+    /* TIM4 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM4_IRQn);
+  /* USER CODE BEGIN TIM4_MspDeInit 1 */
+
+  /* USER CODE END TIM4_MspDeInit 1 */
+  }
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+	if (htim == &htim4)
+		tim4_counter++;
 
+	if (htim == &htim3)
+	{
+
+		if(!count_pulses_mode && get_pulses_tim() < (sp_period_s / 15.0)  && was_reset)
+		{
+			count_pulses_mode = 1;
+			reset_tim4_counter();
+			HAL_TIM_Base_Stop_IT(&htim4);
+		}
+
+		if(count_pulses_mode && get_n_pulses() < LM_EN)
+		{
+			count_pulses_mode = 0;
+			reset_pulses();
+			HAL_TIM_Base_Start_IT(&htim4);
+		}
+
+		process_units[units]();
+		was_reset = 0;
+		reset_pulses();
+	}
+}
+
+void reset_tim4_counter(void)
+{
+	tim4_counter = 0;
+	was_reset = 1;
+}
+
+unsigned int get_tim4_counter()
+{
+	return tim4_counter;
+}
+
+bool get_count_pulses_mode(void)
+{
+	return count_pulses_mode;
+}
+
+void (*process_units[])() = {
+		process_units_rpm,
+		process_units_rps,
+		process_units_hz,
+		process_units_rads
+};
+
+void process_units_rads()
+{
+
+	if(count_pulses_mode)
+		speed = get_n_pulses() * 60.0 * PI * 2.0/(960.0 * sp_period_s);
+	else
+	{
+		speed = 60.0 * 2.0 * PI / get_pulses_tim();
+
+		if(get_pulses_tim() == 0)
+			speed = 0;
+	}
+	speed_buffer[speed_buffer_index++ & (SPEED_BUFF_SIZE - 1)] = speed;
+
+	float temp;
+
+	for(int i = 0 ; i < SPEED_BUFF_SIZE; i++)
+		{
+			temp += 0.0625 * speed_buffer[i];
+		}
+	speed = temp;
+
+	sprintf((char*) message, "rads %f %d", speed, get_dir());
+	send_UART(message);
+}
+
+void process_units_rps()
+{
+	if(count_pulses_mode)
+		speed = get_n_pulses() * 3600.0 / (960.0 * sp_period_s);
+	else
+	{
+		speed = 60.0 * 2.0 * PI / get_pulses_tim();
+
+		if(get_pulses_tim() == 0)
+			speed = 0;
+	}
+	speed_buffer[speed_buffer_index++ & (SPEED_BUFF_SIZE - 1)] = speed;
+
+	float temp;
+
+	for(int i = 0 ; i < SPEED_BUFF_SIZE; i++)
+		{
+			temp += 0.0625 * speed_buffer[i];
+		}
+	speed = temp;
+
+	sprintf((char*) message, "rps %f %d", speed, get_dir());
+	send_UART(message);
+}
+
+void process_units_hz()
+{
+	if(count_pulses_mode)
+		speed = get_n_pulses() * 3600.0 /(960.0 * sp_period_s);
+	else
+	{
+		speed = 60.0 * 2.0 * PI / get_pulses_tim();
+
+		if(get_pulses_tim() == 0)
+			speed = 0;
+	}
+	speed_buffer[speed_buffer_index++ & (SPEED_BUFF_SIZE - 1)] = speed;
+
+	float temp;
+
+	for(int i = 0 ; i < SPEED_BUFF_SIZE; i++)
+		{
+			temp += 0.0625 * speed_buffer[i];
+		}
+	speed = temp;
+
+	sprintf((char*) message, "hz %f %d", speed, get_dir());
+	send_UART(message);
+}
+
+void process_units_rpm()
+{
+	if(count_pulses_mode)
+		speed = get_n_pulses() * 60.0 /960.0 / sp_period_s;
+	else
+	{
+		speed = 60.0 * 2.0 * PI / get_pulses_tim();
+
+		if(get_pulses_tim() == 0)
+			speed = 0;
+	}
+
+	speed_buffer[speed_buffer_index++ & (SPEED_BUFF_SIZE - 1)] = speed;
+
+	float temp;
+
+	for(int i = 0 ; i < SPEED_BUFF_SIZE; i++)
+		{
+			temp += 0.0625 * speed_buffer[i];
+		}
+	speed = temp;
+
+	sprintf((char*) message, "rpm %f %d", speed, get_dir());
+	send_UART(message);
+}
+
+void set_units(char s_units[5])
+{
+	if(strcmp(s_units,"hz") == 0)
+		units = u_hz;
+	else if(strcmp(s_units,"rps") == 0)
+		units = u_rps;
+	else if(strcmp(s_units,"rads") == 0)
+		units = u_rads;
+	else if(strcmp(s_units,"rpm") == 0)
+		units = u_rpm;
+}
 /* USER CODE END 1 */
