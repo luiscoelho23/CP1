@@ -33,7 +33,7 @@ extern "C" {
 
 #define PI 3.14159
 
-#define SPEED_BUFF_SIZE 16
+#define SPEED_BUFF_SIZE 8
 /* USER CODE END Includes */
 
 extern TIM_HandleTypeDef htim1;

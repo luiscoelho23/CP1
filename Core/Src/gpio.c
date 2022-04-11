@@ -134,7 +134,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		pulses++;
 	else
 	{
-		TIM4->CNT = 0;
 		pulses_tim = get_tim4_counter();
 		reset_tim4_counter();
 	}
@@ -150,7 +149,7 @@ void reset_pulses(void)
 
 float get_pulses_tim(void)
 {
-	return pulses_tim * 0.00005 ;
+	return pulses_tim  * 0.05;
 }
 
 unsigned int get_n_pulses(void)
