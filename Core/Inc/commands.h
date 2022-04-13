@@ -33,13 +33,13 @@ struct sp_config_t
 #include "gpio.h"
 #include "tim.h"
 
-enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST, CS, EN, UN, VR, INC, DEC, HW, FSW, SW, STW };
+enum command { INV = 0, MR, MW, MI, MO, RD, WD, RA, WA, LAST, HELP, VER, SP, AC, FNI, FFI, FNF, FFF, S, ST, CS, EN, UN, VR, INC, DEC, HW, FSW, SW, STW,KP };
 
 uint8_t last_message[BUFFER_SIZE];
 uint8_t memory[65536];
 
 unsigned char check_command(char*);
-void (*exec_command[31])(char*);
+void (*exec_command[32])(char*);
 
 void proc_inv_cmd(char*);
 void proc_mr_cmd(char*);
@@ -73,6 +73,7 @@ void proc_hw_cmd(char*);
 void proc_fsw_cmd(char*);
 void proc_sw_cmd(char*);
 void proc_stw_cmd(char*);
+void proc_kp_cmd(char*);
 
 
 bool memory_read(unsigned int addr, unsigned int length, char* data);
@@ -92,6 +93,6 @@ void process_buf_nf(uint32_t*, int);
 void process_buf_if(uint32_t*, int);
 void process_buf_ff(uint32_t*, int);
 
-void setDirection(bool dir);
+float get_speed(void);
 
 #endif /* __COMMANDS_H__ */

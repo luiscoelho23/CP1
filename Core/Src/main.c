@@ -106,8 +106,11 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
   HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
   reset_pulses();
 

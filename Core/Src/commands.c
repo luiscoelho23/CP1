@@ -16,7 +16,8 @@ float coef_bk[10] = {0.05, 0.005, 0.045, 0.1, 0.075, 0.025, 0.15, 0.02, 0.02, 0.
 */
 
 bool mode_speed = false, enable = false, direction = false;
-unsigned int duty_cycle = 0, speed = 0;
+unsigned int duty_cycle = 0, mul_pwm = 1;
+float speed_rpm = 0;
 
 #define RECOVERY_TIME_MS 10
 
@@ -539,6 +540,7 @@ void proc_cs_cmd(char* message)
 {
 	// DISABLE ALL
 	enable = false;
+	HAL_TIM_Base_Stop_IT(&htim9);
 	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
 
 	int val;
@@ -585,7 +587,12 @@ void proc_en_cmd(char* message)
 
 				if(mode_speed)
 				{
-					// start speed mode
+					sp_config.sp_limit = 0;
+					MX_TIM3_Init1(sp_config);
+					HAL_TIM_Base_Start_IT(&htim3);
+					HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+					HAL_TIM_Base_Start_IT(&htim9);
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 				}
 				else
 				{
@@ -595,6 +602,9 @@ void proc_en_cmd(char* message)
 			else
 			{
 				// DISABLE ALL
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
+				HAL_TIM_Base_Stop_IT(&htim9);
 				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
 				send_UART("System disabled with success.");
 				enable = false;
@@ -610,6 +620,7 @@ void proc_en_cmd(char* message)
 
 void proc_un_cmd(char* message)
 {
+	mul_pwm = (TIM2->ARR+1)/100;
 	char sign;
 	int val;
 	int args_read;
@@ -626,19 +637,21 @@ void proc_un_cmd(char* message)
 				{
 					for(int i = duty_cycle; i > 0; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i - 1;
+						duty_cycle = (i - 1);
+						TIM2->CCR4 = duty_cycle * mul_pwm;
+
 						HAL_Delay(RECOVERY_TIME_MS);
 					}
-
-					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
 				}
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
 
 				if(duty_cycle > val)
 				{
 					for(int i = duty_cycle; i > val; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i - 1;
+						duty_cycle = (i - 1);
+						TIM2->CCR4 = duty_cycle * mul_pwm;
 						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
@@ -646,7 +659,8 @@ void proc_un_cmd(char* message)
 				{
 					for(int i = duty_cycle; i < val; i++)
 					{
-						TIM2->CCR4 = duty_cycle = i + 1;
+						duty_cycle = (i + 1);
+						TIM2->CCR4 = duty_cycle * mul_pwm;
 						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
@@ -659,19 +673,19 @@ void proc_un_cmd(char* message)
 				{
 					for(int i = duty_cycle; i > 0; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i - 1;
+						duty_cycle = (i - 1);
+						TIM2->CCR4 = duty_cycle * mul_pwm;
 						HAL_Delay(RECOVERY_TIME_MS);
 					}
-
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
-					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
 				}
-
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
 				if(duty_cycle > val)
 				{
 					for(int i = duty_cycle; i > val; i--)
 					{
-						TIM2->CCR4 = duty_cycle = i - 1;
+						duty_cycle = (i - 1);
+						TIM2->CCR4 = duty_cycle * mul_pwm;
 						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
@@ -679,7 +693,8 @@ void proc_un_cmd(char* message)
 				{
 					for(int i = duty_cycle; i < val; i++)
 					{
-						TIM2->CCR4 = duty_cycle = i + 1;
+						duty_cycle = (i + 1);
+						TIM2->CCR4 = duty_cycle * mul_pwm;
 						HAL_Delay(RECOVERY_TIME_MS);
 					}
 				}
@@ -700,7 +715,8 @@ void proc_un_cmd(char* message)
 
 			for(int i = duty_cycle; i > 0; i--)
 			{
-				TIM2->CCR4 = duty_cycle = i - 1;
+				duty_cycle = (i - 1);
+				TIM2->CCR4 = duty_cycle * mul_pwm;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 
@@ -726,7 +742,7 @@ void proc_vr_cmd(char* message)
 			if(sign == '+' || sign == '-')
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
-			speed = val;
+			speed_rpm = val;
 
 			if(sign == '+')
 				direction = true;
@@ -744,16 +760,17 @@ void proc_vr_cmd(char* message)
 
 void proc_inc_cmd(char* message)
 {
+	mul_pwm = (TIM2->ARR+1)/100;
 	strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
 	if(mode_speed)
 	{
-		if(speed < 156)
-			speed += 5;
+		if(speed_rpm < 156)
+			speed_rpm += 5;
 		else
-			speed = 160;
+			speed_rpm = 160;
 
-		sprintf(message, "Speed updated to %d rpm.", speed);
+		sprintf(message, "Speed updated to %.2f rpm.", speed_rpm);
 	}
 	else
 	{
@@ -768,7 +785,7 @@ void proc_inc_cmd(char* message)
 		{
 			for(int i = 0; i < 5 && duty_cycle < 100; ++i)
 			{
-				TIM2->CCR4 = ++duty_cycle;
+				TIM2->CCR4 = ++duty_cycle * mul_pwm;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
@@ -776,7 +793,7 @@ void proc_inc_cmd(char* message)
 		{
 			for(int i = 0; i < 5 && duty_cycle > 0; ++i)
 			{
-				TIM2->CCR4 = --duty_cycle;
+				TIM2->CCR4 = --duty_cycle * mul_pwm;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
@@ -789,14 +806,15 @@ void proc_inc_cmd(char* message)
 
 void proc_dec_cmd(char* message)
 {
+	mul_pwm = (TIM2->ARR+1)/100;
 	if(mode_speed)
 	{
-		if(speed > 4)
-			speed -= 5;
+		if(speed_rpm > 4)
+			speed_rpm -= 5;
 		else
-			speed = 0;
+			speed_rpm = 0;
 
-		sprintf((char*) message, "Speed updated to %d rpm.", speed);
+		sprintf((char*) message, "Speed updated to %.2f rpm.", speed_rpm);
 	}
 	else
 	{
@@ -811,7 +829,7 @@ void proc_dec_cmd(char* message)
 		{
 			for(int i = 0; i < 5 && duty_cycle < 100; ++i)
 			{
-				TIM2->CCR4 = ++duty_cycle;
+				TIM2->CCR4 = ++duty_cycle * mul_pwm;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
@@ -819,7 +837,7 @@ void proc_dec_cmd(char* message)
 		{
 			for(int i = 0; i < 5 && duty_cycle > 0; ++i)
 			{
-				TIM2->CCR4 = --duty_cycle;
+				TIM2->CCR4 = --duty_cycle * mul_pwm;
 				HAL_Delay(RECOVERY_TIME_MS);
 			}
 		}
@@ -908,6 +926,20 @@ void proc_stw_cmd(char* message)
 	}
 	else
 		send_UART("Invalid Stop Sampling instruction syntax.");
+}
+void proc_kp_cmd(char* message){
+	unsigned int kp = 0;
+	if(sscanf((char*)message, "KP %d", &kp) == 1)
+	{
+		if(kp <= 200 && kp >= 0)
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+		}
+		else
+			send_UART("Invalid Gain.");
+	}
+	else
+		send_UART("Invalid KP instruction syntax.");
 }
 
 
@@ -1145,12 +1177,10 @@ void process_buf(uint32_t* x_buf, int n)
 	}
 }
 
-
-void setDirection(bool dir)
+float get_speed(void)
 {
-	direction = dir;
+	return speed_rpm * 0.10472;
 }
-
 /* USER CODE END 4 */
 
 /**
