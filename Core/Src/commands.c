@@ -543,7 +543,6 @@ void proc_cs_cmd(char* message)
 {
 	// DISABLE ALL
 	enable = false;
-	HAL_TIM_Base_Stop_IT(&htim9);
 	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
 
 	int val;
@@ -595,7 +594,6 @@ void proc_en_cmd(char* message)
 					MX_TIM3_Init1(sp_config);
 					HAL_TIM_Base_Start_IT(&htim3);
 					HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-					HAL_TIM_Base_Start_IT(&htim9);
 					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 				}
 				else
@@ -612,7 +610,6 @@ void proc_en_cmd(char* message)
 				reset_pulses();
 				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
 				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
-				HAL_TIM_Base_Stop_IT(&htim9);
 				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4);
 				send_UART("System disabled with success.");
 				enable = false;
@@ -1190,6 +1187,10 @@ void process_buf(uint32_t* x_buf, int n)
 float get_speed(void)
 {
 	return speed_rpm * 0.10472;
+}
+
+bool get_mode_speed(){
+	return mode_speed;
 }
 /* USER CODE END 4 */
 

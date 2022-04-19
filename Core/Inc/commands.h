@@ -94,5 +94,6 @@ void process_buf_if(uint32_t*, int);
 void process_buf_ff(uint32_t*, int);
 
 float get_speed(void);
+bool get_mode_speed();
 
 #endif /* __COMMANDS_H__ */
