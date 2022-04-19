@@ -40,6 +40,8 @@ unsigned char check_command(char* message)
 		cmd = STW;
     else if((!strncmp((char*) message, "FSW", 3)))
 		cmd = FSW;
+    else if((!strncmp((char*) message, "KP", 2)))
+        cmd = KP;
     else if((!strncmp((char*) message, "ST", 2)))
         cmd = ST;
     else if((!strncmp((char*) message, "MR", 2)))
@@ -121,7 +123,8 @@ void (*exec_command[])(char* message) = {
 		proc_hw_cmd,
 		proc_fsw_cmd,
 		proc_sw_cmd,
-		proc_stw_cmd
+		proc_stw_cmd,
+		proc_kp_cmd
 };
 
 
@@ -587,6 +590,7 @@ void proc_en_cmd(char* message)
 
 				if(mode_speed)
 				{
+					set_units("rads");
 					sp_config.sp_limit = 0;
 					MX_TIM3_Init1(sp_config);
 					HAL_TIM_Base_Start_IT(&htim3);
@@ -602,6 +606,10 @@ void proc_en_cmd(char* message)
 			else
 			{
 				// DISABLE ALL
+				HAL_TIM_Base_Stop_IT(&htim3);
+				HAL_TIM_Base_Stop_IT(&htim4);
+				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+				reset_pulses();
 				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
 				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
 				HAL_TIM_Base_Stop_IT(&htim9);
@@ -927,6 +935,7 @@ void proc_stw_cmd(char* message)
 	else
 		send_UART("Invalid Stop Sampling instruction syntax.");
 }
+
 void proc_kp_cmd(char* message){
 	unsigned int kp = 0;
 	if(sscanf((char*)message, "KP %d", &kp) == 1)
@@ -934,6 +943,7 @@ void proc_kp_cmd(char* message){
 		if(kp <= 200 && kp >= 0)
 		{
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+			set_kp(kp);
 		}
 		else
 			send_UART("Invalid Gain.");

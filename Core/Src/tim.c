@@ -29,8 +29,8 @@ unsigned int tim4_counter = 0;
 unsigned int tim4_counter_ant = 0;
 bool count_pulses_mode = 1;
 bool frist_time = 1;
-float speed;
-unsigned int units = u_rpm;
+float speed, speed_c, un, dc;
+unsigned int units = u_rpm, kp = 0;
 float sp_period_s;
 char* message;
 
@@ -334,7 +334,7 @@ void MX_TIM9_Init(void)
   htim9.Instance = TIM9;
   htim9.Init.Prescaler = 960-1;
   htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim9.Init.Period = 10000;
+  htim9.Init.Period = 100;
   htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim9) != HAL_OK)
@@ -570,9 +570,36 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 		process_units[units]();
 		frist_time = 0;
 		reset_pulses();
+
 	}else if (htim == &htim9)
 	{
+		speed_c = get_speed();
+		 unsigned int mul_pwm = (TIM2->ARR+1)/100;
 
+		un = kp*(speed_c - speed);
+		dc = (un/6)*100;
+
+		if(dc >= 0){
+
+			if(dc < 0)
+				dc = -dc;
+			if(dc > 100)
+				dc = 100;
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
+			TIM2->CCR4 = dc * mul_pwm;
+
+		}
+		if(dc < 0){
+
+			if(dc < 0)
+				dc = -dc;
+			if(dc > 100)
+				dc = 100;
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
+			TIM2->CCR4 = dc * mul_pwm;
+		}
 	}
 }
 
@@ -710,5 +737,10 @@ void set_units(char s_units[5])
 		units = u_rads;
 	else if(strcmp(s_units,"rpm") == 0)
 		units = u_rpm;
+}
+
+void set_kp(unsigned int kp1)
+{
+	kp = kp1;
 }
 /* USER CODE END 1 */

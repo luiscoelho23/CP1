@@ -59,6 +59,8 @@ void MX_TIM1_Init1(struct sp_config_t sp_config);
 void MX_TIM3_Init1(struct sp_config_t sp_config);
 
 void set_units(char*);
+void set_kp(unsigned int);
+void set_speed_c(float);
 
 void reset_tim4_counter(void);
 bool get_count_pulses_mode(void);
