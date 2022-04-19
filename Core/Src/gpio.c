@@ -65,8 +65,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PE13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  /*Configure GPIO pin : PE12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -128,7 +128,7 @@ bool is_GPIO_pin_free(unsigned int port_addr, unsigned int pin_setting)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	read_dir = HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13);
+	read_dir = HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_12);
 
 	if(get_count_pulses_mode())
 		pulses++;
