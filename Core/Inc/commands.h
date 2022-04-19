@@ -18,6 +18,8 @@ extern "C" {
 #define a 0.4
 #define M 26
 
+extern bool direction;
+
 enum filter_type_t { Nf, Inf = 1, Fin };
 
 struct sp_config_t

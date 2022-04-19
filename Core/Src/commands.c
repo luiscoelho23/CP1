@@ -739,12 +739,12 @@ void proc_vr_cmd(char* message)
 {
 	char sign;
 	int val;
+	int args_read;
 
-	if(sscanf((char*) message, "VR %c%d", &sign, &val) == 2)
+	if((args_read = sscanf((char*) message, "VR %c%d", &sign, &val)) == 2)
 	{
-		if(val >= 0 && val <= 160)
+		if(val >= 0 && val <= 160 && (sign == '+' || sign == '-'))
 		{
-			if(sign == '+' || sign == '-')
 			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
 
 			speed_rpm = val;
@@ -753,6 +753,19 @@ void proc_vr_cmd(char* message)
 				direction = true;
 			else
 				direction = false;
+
+			send_UART("Speed changed with success.");
+		}
+		else
+			send_UART("Invalid Reference Speed instruction argument values.");
+	}
+	else if(sscanf((char*) message, "VR %d", &val) == 1)
+	{
+		if(!val)
+		{
+			strncpy((char*) last_message, (char*) message, BUFFER_SIZE);
+
+			speed_rpm = val;
 
 			send_UART("Speed changed with success.");
 		}

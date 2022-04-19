@@ -30,7 +30,7 @@ unsigned int tim4_counter_ant = 0;
 bool count_pulses_mode = 1;
 bool frist_time = 1;
 float speed, speed_c, un, dc;
-unsigned int units = u_rpm, kp = 0;
+unsigned int units = u_rpm, kp = 10;
 float sp_period_s;
 char* message;
 
@@ -473,16 +473,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	if (htim == &htim4)
 	{
 		tim4_counter++;
-
-	}else if (htim == &htim3)
+	}
+	else if (htim == &htim3)
 	{
-
 		if(!count_pulses_mode && ((60 / get_pulses_tim()) > 35) && !frist_time)
 		{
 			count_pulses_mode = 1;
 			reset_tim4_counter();
 			HAL_TIM_Base_Stop_IT(&htim4);
-		}else if(count_pulses_mode && get_n_pulses() < LM_EN  && !frist_time)
+		}
+		else if(count_pulses_mode && get_n_pulses() < LM_EN  && !frist_time)
 		{
 			count_pulses_mode = 0;
 			reset_pulses();
@@ -490,38 +490,36 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 			HAL_TIM_Base_Start_IT(&htim4);
 		}
 
+
 		process_units[units]();
 		frist_time = 0;
 		reset_pulses();
-		if(get_mode_speed()){
+
+		if(get_mode_speed())
+		{
 			speed_c = get_speed();
 			unsigned int mul_pwm = (TIM2->ARR+1)/100;
+
+			if(direction)
+			{
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
+			}
+			else
+			{
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
+				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
+			}
 
 			un = kp*(speed_c - speed);
 			dc = (un/6)*100;
 
-			if(dc >= 0){
+			if(dc > 100)
+				dc = 100;
+			else if(dc < 0)
+				dc = 0;
 
-				if(dc > 100)
-					dc = 100;
-
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 0);
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
-				TIM2->CCR4 = dc * mul_pwm;
-
-			}
-			if(dc < 0){
-
-				if(dc < 0)
-					dc = -dc;
-				if(dc > 100)
-					dc = 100;
-
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, 1);
-				TIM2->CCR4 = dc * mul_pwm;
-
-			}
+			TIM2->CCR4 = dc * mul_pwm;
 		}
 	}
 }
@@ -550,9 +548,8 @@ void (*process_units[])() = {
 
 void process_units_rads()
 {
-
 	if(count_pulses_mode)
-		speed = (get_n_pulses() * PI * 2.0) / (960.0  * sp_period_s) ;
+		speed = (get_n_pulses() * PI * 2.0) / (960.0  * sp_period_s);
 	else
 	{
 		speed = (2.0 * PI) / (get_pulses_tim());
@@ -565,12 +562,13 @@ void process_units_rads()
 	float temp = 0;
 
 	for(int i = 0 ; i < SPEED_BUFF_SIZE; i++)
-		{
-			temp += 0.125 * speed_buffer[i];
-		}
+	{
+		temp += 0.125 * speed_buffer[i];
+	}
+
 	speed = temp;
 
-	sprintf((char*) message, "rads %.2f D%d M%d", speed, get_dir(),count_pulses_mode);
+	sprintf((char*) message, "rads %.2f D%d M%d", speed, get_dir(), count_pulses_mode);
 	send_UART(message);
 }
 

@@ -42,7 +42,7 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN Private defines */
-enum units { u_rpm = 0, u_rps, u_hz, u_rads};
+enum units { u_rpm = 0, u_rps, u_hz, u_rads };
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);
