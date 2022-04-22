@@ -1,8 +1,0 @@
-gpio.c:42:6:MX_GPIO_Init	56	static
-gpio.c:98:6:is_GPIO_pin_free	16	static
-gpio.c:129:6:HAL_GPIO_EXTI_Callback	16	static
-gpio.c:144:6:reset_pulses	4	static
-gpio.c:149:7:get_pulses_tim	4	static
-gpio.c:154:14:get_n_pulses	4	static
-gpio.c:159:6:blink_LED	8	static
-gpio.c:166:6:get_dir	4	static
